@@ -178,7 +178,7 @@ class PHP_CRUD_UI {
     }
 
     function selectSubject($url,$subject,$name,$value,$definition) {
-        $properties = $this->properties($subject,$action,$definition);
+        $properties = $this->properties($subject,'list',$definition);
         $references = $this->references($subject,$properties);
         $primaryKey = $this->primaryKey($subject,$properties);
         
