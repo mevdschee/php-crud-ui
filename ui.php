@@ -187,7 +187,7 @@ class PHP_CRUD_UI {
         $indices = array_flip($data[$subject]['columns']);
         $displayColumn = $this->displayColumn($indices);
         
-        $html = '<select class="form-control">';
+        $html = '<select id="'.$name.'" name="'.$name.'" class="form-control">';
         $html.= '<option value=""></option>';
         foreach ($data[$subject]['records'] as $record) {
             $selected = $record[$primaryKey]==$value?' selected':'';
@@ -295,6 +295,7 @@ class PHP_CRUD_UI {
 
     function get_properties($definition,$path) {
         while (null!==($element = array_shift($path))) {
+            //echo '"'.$element.'",';
             if (!isset($definition[$element])) return false;
             $definition = $definition[$element];
         }
@@ -307,7 +308,7 @@ class PHP_CRUD_UI {
             case 'list': $path = array('paths','/'.$subject,'get','responses','200','schema','items','properties'); break;
             case 'read': $path = array('paths','/'.$subject.'/{id}','get','responses','200','schema','properties'); break;
             case 'add' : $path = array('paths','/'.$subject,'post','parameters',0,'schema','properties'); break;
-            case 'edit': $path = array('paths','/'.$subject.'/{id}','post','parameters',0,'schema','properties'); break;
+            case 'edit': $path = array('paths','/'.$subject.'/{id}','put','parameters',1,'schema','properties'); break;
         }
         return $this->get_properties($definition,$path);
     }
