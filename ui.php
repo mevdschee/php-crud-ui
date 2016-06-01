@@ -271,24 +271,14 @@ class PHP_CRUD_UI {
 
     function updateRecord($parameters) {
         extract($parameters);
-        
-        $properties = $this->properties($subject,$action,$definition);
-        $references = $this->references($subject,$properties);
-        $referenced = $this->referenced($subject,$properties);
-        $primaryKey = $this->primaryKey($subject,$properties);
-        
+
         $this->call('PUT',$url.'/'.$subject.'/'.$id,json_encode($post));
         return '<p>Updated</p>';
     }
     
     function insertRecord($parameters) {
         extract($parameters);
-        
-        $properties = $this->properties($subject,$action,$definition);
-        $references = $this->references($subject,$properties);
-        $referenced = $this->referenced($subject,$properties);
-        $primaryKey = $this->primaryKey($subject,$properties);
-        
+
         $this->call('POST',$url.'/'.$subject,json_encode($post));
         return '<p>Added</p>';
     }
