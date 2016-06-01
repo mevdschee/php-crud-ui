@@ -225,13 +225,13 @@ class PHP_CRUD_UI {
         $data = array_keys($properties);
         
         foreach ($data as $i=>$column) {
-            if ($i==$primaryKey) continue;
             $html.= '<div class="form-group">';
             $html.= '<label for="'.$column.'">'.$column.'</label>';
             if ($references[$i]) {
                 $html.= $this->selectSubject($url,$references[$i][0],$column,$field,$definition);
             } else {
-                $html.= '<input class="form-control" id="'.$column.'" name="'.$column.'" value=""/>';
+                $disabled = $i==$primaryKey?' disabled':'';
+                $html.= '<input class="form-control" id="'.$column.'" name="'.$column.'" value=""'.$disabled.'/>';
             }
             $html.= '</div>';
         }
