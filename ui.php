@@ -52,7 +52,7 @@ class PHP_CRUD_UI {
         $html.= '<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" rel="stylesheet">';
         $html.= '</head><body><div class="container">';
         $html.= '<div class="row">';
-        $html.= '<div class="col-md-4"><h3>PHP-CRUD-UI</h3></div>';
+        $html.= '<div class="col-md-3"><h3>PHP-CRUD-UI</h3></div>';
         $html.= '</div>';
         return $html;
     }
@@ -73,7 +73,7 @@ class PHP_CRUD_UI {
 
 
     function referenceText($subject,$data,$field,$id,$definition) {
-        $properties = $this->properties($subject,$definition);
+        $properties = $this->properties($subject,'read',$definition);
         $references = $this->references($subject,$properties);
         $referenced = $this->referenced($subject,$properties);
         $primaryKey = $this->primaryKey($subject,$properties);
@@ -106,7 +106,7 @@ class PHP_CRUD_UI {
     function listRecords($parameters) {
         extract($parameters);
         
-        $properties = $this->properties($subject,$definition);
+        $properties = $this->properties($subject,$action,$definition);
         $references = $this->references($subject,$properties);
         $referenced = $this->referenced($subject,$properties);
         $primaryKey = $this->primaryKey($subject,$properties);
@@ -115,7 +115,7 @@ class PHP_CRUD_UI {
         
         $args = array();
         if ($field) {
-            $args['filter']=$field.',eq,'.$id; 
+            $args['filter']=$field.',eq,'.$id;
         }
         $include = implode(',',array_filter(array_map(function($v){ return $v[0]; },$references)));
         if ($include) {
@@ -172,11 +172,13 @@ class PHP_CRUD_UI {
             $html.= '</tr>';
         }
         $html.= '</tbody></table>';
+        $href = $this->url($base,$subject,'add');
+        $html.= '<p><a href="'.$href.'" class="btn btn-primary">Add</a></p>';
         return $html;
     }
 
     function selectSubject($url,$subject,$name,$value,$definition) {
-        $properties = $this->properties($subject,$definition);
+        $properties = $this->properties($subject,$action,$definition);
         $references = $this->references($subject,$properties);
         $primaryKey = $this->primaryKey($subject,$properties);
         
@@ -186,6 +188,7 @@ class PHP_CRUD_UI {
         $displayColumn = $this->displayColumn($indices);
         
         $html = '<select class="form-control">';
+        $html.= '<option value=""></option>';
         foreach ($data[$subject]['records'] as $record) {
             $selected = $record[$primaryKey]==$value?' selected':'';
             $html.= '<option value="'.$record[$primaryKey].'"'.$selected.'>';
@@ -209,17 +212,45 @@ class PHP_CRUD_UI {
         return $html;
     }
 
+    function addRecord($parameters) {
+        extract($parameters);
+        
+        $properties = $this->properties($subject,$action,$definition);
+        $references = $this->references($subject,$properties);
+        $referenced = $this->referenced($subject,$properties);
+        $primaryKey = $this->primaryKey($subject,$properties);
+        
+        $html = '<h4>'.$subject.': add</h4>';
+        $html.= '<form method="post">';
+        $data = array_keys($properties);
+        
+        foreach ($data as $i=>$column) {
+            if ($i==$primaryKey) continue;
+            $html.= '<div class="form-group">';
+            $html.= '<label for="'.$column.'">'.$column.'</label>';
+            if ($references[$i]) {
+                $html.= $this->selectSubject($url,$references[$i][0],$column,$field,$definition);
+            } else {
+                $html.= '<input class="form-control" id="'.$column.'" name="'.$column.'" value=""/>';
+            }
+            $html.= '</div>';
+        }
+        $html.= '<button type="submit" class="btn btn-primary">Save</button>';
+        $html.= '</form>';
+        return $html;
+    }
+    
     function editRecord($parameters) {
         extract($parameters);
         
-        $properties = $this->properties($subject,$definition);
+        $properties = $this->properties($subject,$action,$definition);
         $references = $this->references($subject,$properties);
         $referenced = $this->referenced($subject,$properties);
         $primaryKey = $this->primaryKey($subject,$properties);
         
         $data = $this->call('GET',$url.'/'.$subject.'/'.$id);
         $html = '<h4>'.$subject.': edit</h4>';
-        $html.= '<form>';
+        $html.= '<form method="post">';
         $i=0;
         foreach ($data as $column=>$field) {
             $html.= '<div class="form-group">';
@@ -228,28 +259,57 @@ class PHP_CRUD_UI {
                 $html.= $this->selectSubject($url,$references[$i][0],$column,$field,$definition);
             } else {
                 $readonly = $i==$primaryKey?' readonly':'';
-                $html.= '<input class="form-control" id="'.$column.'" value="'.$field.'"'.$readonly.'/>';
+                $html.= '<input class="form-control" id="'.$column.'" name="'.$column.'" value="'.$field.'"'.$readonly.'/>';
             }
             $html.= '</div>';
             $i++;
         }
+        $html.= '<button type="submit" class="btn btn-primary">Save</button>';
         $html.= '</form>';
         return $html;
     }
 
-    function properties($subject,$definition) {
+    function updateRecord($parameters) {
+        extract($parameters);
+        
+        $properties = $this->properties($subject,$action,$definition);
+        $references = $this->references($subject,$properties);
+        $referenced = $this->referenced($subject,$properties);
+        $primaryKey = $this->primaryKey($subject,$properties);
+        
+        $this->call('PUT',$url.'/'.$subject.'/'.$id,json_encode($post));
+        return '<p>Updated</p>';
+    }
+    
+    function insertRecord($parameters) {
+        extract($parameters);
+        
+        $properties = $this->properties($subject,$action,$definition);
+        $references = $this->references($subject,$properties);
+        $referenced = $this->referenced($subject,$properties);
+        $primaryKey = $this->primaryKey($subject,$properties);
+        
+        $this->call('POST',$url.'/'.$subject,json_encode($post));
+        return '<p>Added</p>';
+    }
+
+    function get_properties($definition,$path) {
+        while (null!==($element = array_shift($path))) {
+            if (!isset($definition[$element])) return false;
+            $definition = $definition[$element];
+        }
+        return $definition;
+    }
+
+    function properties($subject,$action,$definition) {
         if (!$subject || !$definition) return false;
-        $path = '/'.$subject;
-        if (!isset($definition['paths'][$path])) {
-            $path = '/'.$subject.'/{id}';
+        switch ($action) {
+            case 'list': $path = array('paths','/'.$subject,'get','responses','200','schema','items','properties'); break;
+            case 'read': $path = array('paths','/'.$subject.'/{id}','get','responses','200','schema','properties'); break;
+            case 'add' : $path = array('paths','/'.$subject,'post','parameters',0,'schema','properties'); break;
+            case 'edit': $path = array('paths','/'.$subject.'/{id}','post','parameters',0,'schema','properties'); break;
         }
-        $properties = false;
-        if (isset($definition['paths'][$path]['get']['responses']['200']['schema']['properties'])) {
-            $properties = $definition['paths'][$path]['get']['responses']['200']['schema']['properties'];
-        } elseif (isset($definition['paths'][$path]['get']['responses']['200']['schema']['items']['properties'])) {
-            $properties = $definition['paths'][$path]['get']['responses']['200']['schema']['items']['properties'];
-        }
-        return $properties;
+        return $this->get_properties($definition,$path);
     }
 
     function references($subject,$properties) {
@@ -314,7 +374,7 @@ class PHP_CRUD_UI {
             $get = $_GET;
         }
         if (!$post) {
-            $post = 'php://input';
+            $post = $_POST;
         }
                 
         $request = trim($request,'/');
@@ -344,7 +404,7 @@ class PHP_CRUD_UI {
         $id        = $this->parseRequestParameter($request, 'a-zA-Z0-9\-_');
         $field     = $this->parseRequestParameter($request, 'a-zA-Z0-9\-_');
 
-        return compact('url','base','subject','action','id','field','definition');
+        return compact('url','base','definition','method','subject','action','id','field','get','post');
     }
     
     function executeCommand() {
@@ -352,15 +412,19 @@ class PHP_CRUD_UI {
         
         $html = $this->head();
         $html.= '<div class="row">';
-        $html.= '<div class="col-md-4">';
+        $html.= '<div class="col-md-3">';
         $html.= $this->menu($parameters);
         $html.= '</div>';
         
-        $html.= '<div class="col-md-8">';
-        switch($parameters['action']){
-            case '':     $html.= $this->home($parameters); break;
-            case 'list': $html.= $this->listRecords($parameters); break;
-            case 'edit': $html.= $this->editRecord($parameters); break;
+        $html.= '<div class="col-md-9">';
+        $action = $parameters['method'].'.'.($parameters['action']?:'home');
+        switch($action){
+            case 'GET.home':  $html.= $this->home($parameters); break;
+            case 'GET.list':  $html.= $this->listRecords($parameters); break;
+            case 'GET.add':   $html.= $this->addRecord($parameters); break;
+            case 'GET.edit':  $html.= $this->editRecord($parameters); break;
+            case 'POST.add':  $html.= $this->insertRecord($parameters); break;
+            case 'POST.edit': $html.= $this->updateRecord($parameters); break;
         }
         $html.= '</div>';
         
