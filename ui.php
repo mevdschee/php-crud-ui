@@ -168,6 +168,9 @@ class PHP_CRUD_UI {
             $html.= '<td>';
             $href = $this->url($base,$subject,'edit',$record[$primaryKey]);
             $html.= '<a href="'.$href.'">edit</a>';
+            $href = $this->url($base,$subject,'delete',$record[$primaryKey]);
+            $html.= ' | ';
+            $html.= '<a href="'.$href.'">delete</a>';
             $html.= '</td>';
             $html.= '</tr>';
         }
@@ -269,6 +272,38 @@ class PHP_CRUD_UI {
         return $html;
     }
 
+    function confirmDelete($parameters) {
+        extract($parameters);
+        
+        $properties = $this->properties($subject,$action,$definition);
+        $references = $this->references($subject,$properties);
+        $referenced = $this->referenced($subject,$properties);
+        $primaryKey = $this->primaryKey($subject,$properties);
+        
+        $data = $this->call('GET',$url.'/'.$subject.'/'.$id);
+        $html = '<h4>Are you sure?</h4>';
+        $html.= '<form method="post">';
+        $i=0;
+        foreach ($data as $column=>$field) {
+            if ($i==$primaryKey) {
+                $html.= '<input type="hidden" name="'.$column.'" value="'.$field.'"/>';
+            }
+            $i++;
+        }
+        $html.= '<button type="submit" class="btn btn-primary">Yes</button>';
+        $href = $this->url($base,$subject,'list');
+        $html.= ' <a href="'.$href.'" class="btn btn-default">Cancel</a>';
+        $html.= '</form>';
+        return $html;
+    }
+
+    function deleteRecord($parameters) {
+        extract($parameters);
+
+        $this->call('DELETE',$url.'/'.$subject.'/'.$id);
+        return '<p>Deleted</p>';
+    }
+
     function updateRecord($parameters) {
         extract($parameters);
 
@@ -299,6 +334,7 @@ class PHP_CRUD_UI {
             case 'read': $path = array('paths','/'.$subject.'/{id}','get','responses','200','schema','properties'); break;
             case 'add' : $path = array('paths','/'.$subject,'post','parameters',0,'schema','properties'); break;
             case 'edit': $path = array('paths','/'.$subject.'/{id}','put','parameters',1,'schema','properties'); break;
+            case 'delete': $path = array('paths','/'.$subject.'/{id}','delete','parameters',1,'schema','properties'); break;
         }
         return $this->get_properties($definition,$path);
     }
@@ -414,8 +450,10 @@ class PHP_CRUD_UI {
             case 'GET.list':  $html.= $this->listRecords($parameters); break;
             case 'GET.add':   $html.= $this->addRecord($parameters); break;
             case 'GET.edit':  $html.= $this->editRecord($parameters); break;
+            case 'GET.delete': $html.= $this->confirmDelete($parameters); break;
             case 'POST.add':  $html.= $this->insertRecord($parameters); break;
             case 'POST.edit': $html.= $this->updateRecord($parameters); break;
+            case 'POST.delete': $html.= $this->deleteRecord($parameters); break;
         }
         $html.= '</div>';
         
