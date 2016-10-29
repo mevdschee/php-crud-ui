@@ -29,7 +29,7 @@ class PHP_CRUD_UI {
         extract($parameters);
         
         $html= '<ul class="nav nav-pills nav-stacked">';
-        if (is_array($definition)) foreach ($definition['tags'] as $tag) {
+        if (isset($definition['tags'])) foreach ($definition['tags'] as $tag) {
             $active = $tag['name']==$subject?' class="active"':'';
             $html.= '<li'.$active.'><a href="'.$this->url($base,$tag['name'],'list').'">'.$tag['name'].'</a></li>';
         }
