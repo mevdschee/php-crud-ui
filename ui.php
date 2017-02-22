@@ -3,7 +3,7 @@
 class PHP_CRUD_UI {
 
     protected $settings;
-    
+
     function call($method, $url, $data = false) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
@@ -27,7 +27,7 @@ class PHP_CRUD_UI {
 
     function menu($parameters) {
         extract($parameters);
-        
+
         $html= '<ul class="nav nav-pills nav-stacked">';
         if (isset($definition['tags'])) foreach ($definition['tags'] as $tag) {
             $active = $tag['name']==$subject?' class="active"':'';
@@ -39,7 +39,7 @@ class PHP_CRUD_UI {
 
     function home($parameters) {
         extract($parameters);
-        
+
         $html = 'Nothing';
         return $html;
     }
@@ -71,16 +71,15 @@ class PHP_CRUD_UI {
         return false;
     }
 
-
     function referenceText($subject,$data,$field,$id,$definition) {
         $properties = $this->properties($subject,'read',$definition);
         $references = $this->references($subject,$properties);
         $referenced = $this->referenced($subject,$properties);
         $primaryKey = $this->primaryKey($subject,$properties);
-        
+
         $indices = array_flip($data[$subject]['columns']);
         $displayColumn = $this->displayColumn($indices);
-        
+
         $records = $data[$subject]['records'];
         foreach ($records as $record) {
             if ($record[$indices[$field]]==$id) {
@@ -93,7 +92,7 @@ class PHP_CRUD_UI {
                             $text.= $value;
                             $first = false;
                         }
-                    } 
+                    }
                     return $text;
                 } else {
                     return $record[$displayColumn];
@@ -105,30 +104,30 @@ class PHP_CRUD_UI {
 
     function listRecords($parameters) {
         extract($parameters);
-        
+
         $properties = $this->properties($subject,$action,$definition);
         $references = $this->references($subject,$properties);
         $referenced = $this->referenced($subject,$properties);
         $primaryKey = $this->primaryKey($subject,$properties);
-        
+
         $related = !empty(array_filter($referenced));
-        
+
         $args = array();
         if ($field) {
             $args['filter']=$field.',eq,'.$id;
         }
         $include = implode(',',array_filter(array_map(function($v){ return $v[0]; },$references)));
         if ($include) {
-            $args['include']=$include; 
+            $args['include']=$include;
         }
         $data = $this->call('GET',$url.'/'.$subject.'?'.http_build_query($args));
-        
+
         $html = '<h4>'.$subject.': list</h4>';
         if ($field) {
             $html .= '<div class="alert alert-info" role="alert">Filtered where "'.$field.'" = "'.$id.'".';
             $href = $this->url($base,$subject,'list');
             $html .= '<div style="float:right;"><a href="'.$href.'">Show all</a></div></div>';
-        }    
+        }
         $html.= '<table class="table">';
         $html.= '<thead><tr>';
         foreach ($data[$subject]['columns'] as $i=>$column) {
@@ -159,7 +158,7 @@ class PHP_CRUD_UI {
                     $id = $record[$i];
                     if ($relations) foreach ($relations as $j=>$relation) {
                         if ($j) $html.= ', ';
-                        $href = $this->url($base,$relation[0],'list',$id,$relation[1]); 
+                        $href = $this->url($base,$relation[0],'list',$id,$relation[1]);
                         $html.= '<a href="'.$href.'">'.$relation[0].'</a>';
                     }
                 }
@@ -184,12 +183,12 @@ class PHP_CRUD_UI {
         $properties = $this->properties($subject,'list',$definition);
         $references = $this->references($subject,$properties);
         $primaryKey = $this->primaryKey($subject,$properties);
-        
+
         $data = $this->call('GET',$url.'/'.$subject);
-        
+
         $indices = array_flip($data[$subject]['columns']);
         $displayColumn = $this->displayColumn($indices);
-        
+
         $html = '<select id="'.$name.'" name="'.$name.'" class="form-control">';
         $html.= '<option value=""></option>';
         foreach ($data[$subject]['records'] as $record) {
@@ -204,7 +203,7 @@ class PHP_CRUD_UI {
                         $text.= $field;
                         $first = false;
                     }
-                } 
+                }
                 $html.= $text;
             } else {
                 $html.= $record[$displayColumn];
@@ -217,16 +216,16 @@ class PHP_CRUD_UI {
 
     function addRecord($parameters) {
         extract($parameters);
-        
+
         $properties = $this->properties($subject,$action,$definition);
         $references = $this->references($subject,$properties);
         $referenced = $this->referenced($subject,$properties);
         $primaryKey = $this->primaryKey($subject,$properties);
-        
+
         $html = '<h4>'.$subject.': add</h4>';
         $html.= '<form method="post">';
         $data = array_keys($properties);
-        
+
         foreach ($data as $i=>$column) {
             $html.= '<div class="form-group">';
             $html.= '<label for="'.$column.'">'.$column.'</label>';
@@ -242,15 +241,15 @@ class PHP_CRUD_UI {
         $html.= '</form>';
         return $html;
     }
-    
+
     function editRecord($parameters) {
         extract($parameters);
-        
+
         $properties = $this->properties($subject,$action,$definition);
         $references = $this->references($subject,$properties);
         $referenced = $this->referenced($subject,$properties);
         $primaryKey = $this->primaryKey($subject,$properties);
-        
+
         $data = $this->call('GET',$url.'/'.$subject.'/'.$id);
         $html = '<h4>'.$subject.': edit</h4>';
         $html.= '<form method="post">';
@@ -274,12 +273,12 @@ class PHP_CRUD_UI {
 
     function confirmDelete($parameters) {
         extract($parameters);
-        
+
         $properties = $this->properties($subject,$action,$definition);
         $references = $this->references($subject,$properties);
         $referenced = $this->referenced($subject,$properties);
         $primaryKey = $this->primaryKey($subject,$properties);
-        
+
         $data = $this->call('GET',$url.'/'.$subject.'/'.$id);
         $html = '<h4>Are you sure?</h4>';
         $html.= '<form method="post">';
@@ -310,7 +309,7 @@ class PHP_CRUD_UI {
         $this->call('PUT',$url.'/'.$subject.'/'.$id,json_encode($post));
         return '<p>Updated</p>';
     }
-    
+
     function insertRecord($parameters) {
         extract($parameters);
 
@@ -366,20 +365,20 @@ class PHP_CRUD_UI {
         }
         return false;
     }
-    
+
     public function __construct($config) {
         extract($config);
-        
+
         // initialize
         $url = isset($url)?$url:null;
-        
+
         $base = isset($base)?$base:null;
         $definition = isset($definition)?$definition:null;
         $method = isset($method)?$method:null;
         $request = isset($request)?$request:null;
         $get = isset($get)?$get:null;
         $post = isset($post)?$post:null;
-        
+
         // defaults
         if (!$definition) {
             $definition = isset($_SESSION['definition'])?$_SESSION['definition']:null;
@@ -403,17 +402,17 @@ class PHP_CRUD_UI {
         if (!$post) {
             $post = $_POST;
         }
-                
+
         $request = trim($request,'/');
 
         if (!$base) {
             $count = $request?(-1*strlen($request)):strlen($_SERVER['REQUEST_URI']);
             $base = rtrim(substr($_SERVER['REQUEST_URI'],0,$count),'/').'/';
         }
-        
+
         $this->settings = compact('url', 'base', 'definition', 'method', 'request', 'get', 'post');
     }
-    
+
     protected function parseRequestParameter(&$request,$characters) {
         if (!$request) return false;
         $pos = strpos($request,'/');
@@ -422,7 +421,7 @@ class PHP_CRUD_UI {
         if (!$characters) return $value;
         return preg_replace("/[^$characters]/",'',$value);
     }
-    
+
     protected function getParameters($settings) {
         extract($settings);
 
@@ -433,16 +432,16 @@ class PHP_CRUD_UI {
 
         return compact('url','base','definition','method','subject','action','id','field','get','post');
     }
-    
+
     function executeCommand() {
         $parameters = $this->getParameters($this->settings);
-        
+
         $html = $this->head();
         $html.= '<div class="row">';
         $html.= '<div class="col-md-3">';
         $html.= $this->menu($parameters);
         $html.= '</div>';
-        
+
         $html.= '<div class="col-md-9">';
         $action = $parameters['method'].'.'.($parameters['action']?:'home');
         switch($action){
@@ -456,7 +455,7 @@ class PHP_CRUD_UI {
             case 'POST.delete': $html.= $this->deleteRecord($parameters); break;
         }
         $html.= '</div>';
-        
+
         $html.= '</div>';
         $html.= $this->foot();
         return $html;
