@@ -249,7 +249,7 @@ class PHP_CRUD_UI {
     function editRecord($parameters) {
         extract($parameters);
 
-        $properties = $this->$properties($subject, $action, $definition);
+        $properties = $this->properties($subject, $action, $definition);
         $references = $this->references($subject, $properties);
         $referenced = $this->referenced($subject, $properties);
         $primaryKey = $this->primaryKey($subject, $properties);
@@ -278,7 +278,7 @@ class PHP_CRUD_UI {
     function confirmDelete($parameters) {
         extract($parameters);
 
-        $properties = $this->$properties($subject, $action, $definition);
+        $properties = $this->properties($subject, $action, $definition);
         $references = $this->references($subject, $properties);
         $referenced = $this->referenced($subject, $properties);
         $primaryKey = $this->primaryKey($subject, $properties);
