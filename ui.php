@@ -468,6 +468,6 @@ class PHP_CRUD_UI {
 
 //session_start();
 //$ui = new PHP_CRUD_UI(array(
-//    'url' => 'http://localhost/api.php',
+//    'url' => 'http://localhost/api.php/',
 //));
 //echo $ui->executeCommand();
