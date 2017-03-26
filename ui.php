@@ -66,7 +66,7 @@ class PHP_CRUD_UI {
 
     function displayColumn($columns) {
         // TODO: make configurable
-        $names = array('name','title','description','username');
+        $names = array('name', 'title', 'description', 'username');
         foreach ($names as $name) {
             if (isset($columns[$name])) return $columns[$name];
         }
@@ -142,7 +142,7 @@ class PHP_CRUD_UI {
         $html .= '</tr></thead><tbody>';
         foreach ($data[$subject]['records'] as $record) {
             $html .= '<tr>';
-            foreach ($record as $i=>$value) {
+            foreach ($record as $i => $value) {
                 if ($references[$i]) {
                     $html .= '<td>';
                     $href = $this->url($base, $references[$i][0], 'list', $value, $references[$i][1]);
@@ -337,9 +337,9 @@ class PHP_CRUD_UI {
             case 'read': $path = array('paths', '/' . $subject.'/{id}', 'get', 'responses', '200', 'schema', 'properties'); break;
             case 'add' : $path = array('paths', '/' . $subject, 'post', 'parameters', 0, 'schema', 'properties'); break;
             case 'edit': $path = array('paths', '/' . $subject.'/{id}', 'put', 'parameters', 1, 'schema', 'properties'); break;
-            case 'delete': $path = array('paths' ,'/' . $subject.'/{id}', 'delete', 'parameters', 1, 'schema', 'properties'); break;
+            case 'delete': $path = array('paths', '/' . $subject.'/{id}', 'delete', 'parameters', 1, 'schema', 'properties'); break;
         }
-        return $this->get_properties($definition,$path);
+        return $this->get_properties($definition, $path);
     }
 
     function references($subject, $properties) {
