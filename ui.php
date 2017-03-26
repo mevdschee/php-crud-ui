@@ -257,7 +257,7 @@ class PHP_CRUD_UI {
         $data = $this->call('GET', $url . '/' . $subject . '/' . $id);
         $html = '<h4>' . $subject . ': edit</h4>';
         $html .= '<form method="post">';
-        $i=0;
+        $i = 0;
         foreach ($data as $column => $field) {
             $html .= '<div class="form-group">';
             $html .= '<label for="' . $column . '">' . $column . '</label>';
@@ -448,7 +448,7 @@ class PHP_CRUD_UI {
 
         $html .= '<div class="col-md-9">';
         $action = $parameters['method'] . '.' . ($parameters['action'] ?: 'home');
-        switch($action){
+        switch ($action) {
             case 'GET.home':  $html .= $this->home($parameters); break;
             case 'GET.list':  $html .= $this->listRecords($parameters); break;
             case 'GET.add':   $html .= $this->addRecord($parameters); break;
