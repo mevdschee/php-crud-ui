@@ -5,3 +5,4 @@ Single file PHP script that adds a UI to a [PHP-CRUD-API](https://github.com/mev
 ## Requirements
 
   - curl
+  - php-crud-api v1
