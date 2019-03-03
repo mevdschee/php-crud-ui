@@ -333,7 +333,7 @@ class PHP_CRUD_UI {
     function properties($subject, $action, $definition) {
         if (!$subject || !$definition) return false;
         switch ($action) {
-            case 'list': $path = array('paths', '/' . $subject, 'get', 'responses', '200', 'schema', 'items', 'properties'); break;
+            case 'list': $path = array('paths', '/' . $subject, 'get', 'responses', '200', 'schema', 'properties', $subject, 'items', 'properties'); break;
             case 'read': $path = array('paths', '/' . $subject.'/{id}', 'get', 'responses', '200', 'schema', 'properties'); break;
             case 'add' : $path = array('paths', '/' . $subject, 'post', 'parameters', 0, 'schema', 'properties'); break;
             case 'edit': $path = array('paths', '/' . $subject.'/{id}', 'put', 'parameters', 1, 'schema', 'properties'); break;
