@@ -77,7 +77,7 @@ class PHP_CRUD_UI
         $names = array('name', 'title', 'description', 'username');
         foreach ($names as $name) {
             if (isset($columns[$name])) {
-                return $columns[$name];
+                return $name;
             }
 
         }
@@ -91,10 +91,10 @@ class PHP_CRUD_UI
         $referenced = $this->referenced($subject, $properties);
         $primaryKey = $this->primaryKey($subject, $properties);
 
-        $indices = array_flip($data[$subject]['columns']);
-        $displayColumn = $this->displayColumn($indices);
+        $columns = array_keys($data['records'][0]);
+        $displayColumn = $this->displayColumn($columns);
 
-        $records = $data[$subject]['records'];
+        $records = $data['records'];
         foreach ($records as $record) {
             if ($record[$indices[$field]] == $id) {
                 if ($displayColumn === false) {
@@ -302,7 +302,7 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function confirmDelete($parameters)
+    public function deleteRecord($parameters)
     {
         extract($parameters);
 
@@ -328,7 +328,7 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function deleteRecord($parameters)
+    public function doDeleteRecord($parameters)
     {
         extract($parameters);
 
@@ -336,7 +336,7 @@ class PHP_CRUD_UI
         return '<p>Deleted</p>';
     }
 
-    public function updateRecord($parameters)
+    public function doUpdateRecord($parameters)
     {
         extract($parameters);
 
@@ -344,7 +344,7 @@ class PHP_CRUD_UI
         return '<p>Updated</p>';
     }
 
-    public function insertRecord($parameters)
+    public function doCreateRecord($parameters)
     {
         extract($parameters);
 
@@ -352,7 +352,7 @@ class PHP_CRUD_UI
         return '<p>Added</p>';
     }
 
-    public function get_properties($definition, $path)
+    public function getProperties($definition, $path)
     {
         while (null !== ($element = array_shift($path))) {
             //echo '"'.$element.'",';
@@ -375,7 +375,7 @@ class PHP_CRUD_UI
         } else {
             $path = array('components', 'schemas', $action . '-' . $subject, 'properties');
         }
-        return $this->get_properties($definition, $path);
+        return $this->getProperties($definition, $path);
     }
 
     public function references($subject, $properties)
@@ -386,7 +386,7 @@ class PHP_CRUD_UI
 
         $references = array();
         foreach ($properties as $field => $property) {
-            $references[] = isset($property['x-references']) ? $property['x-references'] : false;
+            $references[$field] = isset($property['x-references']) ? $property['x-references'] : false;
         }
         return $references;
     }
@@ -399,7 +399,7 @@ class PHP_CRUD_UI
 
         $referenced = array();
         foreach ($properties as $field => $property) {
-            $referenced[] = isset($property['x-referenced']) ? $property['x-referenced'] : false;
+            $referenced[] = isset($property['x-referenced']) ? explode('.',$property['x-referenced']) : false;
         }
         return $referenced;
     }
@@ -410,13 +410,10 @@ class PHP_CRUD_UI
             return false;
         }
 
-        $i = 0;
         foreach ($properties as $field => $property) {
             if (isset($property['x-primary-key'])) {
-                return $i;
+                return $field;
             }
-
-            $i++;
         }
         return false;
     }
@@ -518,13 +515,13 @@ class PHP_CRUD_UI
                 break;
             case 'GET.update':$html .= $this->updateRecord($parameters);
                 break;
-            case 'GET.delete':$html .= $this->confirmDelete($parameters);
+            case 'GET.delete':$html .= $this->deleteRecord($parameters);
                 break;
-            case 'POST.create':$html .= $this->insertRecord($parameters);
+            case 'POST.create':$html .= $this->doCreateRecord($parameters);
                 break;
-            case 'POST.update':$html .= $this->updateRecord($parameters);
+            case 'POST.update':$html .= $this->doUpdateRecord($parameters);
                 break;
-            case 'POST.delete':$html .= $this->deleteRecord($parameters);
+            case 'POST.delete':$html .= $this->doDeleteRecord($parameters);
                 break;
         }
         $html .= '</div>';
@@ -535,8 +532,8 @@ class PHP_CRUD_UI
     }
 }
 
-//session_start();
-//$ui = new PHP_CRUD_UI(array(
-//    'url' => 'http://localhost/api.php/',
-//));
-//echo $ui->executeCommand();
+session_start();
+$ui = new PHP_CRUD_UI(array(
+    'url' => 'http://localhost:8000/api.php',
+));
+echo $ui->executeCommand();
