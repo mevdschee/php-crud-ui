@@ -76,7 +76,7 @@ class PHP_CRUD_UI
         // TODO: make configurable
         $names = array('name', 'title', 'description', 'username');
         foreach ($names as $name) {
-            if (isset($columns[$name])) {
+            if (in_array($name, $columns)) {
                 return $name;
             }
 
@@ -84,39 +84,18 @@ class PHP_CRUD_UI
         return false;
     }
 
-    public function referenceText($subject, $data, $field, $id, $definition)
+    public function referenceText($subject, $record, $definition)
     {
         $properties = $this->properties($subject, 'read', $definition);
-        $references = $this->references($subject, $properties);
-        $referenced = $this->referenced($subject, $properties);
+        $displayColumn = $this->displayColumn(array_keys($properties));
+        return $record[$displayColumn];
+    }
+
+    public function referenceId($subject, $record, $definition)
+    {
+        $properties = $this->properties($subject, 'read', $definition);
         $primaryKey = $this->primaryKey($subject, $properties);
-
-        $columns = array_keys($data['records'][0]);
-        $displayColumn = $this->displayColumn($columns);
-
-        $records = $data['records'];
-        foreach ($records as $record) {
-            if ($record[$indices[$field]] == $id) {
-                if ($displayColumn === false) {
-                    $text = '';
-                    $first = true;
-                    foreach ($record as $i => $value) {
-                        if (!$references[$i] && $i != $primaryKey) {
-                            if (!$first) {
-                                $text .= ' - ';
-                            }
-
-                            $text .= $value;
-                            $first = false;
-                        }
-                    }
-                    return $text;
-                } else {
-                    return $record[$displayColumn];
-                }
-            }
-        }
-        return false;
+        return $record[$primaryKey];
     }
 
     public function listRecords($parameters)
@@ -128,19 +107,16 @@ class PHP_CRUD_UI
         $referenced = $this->referenced($subject, $properties);
         $primaryKey = $this->primaryKey($subject, $properties);
 
-        var_dump([$properties, $references, $referenced, $primaryKey]);
-
         $related = !empty(array_filter($referenced));
 
         $args = array();
-        if ($field) {
+        if ($id) {
+            $field = $field ?: $primaryKey;
             $args['filter'] = $field . ',eq,' . $id;
         }
-        $join = implode(',', array_filter($references));
-        if ($join) {
-            $args['join'] = $join;
-        }
-        $data = $this->call('GET', $url . '/records/' . $subject . '?' . http_build_query($args));
+        $args['join'] = array_values(array_filter($references));
+        $urlArgs = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
+        $data = $this->call('GET', $url . '/records/' . $subject . $urlArgs);
 
         $html = '<h4>' . $subject . ': list</h4>';
         if ($field) {
@@ -160,12 +136,13 @@ class PHP_CRUD_UI
         $html .= '</tr></thead><tbody>';
         foreach ($data['records'] as $record) {
             $html .= '<tr>';
-            foreach ($record as $i => $value) {
-                if ($references[$i]) {
+            foreach ($record as $key => $value) {
+                if ($references[$key]) {
                     $html .= '<td>';
-                    $href = $this->url($base, $references[$i][0], 'list', $value, $references[$i][1]);
+                    $id = $this->referenceId($references[$key], $record[$key], $definition);
+                    $href = $this->url($base, $references[$key], 'list', $id);
                     $html .= '<a href="' . $href . '">';
-                    $html .= $this->referenceText($references[$i][0], $data, $references[$i][1], $value, $definition);
+                    $html .= $this->referenceText($references[$key], $record[$key], $definition);
                     $html .= '</a>';
                     $html .= '</td>';
                 } else {
@@ -174,18 +151,12 @@ class PHP_CRUD_UI
             }
             if ($related) {
                 $html .= '<td>';
-                foreach ($referenced as $i => $relations) {
-                    $id = $record[$i];
-                    if ($relations) {
-                        foreach ($relations as $j => $relation) {
-                            if ($j) {
-                                $html .= ', ';
-                            }
-
-                            $href = $this->url($base, $relation[0], 'list', $id, $relation[1]);
-                            $html .= '<a href="' . $href . '">' . $relation[0] . '</a>';
-                        }
+                foreach ($referenced as $i => $relation) {
+                    if ($i) {
+                        $html .= ', ';
                     }
+                    $href = $this->url($base, $relation[0], 'list', $record[$primaryKey], $relation[1]);
+                    $html .= '<a href="' . $href . '">' . $relation[0] . '</a>';
                 }
                 $html .= '</td>';
             }
@@ -399,7 +370,12 @@ class PHP_CRUD_UI
 
         $referenced = array();
         foreach ($properties as $field => $property) {
-            $referenced[] = isset($property['x-referenced']) ? explode('.',$property['x-referenced']) : false;
+            if (isset($property['x-referenced'])) {
+                $referenced = array_merge($referenced, $property['x-referenced']);
+            }
+        }
+        for ($i = 0; $i < count($referenced); $i++) {
+            $referenced[$i] = explode('.', $referenced[$i]);
         }
         return $referenced;
     }
@@ -532,8 +508,8 @@ class PHP_CRUD_UI
     }
 }
 
-session_start();
-$ui = new PHP_CRUD_UI(array(
-    'url' => 'http://localhost:8000/api.php',
-));
-echo $ui->executeCommand();
+//session_start();
+//$ui = new PHP_CRUD_UI(array(
+//    'url' => 'http://localhost:8000/api.php',
+//));
+//echo $ui->executeCommand();
