@@ -226,13 +226,13 @@ class PHP_CRUD_UI
         $html .= '<form method="post">';
         $data = array_keys($properties);
 
-        foreach ($data as $i => $column) {
+        foreach ($data as $column) {
             $html .= '<div class="form-group">';
             $html .= '<label for="' . $column . '">' . $column . '</label>';
-            if ($references[$i]) {
-                $html .= $this->selectSubject($url, $references[$i][0], $column, $field, $definition);
+            if ($references[$column]) {
+                $html .= $this->selectSubject($url, $references[$column], $column, false, $definition);
             } else {
-                $disabled = $i == $primaryKey ? ' disabled' : '';
+                $disabled = $column == $primaryKey ? ' disabled' : '';
                 $html .= '<input class="form-control" id="' . $column . '" name="' . $column . '" value=""' . $disabled . '/>';
             }
             $html .= '</div>';
@@ -282,12 +282,10 @@ class PHP_CRUD_UI
         $data = $this->call('GET', $url . '/records/' . $subject . '/' . $id);
         $html = '<h4>Are you sure?</h4>';
         $html .= '<form method="post">';
-        $i = 0;
         foreach ($data as $column => $field) {
-            if ($i == $primaryKey) {
+            if ($column == $primaryKey) {
                 $html .= '<input type="hidden" name="' . $column . '" value="' . $field . '"/>';
             }
-            $i++;
         }
         $html .= '<button type="submit" class="btn btn-primary">Yes</button>';
         $href = $this->url($base, $subject, 'list');
