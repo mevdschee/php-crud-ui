@@ -81,7 +81,7 @@ class PHP_CRUD_UI
             }
 
         }
-        return false;
+        return $columns[0];
     }
 
     public function referenceText($subject, $record, $definition)
@@ -183,24 +183,23 @@ class PHP_CRUD_UI
 
         $data = $this->call('GET', $url . '/records/' . $subject);
 
-        $indices = array_flip($data[$subject]['columns']);
-        $displayColumn = $this->displayColumn($indices);
+        $displayColumn = $this->displayColumn(array_keys($properties));
 
         $html = '<select id="' . $name . '" name="' . $name . '" class="form-control">';
         $html .= '<option value=""></option>';
-        foreach ($data[$subject]['records'] as $record) {
+        foreach ($data['records'] as $record) {
             $selected = $record[$primaryKey] == $value ? ' selected' : '';
             $html .= '<option value="' . $record[$primaryKey] . '"' . $selected . '>';
             if ($displayColumn === false) {
                 $text = '';
                 $first = true;
-                foreach ($record as $i => $field) {
-                    if (!$references[$i] && $i != $primaryKey) {
+                foreach ($record as $column => $value) {
+                    if (!$references[$column] && $column != $primaryKey) {
                         if (!$first) {
                             $text .= ' - ';
                         }
 
-                        $text .= $field;
+                        $text .= $value;
                         $first = false;
                     }
                 }
@@ -255,18 +254,16 @@ class PHP_CRUD_UI
         $data = $this->call('GET', $url . '/records/' . $subject . '/' . $id);
         $html = '<h4>' . $subject . ': update</h4>';
         $html .= '<form method="post">';
-        $i = 0;
-        foreach ($data as $column => $field) {
+        foreach ($data as $column => $value) {
             $html .= '<div class="form-group">';
             $html .= '<label for="' . $column . '">' . $column . '</label>';
-            if ($references[$i]) {
-                $html .= $this->selectSubject($url, $references[$i][0], $column, $field, $definition);
+            if ($references[$column]) {
+                $html .= $this->selectSubject($url, $references[$column], $column, $value, $definition);
             } else {
-                $readonly = $i == $primaryKey ? ' readonly' : '';
-                $html .= '<input class="form-control" id="' . $column . '" name="' . $column . '" value="' . $field . '"' . $readonly . '/>';
+                $readonly = $column == $primaryKey ? ' readonly' : '';
+                $html .= '<input class="form-control" id="' . $column . '" name="' . $column . '" value="' . $value . '"' . $readonly . '/>';
             }
             $html .= '</div>';
-            $i++;
         }
         $html .= '<button type="submit" class="btn btn-primary">Save</button>';
         $html .= '</form>';
