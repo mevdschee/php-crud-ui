@@ -126,7 +126,7 @@ class PHP_CRUD_UI
         }
         $html .= '<table class="table">';
         $html .= '<thead><tr>';
-        foreach (array_keys($data['records'][0]) as $i => $column) {
+        foreach (array_keys($properties) as $column) {
             $html .= '<th>' . $column . '</th>';
         }
         if ($related) {
