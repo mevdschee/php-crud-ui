@@ -161,11 +161,13 @@ class PHP_CRUD_UI
                 $html .= '</td>';
             }
             $html .= '<td>';
-            $href = $this->url($base, $subject, 'update', $record[$primaryKey]);
-            $html .= '<a href="' . $href . '">edit</a>';
-            $href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
-            $html .= ' | ';
-            $html .= '<a href="' . $href . '">delete</a>';
+            if ($primaryKey) {
+                $href = $this->url($base, $subject, 'update', $record[$primaryKey]);
+                $html .= '<a href="' . $href . '">edit</a>';
+                $href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
+                $html .= ' | ';
+                $html .= '<a href="' . $href . '">delete</a>';
+            }
             $html .= '</td>';
             $html .= '</tr>';
         }
