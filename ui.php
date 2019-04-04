@@ -116,7 +116,7 @@ class PHP_CRUD_UI
         }
         $args['join'] = array_values(array_filter($references));
         $urlArgs = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
-        $data = $this->call('GET', $url . '/records/' . $subject . $urlArgs);
+        $data = $this->call('GET', $url . '/records/' . urlencode($subject) . $urlArgs);
 
         $html = '<h4>' . $subject . ': list</h4>';
         if ($field) {
@@ -183,7 +183,7 @@ class PHP_CRUD_UI
         $references = $this->references($subject, $properties);
         $primaryKey = $this->primaryKey($subject, $properties);
 
-        $data = $this->call('GET', $url . '/records/' . $subject);
+        $data = $this->call('GET', $url . '/records/' . urlencode($subject));
 
         $displayColumn = $this->displayColumn(array_keys($properties));
 
@@ -253,7 +253,7 @@ class PHP_CRUD_UI
         $referenced = $this->referenced($subject, $properties);
         $primaryKey = $this->primaryKey($subject, $properties);
 
-        $data = $this->call('GET', $url . '/records/' . $subject . '/' . $id);
+        $data = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
         $html = '<h4>' . $subject . ': update</h4>';
         $html .= '<form method="post">';
         foreach ($data as $column => $value) {
@@ -281,7 +281,7 @@ class PHP_CRUD_UI
         $referenced = $this->referenced($subject, $properties);
         $primaryKey = $this->primaryKey($subject, $properties);
 
-        $data = $this->call('GET', $url . '/records/' . $subject . '/' . $id);
+        $data = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
         $html = '<h4>Are you sure?</h4>';
         $html .= '<form method="post">';
         foreach ($data as $column => $field) {
@@ -300,7 +300,7 @@ class PHP_CRUD_UI
     {
         extract($parameters);
 
-        $this->call('DELETE', $url . '/records/' . $subject . '/' . $id);
+        $this->call('DELETE', $url . '/records/' . urlencode($subject) . '/' . $id);
         return '<p>Deleted</p>';
     }
 
@@ -308,7 +308,7 @@ class PHP_CRUD_UI
     {
         extract($parameters);
 
-        $this->call('PUT', $url . '/records/' . $subject . '/' . $id, json_encode($post));
+        $this->call('PUT', $url . '/records/' . urlencode($subject) . '/' . $id, json_encode($post));
         return '<p>Updated</p>';
     }
 
@@ -316,7 +316,7 @@ class PHP_CRUD_UI
     {
         extract($parameters);
 
-        $this->call('POST', $url . '/records/' . $subject, json_encode($post));
+        $this->call('POST', $url . '/records/' . urlencode($subject), json_encode($post));
         return '<p>Added</p>';
     }
 
@@ -432,8 +432,8 @@ class PHP_CRUD_UI
         $request = trim($request, '/');
 
         if (!$base) {
-            $count = $request ? (-1 * strlen($request)) : strlen($_SERVER['REQUEST_URI']);
-            $base = rtrim(substr($_SERVER['REQUEST_URI'], 0, $count), '/') . '/';
+            $count = $request ? (-1 * strlen($request)) : strlen(urldecode($_SERVER['REQUEST_URI']));
+            $base = rtrim(substr(urldecode($_SERVER['REQUEST_URI']), 0, $count), '/') . '/';
         }
 
         $this->settings = compact('url', 'base', 'definition', 'method', 'request', 'get', 'post');
@@ -459,10 +459,10 @@ class PHP_CRUD_UI
     {
         extract($settings);
 
-        $subject = $this->parseRequestParameter($request, 'a-zA-Z0-9\-_');
-        $action = $this->parseRequestParameter($request, 'a-zA-Z0-9\-_');
-        $id = $this->parseRequestParameter($request, 'a-zA-Z0-9\-_');
-        $field = $this->parseRequestParameter($request, 'a-zA-Z0-9\-_');
+        $subject = $this->parseRequestParameter($request, false);
+        $action = $this->parseRequestParameter($request, false);
+        $id = $this->parseRequestParameter($request, false);
+        $field = $this->parseRequestParameter($request, false);
 
         return compact('url', 'base', 'definition', 'method', 'subject', 'action', 'id', 'field', 'get', 'post');
     }
