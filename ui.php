@@ -172,7 +172,7 @@ class PHP_CRUD_UI
                 $html .= '</td>';
             }
             if ($primaryKey) {
-                $html .= '<td>';
+                $html .= '<td style="white-space: nowrap;">';
                 $href = $this->url($base, $subject, 'read', $record[$primaryKey]);
                 $html .= '<a href="' . $href . '">view</a>';
                 $html .= ' | ';
