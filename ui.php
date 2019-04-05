@@ -113,8 +113,7 @@ class PHP_CRUD_UI
         $related = !empty(array_filter($referenced));
 
         $args = array();
-        if ($id) {
-            $field = $field ?: $primaryKey;
+        if ($field) {
             $args['filter'] = $field . ',eq,' . $id;
         }
         $args['join'] = array_values(array_filter($references));
