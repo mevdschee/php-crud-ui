@@ -1,10 +1,12 @@
 <?php
 
-class PHP_CRUD_UI {
+class PHP_CRUD_UI
+{
 
     protected $settings;
 
-    function call($method, $url, $data = false) {
+    public function call($method, $url, $data = false)
+    {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -21,17 +23,20 @@ class PHP_CRUD_UI {
         return json_decode($response, true);
     }
 
-    function url($base, $subject, $action, $id = '', $field = '') {
+    public function url($base, $subject, $action, $id = '', $field = '')
+    {
         return $base . trim("$subject/$action/$id/$field", '/');
     }
 
-    function menu($parameters) {
-        extract($parameters);
+    public function menu()
+    {
+        extract($this->settings);
+        $subject = $this->getParameter(0);
 
-        $html= '<ul class="nav nav-pills nav-stacked">';
+        $html = '<ul class="nav nav-pills nav-stacked">';
         if (isset($definition['tags'])) {
             foreach ($definition['tags'] as $tag) {
-                $active = $tag['name']==$subject?' class="active"':'';
+                $active = $tag['name'] == $subject ? ' class="active"' : '';
                 $html .= '<li' . $active . '><a href="' . $this->url($base, $tag['name'], 'list') . '">' . $tag['name'] . '</a></li>';
             }
         }
@@ -39,19 +44,19 @@ class PHP_CRUD_UI {
         return $html;
     }
 
-    function home($parameters) {
-        extract($parameters);
-
+    public function homeAction()
+    {
         $html = 'Nothing';
         return $html;
     }
 
-    function head() {
+    public function head()
+    {
         $html = '<!DOCTYPE html><html lang="en">';
         $html .= '<head><title>PHP-CRUD-UI</title>';
         $html .= '<meta name="viewport" content="width=device-width, initial-scale=1">';
-        $html .= '<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">';
-        $html .= '<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" rel="stylesheet">';
+        $html .= '<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">';
+        $html .= '<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css" rel="stylesheet">';
         $html .= '</head><body><div class="container">';
         $html .= '<div class="row">';
         $html .= '<div class="col-md-3"><h3>PHP-CRUD-UI</h3></div>';
@@ -59,152 +64,156 @@ class PHP_CRUD_UI {
         return $html;
     }
 
-    function foot() {
+    public function foot()
+    {
         $html = '</div></body></html>';
         return $html;
     }
 
-    function displayColumn($columns) {
+    public function getDisplayColumn($columns)
+    {
         // TODO: make configurable
         $names = array('name', 'title', 'description', 'username');
         foreach ($names as $name) {
-            if (isset($columns[$name])) return $columns[$name];
-        }
-        return false;
-    }
-
-    function referenceText($subject, $data, $field, $id, $definition) {
-        $properties = $this->properties($subject, 'read', $definition);
-        $references = $this->references($subject, $properties);
-        $referenced = $this->referenced($subject, $properties);
-        $primaryKey = $this->primaryKey($subject, $properties);
-
-        $indices = array_flip($data[$subject]['columns']);
-        $displayColumn = $this->displayColumn($indices);
-
-        $records = $data[$subject]['records'];
-        foreach ($records as $record) {
-            if ($record[$indices[$field]] == $id) {
-                if ($displayColumn === false) {
-                    $text = '';
-                    $first = true;
-                    foreach ($record as $i => $value) {
-                        if (!$references[$i] && $i != $primaryKey) {
-                            if (!$first) $text .= ' - ';
-                            $text .= $value;
-                            $first = false;
-                        }
-                    }
-                    return $text;
-                } else {
-                    return $record[$displayColumn];
-                }
+            if (in_array($name, $columns)) {
+                return $name;
             }
+
         }
-        return false;
+        return $columns[0];
     }
 
-    function listRecords($parameters) {
-        extract($parameters);
+    public function referenceText($subject, $record, $definition)
+    {
+        $properties = $this->getProperties($subject, 'read', $definition);
+        $displayColumn = $this->getDisplayColumn(array_keys($properties));
+        return $record[$displayColumn];
+    }
 
-        $properties = $this->properties($subject, $action, $definition);
-        $references = $this->references($subject, $properties);
-        $referenced = $this->referenced($subject, $properties);
-        $primaryKey = $this->primaryKey($subject, $properties);
+    public function referenceId($subject, $record, $definition)
+    {
+        $properties = $this->getProperties($subject, 'read', $definition);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
+        return $record[$primaryKey];
+    }
+
+    public function executeList()
+    {
+        extract($this->settings);
+        $subject = $this->getParameter(0);
+        $action = $this->getParameter(1);
+        $field = $this->getParameter(2);
+        $id = $this->getParameter(3);
+
+        $properties = $this->getProperties($subject, $action, $definition);
+        $references = $this->getReferences($subject, $properties);
+        $referenced = $this->getReferenced($subject, $properties);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
 
         $related = !empty(array_filter($referenced));
 
         $args = array();
-        if ($field) {
+        if ($id) {
+            $field = $field ?: $primaryKey;
             $args['filter'] = $field . ',eq,' . $id;
         }
-        $include = implode(',', array_filter(array_map(function ($v) { return $v[0]; }, $references)));
-        if ($include) {
-            $args['include'] = $include;
-        }
-        $data = $this->call('GET', $url . '/' . $subject . '?' . http_build_query($args));
+        $args['join'] = array_values(array_filter($references));
+        $urlArgs = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
+        $data = $this->call('GET', $url . '/records/' . urlencode($subject) . $urlArgs);
 
-        $html = '<h4>' . $subject . ': list</h4>';
+        $html = '<h2>' . $subject . ': list</h2>';
+
+        $href = $this->url($base, $subject, 'create');
+        $html .= '<p><a href="' . $href . '" class="btn btn-primary">Add</a></p>';
+
         if ($field) {
-            $html .= '<div class="alert alert-info" role="alert">Filtered where "' . $field . '" = "' . $id . '".';
             $href = $this->url($base, $subject, 'list');
-            $html .= '<div style="float:right;"><a href="' . $href . '">Show all</a></div></div>';
+            $html .= '<div class="well well-sm"><div style="float:right;">';
+            $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">Clear filter</a>';
+            $html .= '</div>Filtered by: ' . $field . ' = ' . $id . '</div>';
         }
+
         $html .= '<table class="table">';
         $html .= '<thead><tr>';
-        foreach ($data[$subject]['columns'] as $i => $column) {
+        foreach (array_keys($properties) as $column) {
             $html .= '<th>' . $column . '</th>';
         }
         if ($related) {
             $html .= '<th>related</th>';
         }
-        $html .= '<th>actions</th>';
+        if ($primaryKey) {
+            $html .= '<th>actions</th>';
+        }
         $html .= '</tr></thead><tbody>';
-        foreach ($data[$subject]['records'] as $record) {
+        foreach ($data['records'] as $record) {
             $html .= '<tr>';
-            foreach ($record as $i => $value) {
-                if ($references[$i]) {
-                    $html .= '<td>';
-                    $href = $this->url($base, $references[$i][0], 'list', $value, $references[$i][1]);
-                    $html .= '<a href="'.$href.'">';
-                    $html .= $this->referenceText($references[$i][0], $data, $references[$i][1], $value, $definition);
-                    $html .= '</a>';
-                    $html .= '</td>';
-                } else {
-                    $html .= '<td>' . $value . '</td>';
-                }
-            }
-            if ($related) {
+            foreach ($record as $key => $value) {
                 $html .= '<td>';
-                foreach ($referenced as $i => $relations) {
-                    $id = $record[$i];
-                    if ($relations) {
-                        foreach ($relations as $j => $relation) {
-                            if ($j) $html .= ', ';
-                            $href = $this->url($base, $relation[0], 'list', $id, $relation[1]);
-                            $html .= '<a href="' . $href . '">' . $relation[0] . '</a>';
-                        }
-                    }
+                if ($references[$key]) {
+                    $id = $this->referenceId($references[$key], $record[$key], $definition);
+                    $href = $this->url($base, $references[$key], 'read', $id);
+                    $html .= '<a href="' . $href . '">';
+                    $html .= $this->referenceText($references[$key], $record[$key], $definition);
+                    $html .= '</a>';
+                } else {
+                    $html .= $value;
                 }
                 $html .= '</td>';
             }
-            $html .= '<td>';
-            $href = $this->url($base, $subject, 'edit', $record[$primaryKey]);
-            $html .= '<a href="' . $href . '">edit</a>';
-            $href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
-            $html .= ' | ';
-            $html .= '<a href="' . $href . '">delete</a>';
-            $html .= '</td>';
+            if ($related) {
+                $html .= '<td>';
+                foreach ($referenced as $i => $relation) {
+                    if ($i) {
+                        $html .= ', ';
+                    }
+                    $href = $this->url($base, $relation[0], 'list', $relation[1], $record[$primaryKey]);
+                    $html .= '<a href="' . $href . '">' . $relation[0] . '</a>';
+                }
+                $html .= '</td>';
+            }
+            if ($primaryKey) {
+                $html .= '<td style="white-space: nowrap;">';
+                $href = $this->url($base, $subject, 'read', $record[$primaryKey]);
+                $html .= '<a href="' . $href . '">view</a>';
+                $html .= ' | ';
+                $href = $this->url($base, $subject, 'update', $record[$primaryKey]);
+                $html .= '<a href="' . $href . '">edit</a>';
+                $html .= ' | ';
+                $href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
+                $html .= '<a href="' . $href . '">delete</a>';
+                $html .= '</td>';
+            }
             $html .= '</tr>';
         }
         $html .= '</tbody></table>';
-        $href = $this->url($base, $subject, 'add');
-        $html .= '<p><a href="' . $href . '" class="btn btn-primary">Add</a></p>';
         return $html;
     }
 
-    function selectSubject($url, $subject, $name, $value, $definition) {
-        $properties = $this->properties($subject, 'list', $definition);
-        $references = $this->references($subject, $properties);
-        $primaryKey = $this->primaryKey($subject, $properties);
+    public function selectSubject($url, $subject, $name, $value, $definition)
+    {
+        $properties = $this->getProperties($subject, 'list', $definition);
+        $references = $this->getReferences($subject, $properties);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
 
-        $data = $this->call('GET', $url . '/' . $subject);
+        $data = $this->call('GET', $url . '/records/' . urlencode($subject));
 
-        $indices = array_flip($data[$subject]['columns']);
-        $displayColumn = $this->displayColumn($indices);
+        $displayColumn = $this->getDisplayColumn(array_keys($properties));
 
         $html = '<select id="' . $name . '" name="' . $name . '" class="form-control">';
         $html .= '<option value=""></option>';
-        foreach ($data[$subject]['records'] as $record) {
-            $selected = $record[$primaryKey] == $value?' selected':'';
+        foreach ($data['records'] as $record) {
+            $selected = $record[$primaryKey] == $value ? ' selected' : '';
             $html .= '<option value="' . $record[$primaryKey] . '"' . $selected . '>';
             if ($displayColumn === false) {
                 $text = '';
                 $first = true;
-                foreach ($record as $i => $field) {
-                    if (!$references[$i] && $i != $primaryKey) {
-                        if (!$first) $text .= ' - ';
-                        $text .= $field;
+                foreach ($record as $column => $value) {
+                    if (!$references[$column] && $column != $primaryKey) {
+                        if (!$first) {
+                            $text .= ' - ';
+                        }
+
+                        $text .= $value;
                         $first = false;
                     }
                 }
@@ -218,25 +227,33 @@ class PHP_CRUD_UI {
         return $html;
     }
 
-    function addRecord($parameters) {
-        extract($parameters);
+    public function executeAdd()
+    {
+        extract($this->settings);
+        $subject = $this->getParameter(0);
+        $action = $this->getParameter(1);
 
-        $properties = $this->properties($subject, $action, $definition);
-        $references = $this->references($subject, $properties);
-        $referenced = $this->referenced($subject, $properties);
-        $primaryKey = $this->primaryKey($subject, $properties);
+        if ($method == 'POST') {
+            $this->call('POST', $url . '/records/' . urlencode($subject), json_encode($post));
+            return '<p>Added</p>';
+        }
 
-        $html = '<h4>' . $subject . ': add</h4>';
+        $properties = $this->getProperties($subject, $action, $definition);
+        $references = $this->getReferences($subject, $properties);
+        $referenced = $this->getReferenced($subject, $properties);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
+
+        $html = '<h2>' . $subject . ': create</h2>';
         $html .= '<form method="post">';
         $data = array_keys($properties);
 
-        foreach ($data as $i => $column) {
+        foreach ($data as $column) {
             $html .= '<div class="form-group">';
             $html .= '<label for="' . $column . '">' . $column . '</label>';
-            if ($references[$i]) {
-                $html .= $this->selectSubject($url, $references[$i][0], $column, $field, $definition);
+            if ($references[$column]) {
+                $html .= $this->selectSubject($url, $references[$column], $column, false, $definition);
             } else {
-                $disabled = $i == $primaryKey?' disabled':'';
+                $disabled = $column == $primaryKey ? ' disabled' : '';
                 $html .= '<input class="form-control" id="' . $column . '" name="' . $column . '" value=""' . $disabled . '/>';
             }
             $html .= '</div>';
@@ -246,131 +263,174 @@ class PHP_CRUD_UI {
         return $html;
     }
 
-    function editRecord($parameters) {
-        extract($parameters);
+    public function executeView()
+    {
+        extract($this->settings);
+        $subject = $this->getParameter(0);
+        $action = $this->getParameter(1);
+        $id = $this->getParameter(2);
 
-        $properties = $this->properties($subject, $action, $definition);
-        $references = $this->references($subject, $properties);
-        $referenced = $this->referenced($subject, $properties);
-        $primaryKey = $this->primaryKey($subject, $properties);
+        $properties = $this->getProperties($subject, $action, $definition);
+        $references = $this->getReferences($subject, $properties);
+        $referenced = $this->getReferenced($subject, $properties);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
 
-        $data = $this->call('GET', $url . '/' . $subject . '/' . $id);
-        $html = '<h4>' . $subject . ': edit</h4>';
+        $data = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
+        $html = '<h2>' . $subject . ': view</h2>';
+        $html .= '<dl>';
+        foreach ($data as $column => $value) {
+            $html .= '<dt>' . $column . '</dt>';
+            $html .= '<dd>';
+            if ($references[$key]) {
+                $id = $this->referenceId($references[$key], $record[$key], $definition);
+                $href = $this->url($base, $references[$key], 'read', $id);
+                $html .= '<a href="' . $href . '">';
+                $html .= $this->referenceText($references[$key], $record[$key], $definition);
+                $html .= '</a>';
+            } else {
+                $html .= $value;
+            }
+            $html .= '</dd>';
+        }
+        $html .= '</dl>';
+        return $html;
+    }
+
+    public function executeEdit()
+    {
+        extract($this->settings);
+        $subject = $this->getParameter(0);
+        $action = $this->getParameter(1);
+        $id = $this->getParameter(2);
+
+        if ($method == 'POST') {
+            $this->call('PUT', $url . '/records/' . urlencode($subject) . '/' . $id, json_encode($post));
+            return '<p>Updated</p>';
+        }
+
+        $properties = $this->getProperties($subject, $action, $definition);
+        $references = $this->getReferences($subject, $properties);
+        $referenced = $this->getReferenced($subject, $properties);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
+
+        $data = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
+        $html = '<h2>' . $subject . ': edit</h2>';
         $html .= '<form method="post">';
-        $i = 0;
-        foreach ($data as $column => $field) {
+        foreach ($data as $column => $value) {
             $html .= '<div class="form-group">';
             $html .= '<label for="' . $column . '">' . $column . '</label>';
-            if ($references[$i]) {
-                $html .= $this->selectSubject($url, $references[$i][0], $column, $field, $definition);
+            if ($references[$column]) {
+                $html .= $this->selectSubject($url, $references[$column], $column, $value, $definition);
             } else {
-                $readonly = $i == $primaryKey ? ' readonly' : '';
-                $html .= '<input class="form-control" id="' . $column . '" name="' . $column . '" value="' . $field . '"' . $readonly . '/>';
+                $readonly = $column == $primaryKey ? ' readonly' : '';
+                $html .= '<input class="form-control" id="' . $column . '" name="' . $column . '" value="' . $value . '"' . $readonly . '/>';
             }
             $html .= '</div>';
-            $i++;
         }
         $html .= '<button type="submit" class="btn btn-primary">Save</button>';
         $html .= '</form>';
         return $html;
     }
 
-    function confirmDelete($parameters) {
-        extract($parameters);
+    public function executeDelete()
+    {
+        extract($this->settings);
+        $subject = $this->getParameter(0);
+        $action = $this->getParameter(1);
+        $id = $this->getParameter(2);
 
-        $properties = $this->properties($subject, $action, $definition);
-        $references = $this->references($subject, $properties);
-        $referenced = $this->referenced($subject, $properties);
-        $primaryKey = $this->primaryKey($subject, $properties);
-
-        $data = $this->call('GET', $url . '/' . $subject . '/' . $id);
-        $html = '<h4>Are you sure?</h4>';
-        $html .= '<form method="post">';
-        $i = 0;
-        foreach ($data as $column => $field) {
-            if ($i == $primaryKey) {
-                $html .= '<input type="hidden" name="' . $column . '" value="' . $field . '"/>';
-            }
-            $i++;
+        if ($method == 'POST') {
+            $this->call('DELETE', $url . '/records/' . urlencode($subject) . '/' . $id);
+            return '<p>Deleted</p>';
         }
-        $html .= '<button type="submit" class="btn btn-primary">Yes</button>';
+
+        $properties = $this->getProperties($subject, 'read', $definition);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
+
+        $html = '<h2>' . $subject . ': delete #' . $id . '</h2>';
+        $html .= '<p>The action cannot be undone.</p>';
+        $html .= '<form method="post">';
+        $html .= '<input type="hidden" name="' . $primaryKey . '" value="' . $id . '"/>';
+        $html .= '<button type="submit" class="btn btn-danger">Delete</button>';
         $href = $this->url($base, $subject, 'list');
         $html .= ' <a href="' . $href . '" class="btn btn-default">Cancel</a>';
         $html .= '</form>';
         return $html;
     }
 
-    function deleteRecord($parameters) {
-        extract($parameters);
-
-        $this->call('DELETE', $url . '/' . $subject . '/' . $id);
-        return '<p>Deleted</p>';
-    }
-
-    function updateRecord($parameters) {
-        extract($parameters);
-
-        $this->call('PUT', $url . '/' . $subject . '/' . $id, json_encode($post));
-        return '<p>Updated</p>';
-    }
-
-    function insertRecord($parameters) {
-        extract($parameters);
-
-        $this->call('POST', $url . '/' . $subject, json_encode($post));
-        return '<p>Added</p>';
-    }
-
-    function get_properties($definition, $path) {
+    public function resolve($definition, $path)
+    {
         while (null !== ($element = array_shift($path))) {
             //echo '"'.$element.'",';
-            if (!isset($definition[$element])) return false;
+            if (!isset($definition[$element])) {
+                return false;
+            }
+
             $definition = $definition[$element];
         }
         return $definition;
     }
 
-    function properties($subject, $action, $definition) {
-        if (!$subject || !$definition) return false;
-        switch ($action) {
-            case 'list': $path = array('paths', '/' . $subject, 'get', 'responses', '200', 'schema', 'properties', $subject, 'items', 'properties'); break;
-            case 'read': $path = array('paths', '/' . $subject.'/{id}', 'get', 'responses', '200', 'schema', 'properties'); break;
-            case 'add' : $path = array('paths', '/' . $subject, 'post', 'parameters', 0, 'schema', 'properties'); break;
-            case 'edit': $path = array('paths', '/' . $subject.'/{id}', 'put', 'parameters', 1, 'schema', 'properties'); break;
-            case 'delete': $path = array('paths', '/' . $subject.'/{id}', 'delete', 'parameters', 1, 'schema', 'properties'); break;
+    public function getProperties($subject, $action, $definition)
+    {
+        if (!$subject || !$definition) {
+            return false;
         }
-        return $this->get_properties($definition, $path);
+        if ($action == 'list') {
+            $path = array('components', 'schemas', $action . '-' . $subject, 'properties', 'records', 'items', 'properties');
+        } else {
+            $path = array('components', 'schemas', $action . '-' . $subject, 'properties');
+        }
+        return $this->resolve($definition, $path);
     }
 
-    function references($subject, $properties) {
-        if (!$subject || !$properties) return false;
+    public function getReferences($subject, $properties)
+    {
+        if (!$subject || !$properties) {
+            return false;
+        }
+
         $references = array();
         foreach ($properties as $field => $property) {
-            $references[] = isset($property['x-references']) ? $property['x-references'] : false;
+            $references[$field] = isset($property['x-references']) ? $property['x-references'] : false;
         }
         return $references;
     }
 
-    function referenced($subject, $properties) {
-        if (!$subject || !$properties) return false;
+    public function getReferenced($subject, $properties)
+    {
+        if (!$subject || !$properties) {
+            return false;
+        }
+
         $referenced = array();
         foreach ($properties as $field => $property) {
-            $referenced[] = isset($property['x-referenced']) ? $property['x-referenced'] : false;
+            if (isset($property['x-referenced'])) {
+                $referenced = array_merge($referenced, $property['x-referenced']);
+            }
+        }
+        for ($i = 0; $i < count($referenced); $i++) {
+            $referenced[$i] = explode('.', $referenced[$i]);
         }
         return $referenced;
     }
 
-    function primaryKey($subject, $properties) {
-        if (!$subject || !$properties) return false;
-        $i = 0;
+    public function getPrimaryKey($subject, $properties)
+    {
+        if (!$subject || !$properties) {
+            return false;
+        }
+
         foreach ($properties as $field => $property) {
-            if (isset($property['x-primary-key'])) return $i;
-            $i++;
+            if (isset($property['x-primary-key'])) {
+                return $field;
+            }
         }
         return false;
     }
 
-    public function __construct($config) {
+    public function __construct($config)
+    {
         extract($config);
 
         // initialize
@@ -387,7 +447,7 @@ class PHP_CRUD_UI {
         if (!$definition) {
             $definition = isset($_SESSION['definition']) ? $_SESSION['definition'] : null;
             if (!$definition) {
-                $definition = $this->call('GET', $url);
+                $definition = $this->call('GET', $url . '/openapi');
                 $_SESSION['definition'] = $definition;
             }
         }
@@ -410,53 +470,53 @@ class PHP_CRUD_UI {
         $request = trim($request, '/');
 
         if (!$base) {
-            $count = $request ? (-1 * strlen($request)) : strlen($_SERVER['REQUEST_URI']);
-            $base = rtrim(substr($_SERVER['REQUEST_URI'], 0, $count), '/') . '/';
+            $count = $request ? (-1 * strlen($request)) : strlen(urldecode($_SERVER['REQUEST_URI']));
+            $base = rtrim(substr(urldecode($_SERVER['REQUEST_URI']), 0, $count), '/') . '/';
         }
 
         $this->settings = compact('url', 'base', 'definition', 'method', 'request', 'get', 'post');
     }
 
-    protected function parseRequestParameter(&$request, $characters) {
-        if (!$request) return false;
-        $pos = strpos($request, '/');
-        $value = $pos ? substr($request, 0, $pos) : $request;
-        $request = $pos ? substr($request, $pos + 1) : '';
-        if (!$characters) return $value;
-        return preg_replace("/[^$characters]/", '', $value);
+    protected function getParameter($position)
+    {
+        $request = $this->settings['request'];
+        if (!$request) {
+            return false;
+        }
+        $parameters = explode('/', $request);
+        return isset($parameters[$position]) ? $parameters[$position] : '';
     }
 
-    protected function getParameters($settings) {
-        extract($settings);
-
-        $subject   = $this->parseRequestParameter($request, 'a-zA-Z0-9\-_');
-        $action    = $this->parseRequestParameter($request, 'a-zA-Z0-9\-_');
-        $id        = $this->parseRequestParameter($request, 'a-zA-Z0-9\-_');
-        $field     = $this->parseRequestParameter($request, 'a-zA-Z0-9\-_');
-
-        return compact('url', 'base', 'definition', 'method', 'subject', 'action', 'id', 'field', 'get', 'post');
-    }
-
-    function executeCommand() {
-        $parameters = $this->getParameters($this->settings);
+    public function executeCommand()
+    {
+        $action = $this->getParameter(1);
 
         $html = $this->head();
         $html .= '<div class="row">';
         $html .= '<div class="col-md-3">';
-        $html .= $this->menu($parameters);
+        $html .= $this->menu();
         $html .= '</div>';
 
         $html .= '<div class="col-md-9">';
-        $action = $parameters['method'] . '.' . ($parameters['action'] ?: 'home');
         switch ($action) {
-            case 'GET.home':  $html .= $this->home($parameters); break;
-            case 'GET.list':  $html .= $this->listRecords($parameters); break;
-            case 'GET.add':   $html .= $this->addRecord($parameters); break;
-            case 'GET.edit':  $html .= $this->editRecord($parameters); break;
-            case 'GET.delete': $html .= $this->confirmDelete($parameters); break;
-            case 'POST.add':  $html .= $this->insertRecord($parameters); break;
-            case 'POST.edit': $html .= $this->updateRecord($parameters); break;
-            case 'POST.delete': $html .= $this->deleteRecord($parameters); break;
+            case '':
+                $html .= $this->executeHome();
+                break;
+            case 'read':
+                $html .= $this->executeView();
+                break;
+            case 'create':
+                $html .= $this->executeAdd();
+                break;
+            case 'update':
+                $html .= $this->executeEdit();
+                break;
+            case 'delete':
+                $html .= $this->executeDelete();
+                break;
+            case 'list':
+                $html .= $this->executeList();
+                break;
         }
         $html .= '</div>';
 
@@ -468,6 +528,6 @@ class PHP_CRUD_UI {
 
 //session_start();
 //$ui = new PHP_CRUD_UI(array(
-//    'url' => 'http://localhost/api.php/',
+//    'url' => 'http://localhost:8000/api.php',
 //));
 //echo $ui->executeCommand();
