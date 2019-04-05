@@ -56,8 +56,8 @@ class PHP_CRUD_UI
         $html = '<!DOCTYPE html><html lang="en">';
         $html .= '<head><title>PHP-CRUD-UI</title>';
         $html .= '<meta name="viewport" content="width=device-width, initial-scale=1">';
-        $html .= '<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">';
-        $html .= '<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" rel="stylesheet">';
+        $html .= '<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">';
+        $html .= '<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css" rel="stylesheet">';
         $html .= '</head><body><div class="container">';
         $html .= '<div class="row">';
         $html .= '<div class="col-md-3"><h3>PHP-CRUD-UI</h3></div>';
