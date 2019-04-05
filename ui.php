@@ -28,9 +28,10 @@ class PHP_CRUD_UI
         return $base . trim("$subject/$action/$id/$field", '/');
     }
 
-    public function menu($parameters)
+    public function menu()
     {
-        extract($parameters);
+        extract($this->settings);
+        $subject = $this->getParameter(0);
 
         $html = '<ul class="nav nav-pills nav-stacked">';
         if (isset($definition['tags'])) {
@@ -43,10 +44,8 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function home($parameters)
+    public function homeAction()
     {
-        extract($parameters);
-
         $html = 'Nothing';
         return $html;
     }
@@ -71,7 +70,7 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function displayColumn($columns)
+    public function getDisplayColumn($columns)
     {
         // TODO: make configurable
         $names = array('name', 'title', 'description', 'username');
@@ -86,26 +85,30 @@ class PHP_CRUD_UI
 
     public function referenceText($subject, $record, $definition)
     {
-        $properties = $this->properties($subject, 'read', $definition);
-        $displayColumn = $this->displayColumn(array_keys($properties));
+        $properties = $this->getProperties($subject, 'read', $definition);
+        $displayColumn = $this->getDisplayColumn(array_keys($properties));
         return $record[$displayColumn];
     }
 
     public function referenceId($subject, $record, $definition)
     {
-        $properties = $this->properties($subject, 'read', $definition);
-        $primaryKey = $this->primaryKey($subject, $properties);
+        $properties = $this->getProperties($subject, 'read', $definition);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
         return $record[$primaryKey];
     }
 
-    public function listRecords($parameters)
+    public function executeList()
     {
-        extract($parameters);
+        extract($this->settings);
+        $subject = $this->getParameter(0);
+        $action = $this->getParameter(1);
+        $field = $this->getParameter(2);
+        $id = $this->getParameter(3);
 
-        $properties = $this->properties($subject, $action, $definition);
-        $references = $this->references($subject, $properties);
-        $referenced = $this->referenced($subject, $properties);
-        $primaryKey = $this->primaryKey($subject, $properties);
+        $properties = $this->getProperties($subject, $action, $definition);
+        $references = $this->getReferences($subject, $properties);
+        $referenced = $this->getReferenced($subject, $properties);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
 
         $related = !empty(array_filter($referenced));
 
@@ -169,10 +172,13 @@ class PHP_CRUD_UI
             }
             if ($primaryKey) {
                 $html .= '<td>';
+                $href = $this->url($base, $subject, 'read', $record[$primaryKey]);
+                $html .= '<a href="' . $href . '">view</a>';
+                $html .= ' | ';
                 $href = $this->url($base, $subject, 'update', $record[$primaryKey]);
                 $html .= '<a href="' . $href . '">edit</a>';
-                $href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
                 $html .= ' | ';
+                $href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
                 $html .= '<a href="' . $href . '">delete</a>';
                 $html .= '</td>';
             }
@@ -184,13 +190,13 @@ class PHP_CRUD_UI
 
     public function selectSubject($url, $subject, $name, $value, $definition)
     {
-        $properties = $this->properties($subject, 'list', $definition);
-        $references = $this->references($subject, $properties);
-        $primaryKey = $this->primaryKey($subject, $properties);
+        $properties = $this->getProperties($subject, 'list', $definition);
+        $references = $this->getReferences($subject, $properties);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
 
         $data = $this->call('GET', $url . '/records/' . urlencode($subject));
 
-        $displayColumn = $this->displayColumn(array_keys($properties));
+        $displayColumn = $this->getDisplayColumn(array_keys($properties));
 
         $html = '<select id="' . $name . '" name="' . $name . '" class="form-control">';
         $html .= '<option value=""></option>';
@@ -220,14 +226,21 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function createRecord($parameters)
+    public function executeAdd()
     {
-        extract($parameters);
+        extract($this->settings);
+        $subject = $this->getParameter(0);
+        $action = $this->getParameter(1);
 
-        $properties = $this->properties($subject, $action, $definition);
-        $references = $this->references($subject, $properties);
-        $referenced = $this->referenced($subject, $properties);
-        $primaryKey = $this->primaryKey($subject, $properties);
+        if ($method == 'POST') {
+            $this->call('POST', $url . '/records/' . urlencode($subject), json_encode($post));
+            return '<p>Added</p>';
+        }
+
+        $properties = $this->getProperties($subject, $action, $definition);
+        $references = $this->getReferences($subject, $properties);
+        $referenced = $this->getReferenced($subject, $properties);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
 
         $html = '<h4>' . $subject . ': create</h4>';
         $html .= '<form method="post">';
@@ -249,14 +262,22 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function updateRecord($parameters)
+    public function executeEdit()
     {
-        extract($parameters);
+        extract($this->settings);
+        $subject = $this->getParameter(0);
+        $action = $this->getParameter(1);
+        $id = $this->getParameter(2);
 
-        $properties = $this->properties($subject, $action, $definition);
-        $references = $this->references($subject, $properties);
-        $referenced = $this->referenced($subject, $properties);
-        $primaryKey = $this->primaryKey($subject, $properties);
+        if ($method == 'POST') {
+            $this->call('PUT', $url . '/records/' . urlencode($subject) . '/' . $id, json_encode($post));
+            return '<p>Updated</p>';
+        }
+
+        $properties = $this->getProperties($subject, $action, $definition);
+        $references = $this->getReferences($subject, $properties);
+        $referenced = $this->getReferenced($subject, $properties);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
 
         $data = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
         $html = '<h4>' . $subject . ': update</h4>';
@@ -277,14 +298,22 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function deleteRecord($parameters)
+    public function executeDelete()
     {
-        extract($parameters);
+        extract($this->settings);
+        $subject = $this->getParameter(0);
+        $action = $this->getParameter(1);
+        $id = $this->getParameter(2);
 
-        $properties = $this->properties($subject, $action, $definition);
-        $references = $this->references($subject, $properties);
-        $referenced = $this->referenced($subject, $properties);
-        $primaryKey = $this->primaryKey($subject, $properties);
+        if ($method == 'POST') {
+            $this->call('DELETE', $url . '/records/' . urlencode($subject) . '/' . $id);
+            return '<p>Deleted</p>';
+        }
+
+        $properties = $this->getProperties($subject, $action, $definition);
+        $references = $this->getReferences($subject, $properties);
+        $referenced = $this->getReferenced($subject, $properties);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
 
         $data = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
         $html = '<h4>Are you sure?</h4>';
@@ -301,31 +330,7 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function doDeleteRecord($parameters)
-    {
-        extract($parameters);
-
-        $this->call('DELETE', $url . '/records/' . urlencode($subject) . '/' . $id);
-        return '<p>Deleted</p>';
-    }
-
-    public function doUpdateRecord($parameters)
-    {
-        extract($parameters);
-
-        $this->call('PUT', $url . '/records/' . urlencode($subject) . '/' . $id, json_encode($post));
-        return '<p>Updated</p>';
-    }
-
-    public function doCreateRecord($parameters)
-    {
-        extract($parameters);
-
-        $this->call('POST', $url . '/records/' . urlencode($subject), json_encode($post));
-        return '<p>Added</p>';
-    }
-
-    public function getProperties($definition, $path)
+    public function resolve($definition, $path)
     {
         while (null !== ($element = array_shift($path))) {
             //echo '"'.$element.'",';
@@ -338,7 +343,7 @@ class PHP_CRUD_UI
         return $definition;
     }
 
-    public function properties($subject, $action, $definition)
+    public function getProperties($subject, $action, $definition)
     {
         if (!$subject || !$definition) {
             return false;
@@ -348,10 +353,10 @@ class PHP_CRUD_UI
         } else {
             $path = array('components', 'schemas', $action . '-' . $subject, 'properties');
         }
-        return $this->getProperties($definition, $path);
+        return $this->resolve($definition, $path);
     }
 
-    public function references($subject, $properties)
+    public function getReferences($subject, $properties)
     {
         if (!$subject || !$properties) {
             return false;
@@ -364,7 +369,7 @@ class PHP_CRUD_UI
         return $references;
     }
 
-    public function referenced($subject, $properties)
+    public function getReferenced($subject, $properties)
     {
         if (!$subject || !$properties) {
             return false;
@@ -382,7 +387,7 @@ class PHP_CRUD_UI
         return $referenced;
     }
 
-    public function primaryKey($subject, $properties)
+    public function getPrimaryKey($subject, $properties)
     {
         if (!$subject || !$properties) {
             return false;
@@ -444,62 +449,45 @@ class PHP_CRUD_UI
         $this->settings = compact('url', 'base', 'definition', 'method', 'request', 'get', 'post');
     }
 
-    protected function parseRequestParameter(&$request, $characters)
+    protected function getParameter($position)
     {
+        $request = $this->settings['request'];
         if (!$request) {
             return false;
         }
-
-        $pos = strpos($request, '/');
-        $value = $pos ? substr($request, 0, $pos) : $request;
-        $request = $pos ? substr($request, $pos + 1) : '';
-        if (!$characters) {
-            return $value;
-        }
-
-        return preg_replace("/[^$characters]/", '', $value);
-    }
-
-    protected function getParameters($settings)
-    {
-        extract($settings);
-
-        $subject = $this->parseRequestParameter($request, false);
-        $action = $this->parseRequestParameter($request, false);
-        $id = $this->parseRequestParameter($request, false);
-        $field = $this->parseRequestParameter($request, false);
-
-        return compact('url', 'base', 'definition', 'method', 'subject', 'action', 'id', 'field', 'get', 'post');
+        $parameters = explode('/', $request);
+        return isset($parameters[$position]) ? $parameters[$position] : '';
     }
 
     public function executeCommand()
     {
-        $parameters = $this->getParameters($this->settings);
+        $action = $this->getParameter(1);
 
         $html = $this->head();
         $html .= '<div class="row">';
         $html .= '<div class="col-md-3">';
-        $html .= $this->menu($parameters);
+        $html .= $this->menu();
         $html .= '</div>';
 
         $html .= '<div class="col-md-9">';
-        $action = $parameters['method'] . '.' . ($parameters['action'] ?: 'home');
         switch ($action) {
-            case 'GET.home':$html .= $this->home($parameters);
+            case '':
+                $html .= $this->executeHome();
                 break;
-            case 'GET.list':$html .= $this->listRecords($parameters);
+            case 'read':
+                $html .= $this->executeView();
                 break;
-            case 'GET.create':$html .= $this->createRecord($parameters);
+            case 'create':
+                $html .= $this->executeAdd();
                 break;
-            case 'GET.update':$html .= $this->updateRecord($parameters);
+            case 'update':
+                $html .= $this->executeEdit();
                 break;
-            case 'GET.delete':$html .= $this->deleteRecord($parameters);
+            case 'delete':
+                $html .= $this->executeDelete();
                 break;
-            case 'POST.create':$html .= $this->doCreateRecord($parameters);
-                break;
-            case 'POST.update':$html .= $this->doUpdateRecord($parameters);
-                break;
-            case 'POST.delete':$html .= $this->doDeleteRecord($parameters);
+            case 'list':
+                $html .= $this->executeList();
                 break;
         }
         $html .= '</div>';
