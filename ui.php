@@ -128,8 +128,9 @@ class PHP_CRUD_UI
 
         if ($field) {
             $href = $this->url($base, $subject, 'list');
-            $html .= '<div class="well well-sm"><div style="float:right;"><a class="btn btn-default btn-xs" href="' . $href . '">Clear filter</a></div>';
-            $html .= 'Filtered by: ' . $field . ' = ' . $id . '</div>';
+            $html .= '<div class="well well-sm"><div style="float:right;">';
+            $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">Clear filter</a>';
+            $html .= '</div>Filtered by: ' . $field . ' = ' . $id . '</div>';
         }
 
         $html .= '<table class="table">';
