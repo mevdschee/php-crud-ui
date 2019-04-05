@@ -127,9 +127,9 @@ class PHP_CRUD_UI
         $html .= '<p><a href="' . $href . '" class="btn btn-primary">Add</a></p>';
 
         if ($field) {
-            $html .= '<div class="alert alert-info" role="alert">Filtered where "' . $field . '" = "' . $id . '".';
             $href = $this->url($base, $subject, 'list');
-            $html .= '<div style="float:right;"><a href="' . $href . '">Show all</a></div></div>';
+            $html .= '<div class="well well-sm"><div style="float:right;"><a class="btn btn-default btn-xs" href="' . $href . '">Clear filter</a></div>';
+            $html .= 'Filtered by: ' . $field . ' = ' . $id . '</div>';
         }
 
         $html .= '<table class="table">';
@@ -147,17 +147,17 @@ class PHP_CRUD_UI
         foreach ($data['records'] as $record) {
             $html .= '<tr>';
             foreach ($record as $key => $value) {
+                $html .= '<td>';
                 if ($references[$key]) {
-                    $html .= '<td>';
                     $id = $this->referenceId($references[$key], $record[$key], $definition);
-                    $href = $this->url($base, $references[$key], 'list', $id);
+                    $href = $this->url($base, $references[$key], 'read', $id);
                     $html .= '<a href="' . $href . '">';
                     $html .= $this->referenceText($references[$key], $record[$key], $definition);
                     $html .= '</a>';
-                    $html .= '</td>';
                 } else {
-                    $html .= '<td>' . $value . '</td>';
+                    $html .= $value;
                 }
+                $html .= '</td>';
             }
             if ($related) {
                 $html .= '<td>';
@@ -165,7 +165,7 @@ class PHP_CRUD_UI
                     if ($i) {
                         $html .= ', ';
                     }
-                    $href = $this->url($base, $relation[0], 'list', $record[$primaryKey], $relation[1]);
+                    $href = $this->url($base, $relation[0], 'list', $relation[1], $record[$primaryKey]);
                     $html .= '<a href="' . $href . '">' . $relation[0] . '</a>';
                 }
                 $html .= '</td>';
