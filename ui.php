@@ -121,7 +121,7 @@ class PHP_CRUD_UI
         $urlArgs = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
         $data = $this->call('GET', $url . '/records/' . urlencode($subject) . $urlArgs);
 
-        $html = '<h4>' . $subject . ': list</h4>';
+        $html = '<h2>' . $subject . ': list</h2>';
 
         $href = $this->url($base, $subject, 'create');
         $html .= '<p><a href="' . $href . '" class="btn btn-primary">Add</a></p>';
@@ -242,7 +242,7 @@ class PHP_CRUD_UI
         $referenced = $this->getReferenced($subject, $properties);
         $primaryKey = $this->getPrimaryKey($subject, $properties);
 
-        $html = '<h4>' . $subject . ': create</h4>';
+        $html = '<h2>' . $subject . ': create</h2>';
         $html .= '<form method="post">';
         $data = array_keys($properties);
 
@@ -259,6 +259,39 @@ class PHP_CRUD_UI
         }
         $html .= '<button type="submit" class="btn btn-primary">Save</button>';
         $html .= '</form>';
+        return $html;
+    }
+
+    public function executeView()
+    {
+        extract($this->settings);
+        $subject = $this->getParameter(0);
+        $action = $this->getParameter(1);
+        $id = $this->getParameter(2);
+
+        $properties = $this->getProperties($subject, $action, $definition);
+        $references = $this->getReferences($subject, $properties);
+        $referenced = $this->getReferenced($subject, $properties);
+        $primaryKey = $this->getPrimaryKey($subject, $properties);
+
+        $data = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
+        $html = '<h2>' . $subject . ': view</h2>';
+        $html .= '<dl>';
+        foreach ($data as $column => $value) {
+            $html .= '<dt>' . $column . '</dt>';
+            $html .= '<dd>';
+            if ($references[$key]) {
+                $id = $this->referenceId($references[$key], $record[$key], $definition);
+                $href = $this->url($base, $references[$key], 'read', $id);
+                $html .= '<a href="' . $href . '">';
+                $html .= $this->referenceText($references[$key], $record[$key], $definition);
+                $html .= '</a>';
+            } else {
+                $html .= $value;
+            }
+            $html .= '</dd>';
+        }
+        $html .= '</dl>';
         return $html;
     }
 
@@ -280,7 +313,7 @@ class PHP_CRUD_UI
         $primaryKey = $this->getPrimaryKey($subject, $properties);
 
         $data = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
-        $html = '<h4>' . $subject . ': update</h4>';
+        $html = '<h2>' . $subject . ': edit</h2>';
         $html .= '<form method="post">';
         foreach ($data as $column => $value) {
             $html .= '<div class="form-group">';
@@ -310,20 +343,14 @@ class PHP_CRUD_UI
             return '<p>Deleted</p>';
         }
 
-        $properties = $this->getProperties($subject, $action, $definition);
-        $references = $this->getReferences($subject, $properties);
-        $referenced = $this->getReferenced($subject, $properties);
+        $properties = $this->getProperties($subject, 'read', $definition);
         $primaryKey = $this->getPrimaryKey($subject, $properties);
 
-        $data = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
-        $html = '<h4>Are you sure?</h4>';
+        $html = '<h2>' . $subject . ': delete #' . $id . '</h2>';
+        $html .= '<p>The action cannot be undone.</p>';
         $html .= '<form method="post">';
-        foreach ($data as $column => $field) {
-            if ($column == $primaryKey) {
-                $html .= '<input type="hidden" name="' . $column . '" value="' . $field . '"/>';
-            }
-        }
-        $html .= '<button type="submit" class="btn btn-primary">Yes</button>';
+        $html .= '<input type="hidden" name="' . $primaryKey . '" value="' . $id . '"/>';
+        $html .= '<button type="submit" class="btn btn-danger">Delete</button>';
         $href = $this->url($base, $subject, 'list');
         $html .= ' <a href="' . $href . '" class="btn btn-default">Cancel</a>';
         $html .= '</form>';
