@@ -173,13 +173,11 @@ class PHP_CRUD_UI
             if ($primaryKey) {
                 $html .= '<td style="white-space: nowrap;">';
                 $href = $this->url($base, $subject, 'read', $record[$primaryKey]);
-                $html .= '<a href="' . $href . '">view</a>';
-                $html .= ' | ';
+                $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">view</a> ';
                 $href = $this->url($base, $subject, 'update', $record[$primaryKey]);
-                $html .= '<a href="' . $href . '">edit</a>';
-                $html .= ' | ';
+                $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">edit</a> ';
                 $href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
-                $html .= '<a href="' . $href . '">delete</a>';
+                $html .= '<a class="btn btn-danger btn-xs" href="' . $href . '">delete</a> ';
                 $html .= '</td>';
             }
             $html .= '</tr>';
