@@ -132,7 +132,9 @@ class PHP_CRUD_UI
         if ($related) {
             $html .= '<th>related</th>';
         }
-        $html .= '<th>actions</th>';
+        if ($primaryKey) {
+            $html .= '<th>actions</th>';
+        }
         $html .= '</tr></thead><tbody>';
         foreach ($data['records'] as $record) {
             $html .= '<tr>';
@@ -160,15 +162,15 @@ class PHP_CRUD_UI
                 }
                 $html .= '</td>';
             }
-            $html .= '<td>';
             if ($primaryKey) {
+                $html .= '<td>';
                 $href = $this->url($base, $subject, 'update', $record[$primaryKey]);
                 $html .= '<a href="' . $href . '">edit</a>';
                 $href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
                 $html .= ' | ';
                 $html .= '<a href="' . $href . '">delete</a>';
+                $html .= '</td>';
             }
-            $html .= '</td>';
             $html .= '</tr>';
         }
         $html .= '</tbody></table>';
