@@ -119,11 +119,16 @@ class PHP_CRUD_UI
         $data = $this->call('GET', $url . '/records/' . urlencode($subject) . $urlArgs);
 
         $html = '<h4>' . $subject . ': list</h4>';
+
+        $href = $this->url($base, $subject, 'create');
+        $html .= '<p><a href="' . $href . '" class="btn btn-primary">Add</a></p>';
+
         if ($field) {
             $html .= '<div class="alert alert-info" role="alert">Filtered where "' . $field . '" = "' . $id . '".';
             $href = $this->url($base, $subject, 'list');
             $html .= '<div style="float:right;"><a href="' . $href . '">Show all</a></div></div>';
         }
+
         $html .= '<table class="table">';
         $html .= '<thead><tr>';
         foreach (array_keys($properties) as $column) {
@@ -174,8 +179,6 @@ class PHP_CRUD_UI
             $html .= '</tr>';
         }
         $html .= '</tbody></table>';
-        $href = $this->url($base, $subject, 'create');
-        $html .= '<p><a href="' . $href . '" class="btn btn-primary">Add</a></p>';
         return $html;
     }
 
