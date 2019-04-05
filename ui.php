@@ -44,7 +44,7 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function homeAction()
+    public function executeHome()
     {
         $html = 'Nothing';
         return $html;
