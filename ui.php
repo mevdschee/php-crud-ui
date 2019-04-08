@@ -275,8 +275,8 @@ class PHP_CRUD_UI
         $data = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
         $html = '<h2>' . $subject . ': view</h2>';
         $html .= '<dl>';
-        foreach ($data as $column => $value) {
-            $html .= '<dt>' . $column . '</dt>';
+        foreach ($data as $key => $value) {
+            $html .= '<dt>' . $key . '</dt>';
             $html .= '<dd>';
             if ($references[$key]) {
                 $id = $this->referenceId($references[$key], $record[$key], $definition);
