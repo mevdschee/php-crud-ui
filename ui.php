@@ -147,10 +147,10 @@ class PHP_CRUD_UI
                     $id = $this->referenceId($references[$key], $record[$key], $definition);
                     $href = $this->url($base, $references[$key], 'read', $id);
                     $html .= '<a href="' . $href . '">';
-                    $html .= $this->referenceText($references[$key], $record[$key], $definition);
+                    $html .= htmlentities($this->referenceText($references[$key], $record[$key], $definition));
                     $html .= '</a>';
                 } else {
-                    $html .= $value;
+                    $html .= htmlentities($value);
                 }
                 $html .= '</td>';
             }
@@ -275,10 +275,10 @@ class PHP_CRUD_UI
                 $id = $this->referenceId($references[$key], $record[$key], $definition);
                 $href = $this->url($base, $references[$key], 'read', $id);
                 $html .= '<a href="' . $href . '">';
-                $html .= $this->referenceText($references[$key], $record[$key], $definition);
+                $html .= htmlentities($this->referenceText($references[$key], $record[$key], $definition));
                 $html .= '</a>';
             } else {
-                $html .= $value;
+                $html .= htmlentities($value);
             }
             $html .= '</dd>';
         }
