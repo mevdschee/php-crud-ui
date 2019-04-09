@@ -312,7 +312,7 @@ class PHP_CRUD_UI
                 $html .= $this->selectSubject($url, $references[$column], $column, $value, $definition);
             } else {
                 $readonly = $column == $primaryKey ? ' readonly' : '';
-                $html .= '<input class="form-control" id="' . htmlentities($column) . '" name="' . htmlentities($column) . '" value="' . htmlentities($value) . '"' . $readonly . '/>';
+                $html .= '<input class="form-control" id="' . $column . '" name="' . $column . '" value="' . htmlentities($value) . '"' . $readonly . '/>';
             }
             $html .= '</div>';
         }
