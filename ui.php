@@ -2,8 +2,7 @@
 
 class PHP_CRUD_UI
 {
-
-    protected $settings;
+    protected $config;
 
     public function call($method, $url, $data = false)
     {
@@ -28,11 +27,8 @@ class PHP_CRUD_UI
         return $base . trim("$subject/$action/$id/$field", '/');
     }
 
-    public function menu()
+    public function menu($subject, $base, $definition)
     {
-        extract($this->settings);
-        $subject = $this->getParameter(0);
-
         $html = '<ul class="nav nav-pills nav-stacked">';
         if (isset($definition['tags'])) {
             foreach ($definition['tags'] as $tag) {
@@ -44,7 +40,7 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function executeHome()
+    public function executeHome($url, $base, $definition, $method, $request)
     {
         $html = 'Nothing';
         return $html;
@@ -97,13 +93,12 @@ class PHP_CRUD_UI
         return $record[$primaryKey];
     }
 
-    public function executeList()
+    public function executeList($url, $base, $definition, $method, $request)
     {
-        extract($this->settings);
-        $subject = $this->getParameter(0);
-        $action = $this->getParameter(1);
-        $field = $this->getParameter(2);
-        $id = $this->getParameter(3);
+        $subject = $this->getParameter($request, 0);
+        $action = $this->getParameter($request, 1);
+        $field = $this->getParameter($request, 2);
+        $id = $this->getParameter($request, 3);
 
         $properties = $this->getProperties($subject, $action, $definition);
         $references = $this->getReferences($subject, $properties);
@@ -224,11 +219,10 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function executeAdd()
+    public function executeAdd($url, $base, $definition, $method, $request, $post)
     {
-        extract($this->settings);
-        $subject = $this->getParameter(0);
-        $action = $this->getParameter(1);
+        $subject = $this->getParameter($request, 0);
+        $action = $this->getParameter($request, 1);
 
         if ($method == 'POST') {
             $this->call('POST', $url . '/records/' . urlencode($subject), json_encode($post));
@@ -260,12 +254,11 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function executeView()
+    public function executeView($url, $base, $definition, $method, $request)
     {
-        extract($this->settings);
-        $subject = $this->getParameter(0);
-        $action = $this->getParameter(1);
-        $id = $this->getParameter(2);
+        $subject = $this->getParameter($request, 0);
+        $action = $this->getParameter($request, 1);
+        $id = $this->getParameter($request, 2);
 
         $properties = $this->getProperties($subject, $action, $definition);
         $references = $this->getReferences($subject, $properties);
@@ -293,12 +286,11 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function executeEdit()
+    public function executeEdit($url, $base, $definition, $method, $request, $post)
     {
-        extract($this->settings);
-        $subject = $this->getParameter(0);
-        $action = $this->getParameter(1);
-        $id = $this->getParameter(2);
+        $subject = $this->getParameter($request, 0);
+        $action = $this->getParameter($request, 1);
+        $id = $this->getParameter($request, 2);
 
         if ($method == 'POST') {
             $this->call('PUT', $url . '/records/' . urlencode($subject) . '/' . $id, json_encode($post));
@@ -329,12 +321,11 @@ class PHP_CRUD_UI
         return $html;
     }
 
-    public function executeDelete()
+    public function executeDelete($url, $base, $definition, $method, $request)
     {
-        extract($this->settings);
-        $subject = $this->getParameter(0);
-        $action = $this->getParameter(1);
-        $id = $this->getParameter(2);
+        $subject = $this->getParameter($request, 0);
+        $action = $this->getParameter($request, 1);
+        $id = $this->getParameter($request, 2);
 
         if ($method == 'POST') {
             $this->call('DELETE', $url . '/records/' . urlencode($subject) . '/' . $id);
@@ -428,55 +419,66 @@ class PHP_CRUD_UI
 
     public function __construct($config)
     {
-        extract($config);
-
-        // initialize
-        $url = isset($url) ? $url : null;
-
-        $base = isset($base) ? $base : null;
-        $definition = isset($definition) ? $definition : null;
-        $method = isset($method) ? $method : null;
-        $request = isset($request) ? $request : null;
-        $get = isset($get) ? $get : null;
-        $post = isset($post) ? $post : null;
-
-        // defaults
-        if (!$definition) {
-            $definition = isset($_SESSION['definition']) ? $_SESSION['definition'] : null;
-            if (!$definition) {
-                $definition = $this->call('GET', $url . '/openapi');
-                $_SESSION['definition'] = $definition;
-            }
-        }
-        if (!$method) {
-            $method = $_SERVER['REQUEST_METHOD'];
-        }
-        if (!$request) {
-            $request = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
-            if (!$request) {
-                $request = isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO'] : '';
-            }
-        }
-        if (!$get) {
-            $get = $_GET;
-        }
-        if (!$post) {
-            $post = $_POST;
-        }
-
-        $request = trim($request, '/');
-
-        if (!$base) {
-            $count = $request ? (-1 * strlen($request)) : strlen(urldecode($_SERVER['REQUEST_URI']));
-            $base = rtrim(substr(urldecode($_SERVER['REQUEST_URI']), 0, $count), '/') . '/';
-        }
-
-        $this->settings = compact('url', 'base', 'definition', 'method', 'request', 'get', 'post');
+        $this->config = $config;
     }
 
-    protected function getParameter($position)
+    protected function getUrl($config)
     {
-        $request = $this->settings['request'];
+        if (isset($config['url'])) {
+            return $config['url'];
+        }
+        return null;
+    }
+
+    protected function getBase($config, $request)
+    {
+        if (isset($config['base'])) {
+            return $config['base'];
+        }
+        $count = $request ? (-1 * strlen($request)) : strlen(urldecode($_SERVER['REQUEST_URI']));
+        return rtrim(substr(urldecode($_SERVER['REQUEST_URI']), 0, $count), '/') . '/';
+    }
+
+    protected function getDefinition($config, $url)
+    {
+        if (isset($config['definition'])) {
+            return $config['definition'];
+        }
+        $definition = $this->call('GET', $url . '/openapi');
+        $_SESSION['definition'] = $definition;
+        return $definition;
+    }
+
+    protected function getMethod($config)
+    {
+        if (isset($config['method'])) {
+            return $config['method'];
+        }
+        return $_SERVER['REQUEST_METHOD'];
+    }
+
+    protected function getRequest($config)
+    {
+        if (isset($config['request'])) {
+            return trim($config['request'], '/');
+        }
+        $request = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
+        if (!$request) {
+            $request = isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO'] : '';
+        }
+        return trim($request, '/');
+    }
+
+    protected function getPost($config)
+    {
+        if (isset($config['post'])) {
+            return $config['post'];
+        }
+        return $_POST;
+    }
+
+    protected function getParameter($request, $position)
+    {
         if (!$request) {
             return false;
         }
@@ -486,33 +488,43 @@ class PHP_CRUD_UI
 
     public function executeCommand()
     {
-        $action = $this->getParameter(1);
+        $config = $this->config;
+
+        $url = $this->getUrl($config);
+        $request = $this->getRequest($config);
+        $base = $this->getBase($config, $request);
+        $definition = $this->getDefinition($config, $url);
+        $method = $this->getMethod($config);
+        $post = $this->getPost($config);
+
+        $subject = $this->getParameter($request, 0);
+        $action = $this->getParameter($request, 1);
 
         $html = $this->head();
         $html .= '<div class="row">';
         $html .= '<div class="col-md-3">';
-        $html .= $this->menu();
+        $html .= $this->menu($subject, $base, $definition);
         $html .= '</div>';
 
         $html .= '<div class="col-md-9">';
         switch ($action) {
             case '':
-                $html .= $this->executeHome();
+                $html .= $this->executeHome($url, $base, $definition, $method, $request);
                 break;
             case 'read':
-                $html .= $this->executeView();
+                $html .= $this->executeView($url, $base, $definition, $method, $request);
                 break;
             case 'create':
-                $html .= $this->executeAdd();
+                $html .= $this->executeAdd($url, $base, $definition, $method, $request, $post);
                 break;
             case 'update':
-                $html .= $this->executeEdit();
+                $html .= $this->executeEdit($url, $base, $definition, $method, $request, $post);
                 break;
             case 'delete':
-                $html .= $this->executeDelete();
+                $html .= $this->executeDelete($url, $base, $definition, $method, $request);
                 break;
             case 'list':
-                $html .= $this->executeList();
+                $html .= $this->executeList($url, $base, $definition, $method, $request);
                 break;
         }
         $html .= '</div>';
