@@ -265,10 +265,10 @@ class PHP_CRUD_UI
         $referenced = $this->getReferenced($subject, $properties);
         $primaryKey = $this->getPrimaryKey($subject, $properties);
 
-        $data = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
+        $record = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
         $html = '<h2>' . $subject . ': view</h2>';
         $html .= '<dl>';
-        foreach ($data as $key => $value) {
+        foreach ($record as $key => $value) {
             $html .= '<dt>' . $key . '</dt>';
             $html .= '<dd>';
             if ($references[$key]) {
