@@ -29,41 +29,24 @@ class PHP_CRUD_UI
 
     public function menu($subject, $base, $definition)
     {
-        $html = '<ul class="nav nav-pills nav-stacked">';
+        $items = array();
         if (isset($definition['tags'])) {
             foreach ($definition['tags'] as $tag) {
-                $active = $tag['name'] == $subject ? ' class="active"' : '';
-                $html .= '<li' . $active . '><a href="' . $this->url($base, $tag['name'], 'list') . '">' . $tag['name'] . '</a></li>';
+                $item = array(
+                    'active' => $tag['name'] == $subject,
+                    'name' => $tag['name'],
+                    'url' => $this->url($base, $tag['name'], 'list'),
+                );
+                array_push($items, $item);
             }
         }
-        $html .= '</ul>';
-        return $html;
+        return $items;
     }
 
     public function executeHome($url, $base, $definition, $method, $request)
     {
-        $html = 'Nothing';
-        return $html;
-    }
-
-    public function head()
-    {
-        $html = '<!DOCTYPE html><html lang="en">';
-        $html .= '<head><title>PHP-CRUD-UI</title>';
-        $html .= '<meta name="viewport" content="width=device-width, initial-scale=1">';
-        $html .= '<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">';
-        $html .= '<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css" rel="stylesheet">';
-        $html .= '</head><body><div class="container">';
-        $html .= '<div class="row">';
-        $html .= '<div class="col-md-3"><h3>PHP-CRUD-UI</h3></div>';
-        $html .= '</div>';
-        return $html;
-    }
-
-    public function foot()
-    {
-        $html = '</div></body></html>';
-        return $html;
+        $template = file_get_contents('../templates/home.html');
+        return Template::render($template, array());
     }
 
     public function getDisplayColumn($columns)
@@ -500,38 +483,32 @@ class PHP_CRUD_UI
         $subject = $this->getParameter($request, 0);
         $action = $this->getParameter($request, 1);
 
-        $html = $this->head();
-        $html .= '<div class="row">';
-        $html .= '<div class="col-md-3">';
-        $html .= $this->menu($subject, $base, $definition);
-        $html .= '</div>';
+        $content = '';
+        $menu = $this->menu($subject, $base, $definition);
 
-        $html .= '<div class="col-md-9">';
         switch ($action) {
             case '':
-                $html .= $this->executeHome($url, $base, $definition, $method, $request);
+                $content = $this->executeHome($url, $base, $definition, $method, $request);
                 break;
             case 'read':
-                $html .= $this->executeView($url, $base, $definition, $method, $request);
+                $content = $this->executeView($url, $base, $definition, $method, $request);
                 break;
             case 'create':
-                $html .= $this->executeAdd($url, $base, $definition, $method, $request, $post);
+                $content = $this->executeAdd($url, $base, $definition, $method, $request, $post);
                 break;
             case 'update':
-                $html .= $this->executeEdit($url, $base, $definition, $method, $request, $post);
+                $content = $this->executeEdit($url, $base, $definition, $method, $request, $post);
                 break;
             case 'delete':
-                $html .= $this->executeDelete($url, $base, $definition, $method, $request);
+                $content = $this->executeDelete($url, $base, $definition, $method, $request);
                 break;
             case 'list':
-                $html .= $this->executeList($url, $base, $definition, $method, $request);
+                $content = $this->executeList($url, $base, $definition, $method, $request);
                 break;
         }
-        $html .= '</div>';
 
-        $html .= '</div>';
-        $html .= $this->foot();
-        return $html;
+        $template = file_get_contents('../templates/layout.html');
+        return Template::render($template, array('menu' => $menu, 'content' => $content));
     }
 }
 
