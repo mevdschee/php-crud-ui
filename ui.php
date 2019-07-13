@@ -308,8 +308,12 @@ class PHP_CRUD_UI
         $id = $this->getParameter($request, 2);
 
         if ($method == 'POST') {
-            $this->call('PUT', $url . '/records/' . urlencode($subject) . '/' . $id, json_encode($post));
-            return '<p>Updated</p>';
+            $result = $this->call('PUT', $url . '/records/' . urlencode($subject) . '/' . $id, json_encode($post));
+            $succeeded = $result ? 'succeeded' : 'failed';
+            $html = "<p>Update $succeeded</p>";
+            $href = $this->url($base, $subject, 'read', $id);
+            $html .= ' <a href="' . $href . '" class="btn btn-primary">Ok</a>';
+            return $html;
         }
 
         $properties = $this->getProperties($subject, $action, $definition);
@@ -343,8 +347,12 @@ class PHP_CRUD_UI
         $id = $this->getParameter($request, 2);
 
         if ($method == 'POST') {
-            $this->call('DELETE', $url . '/records/' . urlencode($subject) . '/' . $id);
-            return '<p>Deleted</p>';
+            $result = $this->call('DELETE', $url . '/records/' . urlencode($subject) . '/' . $id);
+            $succeeded = $result ? 'succeeded' : 'failed';
+            $html = "<p>Delete $succeeded</p>";
+            $href = $this->url($base, $subject, 'list');
+            $html .= ' <a href="' . $href . '" class="btn btn-primary">Ok</a>';
+            return $html;
         }
 
         $properties = $this->getProperties($subject, 'read', $definition);
@@ -355,7 +363,7 @@ class PHP_CRUD_UI
         $html .= '<form method="post">';
         $html .= '<input type="hidden" name="' . $primaryKey . '" value="' . $id . '"/>';
         $html .= '<button type="submit" class="btn btn-danger">Delete</button>';
-        $href = $this->url($base, $subject, 'list');
+        $href = $this->url($base, $subject, 'read', $id);
         $html .= ' <a href="' . $href . '" class="btn btn-default">Cancel</a>';
         $html .= '</form>';
         return $html;
