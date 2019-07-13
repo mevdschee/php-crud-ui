@@ -88,7 +88,7 @@ class PHP_CRUD_UI
         $referenced = $this->getReferenced($subject, $properties);
         $primaryKey = $this->getPrimaryKey($subject, $properties);
 
-        $related = !empty(array_filter($referenced));
+        $related = !empty(array_merge(array_filter($referenced), array_filter($references)));
 
         $args = array();
         if ($field) {
@@ -100,9 +100,6 @@ class PHP_CRUD_UI
 
         $html = '<h2>' . $subject . ': list</h2>';
 
-        $href = $this->url($base, $subject, 'create');
-        $html .= '<p><a href="' . $href . '" class="btn btn-primary">Add</a></p>';
-
         if ($field) {
             $href = $this->url($base, $subject, 'list');
             $html .= '<div class="well well-sm"><div style="float:right;">';
@@ -112,55 +109,53 @@ class PHP_CRUD_UI
 
         $html .= '<table class="table">';
         $html .= '<thead><tr>';
-        foreach (array_keys($properties) as $column) {
-            $html .= '<th>' . $column . '</th>';
-        }
-        if ($related) {
-            $html .= '<th>related</th>';
-        }
         if ($primaryKey) {
             $html .= '<th>actions</th>';
+        }
+        foreach (array_keys($properties) as $column) {
+            $html .= '<th>' . $column . '</th>';
         }
         $html .= '</tr></thead><tbody>';
         foreach ($data['records'] as $record) {
             $html .= '<tr>';
+            if ($primaryKey) {
+                $html .= '<td>';
+                $href = $this->url($base, $subject, 'read', $record[$primaryKey]);
+                $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">view</a> ';
+                $html .= '</td>';
+            }
             foreach ($record as $key => $value) {
                 $html .= '<td>';
                 if ($references[$key]) {
-                    $id = $this->referenceId($references[$key], $record[$key], $definition);
-                    $href = $this->url($base, $references[$key], 'read', $id);
-                    $html .= '<a href="' . $href . '">';
                     $html .= htmlentities($this->referenceText($references[$key], $record[$key], $definition));
-                    $html .= '</a>';
                 } else {
                     $html .= htmlentities($value);
                 }
                 $html .= '</td>';
             }
-            if ($related) {
-                $html .= '<td>';
-                foreach ($referenced as $i => $relation) {
-                    if ($i) {
-                        $html .= ', ';
-                    }
-                    $href = $this->url($base, $relation[0], 'list', $relation[1], $record[$primaryKey]);
-                    $html .= '<a href="' . $href . '">' . $relation[0] . '</a>';
-                }
-                $html .= '</td>';
-            }
-            if ($primaryKey) {
-                $html .= '<td style="white-space: nowrap;">';
-                $href = $this->url($base, $subject, 'read', $record[$primaryKey]);
-                $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">view</a> ';
-                $href = $this->url($base, $subject, 'update', $record[$primaryKey]);
-                $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">edit</a> ';
-                $href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
-                $html .= '<a class="btn btn-danger btn-xs" href="' . $href . '">delete</a> ';
-                $html .= '</td>';
-            }
             $html .= '</tr>';
         }
         $html .= '</tbody></table>';
+
+        $href = $this->url($base, $subject, 'create');
+        $html .= '<a href="' . $href . '" class="btn btn-primary">Add</a>';
+
+        if ($related) {
+            $html .= '<br/><br/><h4>Related</h4>';
+            $html .= '<ul>';
+            foreach ($references as $field => $relation) {
+                if ($relation) {
+                    $href = $this->url($base, $relation, 'list');
+                    $html .= '<li><a href="' . $href . '">' . $relation . '</a></li>';
+                }
+            }
+            foreach ($referenced as $relation) {
+                $href = $this->url($base, $relation[0], 'list');
+                $html .= '<li><a href="' . $href . '">' . $relation[0] . '</a></li>';
+            }
+            $html .= '</ul>';
+        }
+
         return $html;
     }
 
@@ -248,7 +243,7 @@ class PHP_CRUD_UI
         $referenced = $this->getReferenced($subject, $properties);
         $primaryKey = $this->getPrimaryKey($subject, $properties);
 
-        $related = !empty(array_filter($referenced));
+        $related = !empty(array_merge(array_filter($referenced), array_filter($references)));
 
         $args = array();
         $args['join'] = array_values(array_filter($references));
@@ -256,31 +251,53 @@ class PHP_CRUD_UI
         $record = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id . $urlArgs);
 
         $html = '<h2>' . $subject . ': view</h2>';
-        $html .= '<dl>';
+        $html .= '<table class="table">';
+        $html .= '<thead><tr><th>action</th><th>key</th><th>value</th>';
+        $html .= '</tr></thead><tbody>';
         foreach ($record as $key => $value) {
-            $html .= '<dt>' . $key . '</dt>';
-            $html .= '<dd>';
+            $html .= '<tr>';
+            $html .= '<td>';
             if ($references[$key]) {
                 $id = $this->referenceId($references[$key], $record[$key], $definition);
                 $href = $this->url($base, $references[$key], 'read', $id);
-                $html .= '<a href="' . $href . '">';
+                $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">view</a>';
+            } else {
+                $html .= '&nbsp;';
+            }
+            $html .= '</td>';
+            $html .= '<td>' . $key . '</td>';
+            $html .= '<td>';
+            if ($references[$key]) {
                 $html .= htmlentities($this->referenceText($references[$key], $record[$key], $definition));
-                $html .= '</a>';
             } else {
                 $html .= htmlentities($value);
             }
-            $html .= '</dd>';
+            $html .= '</td>';
+            $html .= '</tr>';
         }
-        $html .= '</dl>';
+        $html .= '</tbody></table>';
+
+        $href = $this->url($base, $subject, 'update', $record[$primaryKey]);
+        $html .= '<a class="btn btn-default" href="' . $href . '">edit</a> ';
+        $href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
+        $html .= '<a class="btn btn-danger" href="' . $href . '">delete</a> ';
+
         if ($related) {
-            $html .= '<h4>Related</h4>';
+            $html .= '<br/><br/><h4>Related</h4>';
             $html .= '<ul>';
+            foreach ($references as $field => $relation) {
+                if ($relation) {
+                    $href = $this->url($base, $relation, 'list');
+                    $html .= '<li><a href="' . $href . '">' . $relation . '</a></li>';
+                }
+            }
             foreach ($referenced as $i => $relation) {
                 $href = $this->url($base, $relation[0], 'list', $relation[1], $record[$primaryKey]);
-                $html .= '<li><a href="' . $href . '">' . $relation[0] . '</a></li>';
+                $html .= '<li><a href="' . $href . '">' . $relation[0] . ' (filtered)</a></li>';
             }
             $html .= '</ul>';
         }
+
         return $html;
     }
 
