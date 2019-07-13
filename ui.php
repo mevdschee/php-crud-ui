@@ -248,7 +248,13 @@ class PHP_CRUD_UI
         $referenced = $this->getReferenced($subject, $properties);
         $primaryKey = $this->getPrimaryKey($subject, $properties);
 
-        $record = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id);
+        $related = !empty(array_filter($referenced));
+
+        $args = array();
+        $args['join'] = array_values(array_filter($references));
+        $urlArgs = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
+        $record = $this->call('GET', $url . '/records/' . urlencode($subject) . '/' . $id . $urlArgs);
+
         $html = '<h2>' . $subject . ': view</h2>';
         $html .= '<dl>';
         foreach ($record as $key => $value) {
@@ -266,6 +272,15 @@ class PHP_CRUD_UI
             $html .= '</dd>';
         }
         $html .= '</dl>';
+        if ($related) {
+            $html .= '<h4>Related</h4>';
+            $html .= '<ul>';
+            foreach ($referenced as $i => $relation) {
+                $href = $this->url($base, $relation[0], 'list', $relation[1], $record[$primaryKey]);
+                $html .= '<li><a href="' . $href . '">' . $relation[0] . '</a></li>';
+            }
+            $html .= '</ul>';
+        }
         return $html;
     }
 
