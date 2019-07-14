@@ -22,9 +22,9 @@ class PHP_CRUD_UI
         return json_decode($response, true);
     }
 
-    public function url($base, $subject, $action, $id = '', $field = '')
+    public function url($base, $subject, $action, $id = '', $field = '', $name = '')
     {
-        return $base . trim("$subject/$action/$id/$field", '/');
+        return $base . trim("$subject/$action/$id/$field/$name", '/');
     }
 
     public function menu($subject, $base, $definition)
@@ -82,6 +82,7 @@ class PHP_CRUD_UI
         $action = $this->getParameter($request, 1);
         $field = $this->getParameter($request, 2);
         $id = $this->getParameter($request, 3);
+        $name = $this->getParameter($request, 4);
 
         $properties = $this->getProperties($subject, $action, $definition);
         $references = $this->getReferences($subject, $properties);
@@ -104,7 +105,7 @@ class PHP_CRUD_UI
             $href = $this->url($base, $subject, 'list');
             $html .= '<div class="well well-sm"><div style="float:right;">';
             $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">Clear filter</a>';
-            $html .= '</div>Filtered by: ' . $field . ' = ' . $id . '</div>';
+            $html .= '</div>Filtered by: ' . $field . ' = ' . $name . '</div>';
         }
 
         $html .= '<table class="table">';
@@ -137,8 +138,10 @@ class PHP_CRUD_UI
         }
         $html .= '</tbody></table>';
 
-        $href = $this->url($base, $subject, 'create');
-        $html .= '<a href="' . $href . '" class="btn btn-primary">Add</a>';
+        if ($primaryKey) {
+            $href = $this->url($base, $subject, 'create');
+            $html .= '<a href="' . $href . '" class="btn btn-primary">Add</a>';
+        }
 
         if ($related) {
             $html .= '<br/><br/><h4>Related</h4>';
@@ -278,9 +281,9 @@ class PHP_CRUD_UI
         $html .= '</tbody></table>';
 
         $href = $this->url($base, $subject, 'update', $record[$primaryKey]);
-        $html .= '<a class="btn btn-default" href="' . $href . '">edit</a> ';
+        $html .= '<a class="btn btn-primary" href="' . $href . '">Edit</a> ';
         $href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
-        $html .= '<a class="btn btn-danger" href="' . $href . '">delete</a> ';
+        $html .= '<a class="btn btn-danger" href="' . $href . '">Delete</a> ';
 
         if ($related) {
             $html .= '<br/><br/><h4>Related</h4>';
@@ -292,7 +295,8 @@ class PHP_CRUD_UI
                 }
             }
             foreach ($referenced as $i => $relation) {
-                $href = $this->url($base, $relation[0], 'list', $relation[1], $record[$primaryKey]);
+                $name = $this->referenceText($subject, $record, $definition);
+                $href = $this->url($base, $relation[0], 'list', $relation[1], $record[$primaryKey], $name);
                 $html .= '<li><a href="' . $href . '">' . $relation[0] . ' (filtered)</a></li>';
             }
             $html .= '</ul>';
