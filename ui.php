@@ -91,11 +91,14 @@ class PHP_CRUD_UI
 
         $related = !empty(array_merge(array_filter($referenced), array_filter($references)));
 
+        list($pageNumber, $pageSize) = explode(',', @$_GET['page'] ?: '1,5', 2);
+
         $args = array();
         if ($field) {
             $args['filter'] = $field . ',eq,' . $id;
         }
         $args['join'] = array_values(array_filter($references));
+        $args['page'] = "$pageNumber,$pageSize";
         $urlArgs = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
         $data = $this->call('GET', $url . '/records/' . urlencode($subject) . $urlArgs);
 
@@ -138,9 +141,26 @@ class PHP_CRUD_UI
         }
         $html .= '</tbody></table>';
 
+        $maxPage = ceil($data['results'] / $pageSize);
+        if ($maxPage > 1) {
+            if ($pageNumber - 1 >= 1) {
+                $href = '?page=' . ($pageNumber - 1) . ',' . $pageSize;
+                $html .= '<a href="' . $href . '" class="btn btn-default">Prev</a> ';
+            } else {
+                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>Prev</a> ';
+            }
+            $html .= "$pageNumber / $maxPage ";
+            if ($pageNumber + 1 <= $maxPage) {
+                $href = '?page=' . ($pageNumber + 1) . ',' . $pageSize;
+                $html .= '<a href="' . $href . '" class="btn btn-default">Next</a> ';
+            } else {
+                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>Next</a> ';
+            }
+        }
+
         if ($primaryKey) {
             $href = $this->url($base, $subject, 'create');
-            $html .= '<a href="' . $href . '" class="btn btn-primary">Add</a>';
+            $html .= '<a href="' . $href . '" class="btn btn-primary">Add</a> ';
         }
 
         if ($related) {
@@ -462,8 +482,9 @@ class PHP_CRUD_UI
         if (isset($config['base'])) {
             return $config['base'];
         }
-        $count = $request ? (-1 * strlen($request)) : strlen(urldecode($_SERVER['REQUEST_URI']));
-        return rtrim(substr(urldecode($_SERVER['REQUEST_URI']), 0, $count), '/') . '/';
+        @list($path, $query) = explode('?', $_SERVER['REQUEST_URI'], 2);
+        $count = $request ? (-1 * strlen($request)) : strlen(urldecode($path));
+        return rtrim(substr(urldecode($path), 0, $count), '/') . '/';
     }
 
     protected function getDefinition($config, $url)
