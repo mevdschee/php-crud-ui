@@ -143,19 +143,21 @@ class PHP_CRUD_UI
 
         $maxPage = ceil($data['results'] / $pageSize);
         if ($maxPage > 1) {
+            $html .= '<div style="float:right">';
+            $html .= "page $pageNumber / $maxPage ";
             if ($pageNumber - 1 >= 1) {
                 $href = '?page=' . ($pageNumber - 1) . ',' . $pageSize;
-                $html .= '<a href="' . $href . '" class="btn btn-default">Prev</a> ';
+                $html .= '<a href="' . $href . '" class="btn btn-default">&lt;</a> ';
             } else {
-                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>Prev</a> ';
+                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>&lt;</a> ';
             }
-            $html .= "$pageNumber / $maxPage ";
             if ($pageNumber + 1 <= $maxPage) {
                 $href = '?page=' . ($pageNumber + 1) . ',' . $pageSize;
-                $html .= '<a href="' . $href . '" class="btn btn-default">Next</a> ';
+                $html .= '<a href="' . $href . '" class="btn btn-default">&gt;</a> ';
             } else {
-                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>Next</a> ';
+                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>&gt;</a> ';
             }
+            $html .= '</div>';
         }
 
         if ($primaryKey) {
