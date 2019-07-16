@@ -10,6 +10,7 @@ class ComposerStaticInitb78c1d1cc0994b3b0cff3c4eddbd5efc
         'T' => 
         array (
             'Tqdev\\PhpCrudUi\\' => 16,
+            'Tqdev\\PhpCrudApi\\' => 17,
         ),
         'P' => 
         array (
@@ -31,6 +32,10 @@ class ComposerStaticInitb78c1d1cc0994b3b0cff3c4eddbd5efc
         'Tqdev\\PhpCrudUi\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/Tqdev/PhpCrudUi',
+        ),
+        'Tqdev\\PhpCrudApi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi',
         ),
         'Psr\\Http\\Server\\' => 
         array (

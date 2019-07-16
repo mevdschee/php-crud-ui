@@ -1,5 +1,79 @@
 [
     {
+        "name": "mevdschee/php-crud-api",
+        "version": "v2.3.8",
+        "version_normalized": "2.3.8.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mevdschee/php-crud-api.git",
+            "reference": "04e89b09bb08fe40529590036d970029059e95df"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mevdschee/php-crud-api/zipball/04e89b09bb08fe40529590036d970029059e95df",
+            "reference": "04e89b09bb08fe40529590036d970029059e95df",
+            "shasum": ""
+        },
+        "require": {
+            "ext-json": "*",
+            "ext-pdo": "*",
+            "ext-zlib": "*",
+            "nyholm/psr7": "*",
+            "nyholm/psr7-server": "*",
+            "php": ">=7.0.0",
+            "psr/http-factory": "*",
+            "psr/http-message": "*",
+            "psr/http-server-handler": "*",
+            "psr/http-server-middleware": "*"
+        },
+        "suggest": {
+            "ext-memcache": "*",
+            "ext-memcached": "*",
+            "ext-redis": "*"
+        },
+        "time": "2019-07-11T01:09:15+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Tqdev\\PhpCrudApi\\": "src/Tqdev/PhpCrudApi"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Maurits van der Schee",
+                "email": "maurits@vdschee.nl",
+                "homepage": "https://github.com/mevdschee"
+            }
+        ],
+        "description": "Single file PHP script that adds a REST API to a SQL database.",
+        "homepage": "https://github.com/mevdschee/php-crud-api",
+        "keywords": [
+            "PHP-API",
+            "api-server",
+            "automatic-api",
+            "crud",
+            "database",
+            "geospatial",
+            "multi-database",
+            "mysql",
+            "openapi",
+            "php",
+            "postgis",
+            "postgresql",
+            "rest-api",
+            "restful",
+            "sql-database",
+            "sql-server",
+            "swagger",
+            "ubuntu-linux"
+        ]
+    },
+    {
         "name": "nyholm/psr7",
         "version": "1.1.0",
         "version_normalized": "1.1.0.0",

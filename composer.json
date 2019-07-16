@@ -21,7 +21,8 @@
       "psr/http-server-handler": "*",
       "psr/http-server-middleware": "*",
       "nyholm/psr7": "*",
-      "nyholm/psr7-server": "*"
+      "nyholm/psr7-server": "*",
+      "mevdschee/php-crud-api": "*"
     },
     "suggest": {
     },
