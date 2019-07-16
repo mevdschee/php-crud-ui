@@ -1,10 +1,15 @@
 <?php
+use Tqdev\PhpCrudUi\Ui;
+use Tqdev\PhpCrudUi\Config;
+use Tqdev\PhpCrudUi\RequestFactory;
+use Tqdev\PhpCrudUi\ResponseUtils;
 
-require 'Template.php';
-require '../ui.php';
+require '../vendor/autoload.php';
 
-//session_start();
-$ui = new PHP_CRUD_UI(array(
+$config = new Config([
     'url' => 'http://localhost:8000/api.php',
-));
-echo $ui->executeCommand();
+]);
+$request = RequestFactory::fromGlobals();
+$ui = new Ui($config);
+$response = $ui->handle($request);
+ResponseUtils::output($response);
