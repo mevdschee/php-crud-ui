@@ -1,0 +1,31 @@
+{
+    "name": "mevdschee/php-crud-ui",
+    "type": "library",
+    "description": "Single file PHP script that adds a UI to a PHP-CRUD-API.",
+    "keywords": [],
+    "homepage": "https://github.com/mevdschee/php-crud-ui",
+    "license": "MIT",
+    "authors": [
+      {
+        "name": "Maurits van der Schee",
+        "email": "maurits@vdschee.nl",
+        "homepage": "https://github.com/mevdschee"
+      }
+    ],
+    "require": {
+      "php": ">=7.0.0",
+      "ext-json": "*",
+      "ext-curl": "*",
+      "psr/http-message": "*",
+      "psr/http-factory": "*",
+      "psr/http-server-handler": "*",
+      "psr/http-server-middleware": "*",
+      "nyholm/psr7": "*",
+      "nyholm/psr7-server": "*"
+    },
+    "suggest": {
+    },
+    "autoload": {
+        "psr-4": { "Tqdev\\PhpCrudUi\\": "src/Tqdev/PhpCrudUi" }
+    }   
+}
