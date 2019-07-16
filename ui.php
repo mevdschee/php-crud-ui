@@ -114,20 +114,17 @@ class PHP_CRUD_UI
         $html .= '<table class="table">';
         $html .= '<thead><tr>';
         if ($primaryKey) {
-            $html .= '<th>actions</th>';
+            $html .= '<th>' . $primaryKey . '</th>';
+            $html .= '<th></th>';
         }
         foreach (array_keys($properties) as $column) {
-            $html .= '<th>' . $column . '</th>';
+            if ($column != $primaryKey) {
+                $html .= '<th>' . $column . '</th>';
+            }
         }
         $html .= '</tr></thead><tbody>';
         foreach ($data['records'] as $record) {
             $html .= '<tr>';
-            if ($primaryKey) {
-                $html .= '<td>';
-                $href = $this->url($base, $subject, 'read', $record[$primaryKey]);
-                $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">view</a> ';
-                $html .= '</td>';
-            }
             foreach ($record as $key => $value) {
                 $html .= '<td>';
                 if ($references[$key]) {
@@ -136,6 +133,12 @@ class PHP_CRUD_UI
                     $html .= htmlentities($value);
                 }
                 $html .= '</td>';
+                if ($key == $primaryKey) {
+                    $html .= '<td style="border-right: 2px solid #ddd; width: 40px;">';
+                    $href = $this->url($base, $subject, 'read', $record[$primaryKey]);
+                    $html .= '<a class="btn btn-default btn-xs" href="' . $href . '"> + </a> ';
+                    $html .= '</td>';
+                }
             }
             $html .= '</tr>';
         }
@@ -277,20 +280,20 @@ class PHP_CRUD_UI
 
         $html = '<h2>' . $subject . ': view</h2>';
         $html .= '<table class="table">';
-        $html .= '<thead><tr><th>action</th><th>key</th><th>value</th>';
+        $html .= '<thead><tr><th>key</th><th></th><th>value</th>';
         $html .= '</tr></thead><tbody>';
         foreach ($record as $key => $value) {
             $html .= '<tr>';
-            $html .= '<td>';
+            $html .= '<td>' . $key . '</td>';
+            $html .= '<td style="border-right: 2px solid #ddd; width: 40px;">';
             if ($references[$key]) {
                 $id = $this->referenceId($references[$key], $record[$key], $definition);
                 $href = $this->url($base, $references[$key], 'read', $id);
-                $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">view</a>';
+                $html .= '<a class="btn btn-default btn-xs" href="' . $href . '"> + </a>';
             } else {
                 $html .= '&nbsp;';
             }
             $html .= '</td>';
-            $html .= '<td>' . $key . '</td>';
             $html .= '<td>';
             if ($references[$key]) {
                 $html .= htmlentities($this->referenceText($references[$key], $record[$key], $definition));
