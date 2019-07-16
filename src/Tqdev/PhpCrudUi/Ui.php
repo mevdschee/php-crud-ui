@@ -494,7 +494,7 @@ class Ui
             return false;
         }
         $parameters = explode('/', $request);
-        return isset($parameters[$position]) ? $parameters[$position] : '';
+        return isset($parameters[$position]) ? urldecode($parameters[$position]) : '';
     }
 
     private function removeBasePath(ServerRequestInterface $request): ServerRequestInterface
@@ -554,6 +554,6 @@ class Ui
 
         $template = file_get_contents('../templates/layout.html');
         $html = Template::render($template, array('menu' => $menu, 'content' => $content));
-        return ResponseFactory::fromObject(200,$html);
+        return ResponseFactory::fromHtml(200, $html);
     }
 }

@@ -15,15 +15,15 @@ class ResponseFactory
     const UNPROCESSABLE_ENTITY = 422;
     const INTERNAL_SERVER_ERROR = 500;
 
-    public static function fromObject(int $status, $body): ResponseInterface
+    public static function fromHtml(int $status, string $html): ResponseInterface
     {
         $psr17Factory = new Psr17Factory();
         $response = $psr17Factory->createResponse($status);
-        $stream = $psr17Factory->createStream($body);
+        $stream = $psr17Factory->createStream($html);
         $stream->rewind();
         $response = $response->withBody($stream);
         $response = $response->withHeader('Content-Type', 'text/html');
-        $response = $response->withHeader('Content-Length', strlen($body));
+        $response = $response->withHeader('Content-Length', strlen($html));
         return $response;
     }
 
