@@ -1,0 +1,84 @@
+<h2>{{table}}: {{action}}</h2>
+{{if:field}}
+    <div class="well well-sm"><div style="float:right;">
+    <a class="btn btn-default btn-xs" href="/{{table}}/list">Clear filter</a>
+    </div>Filtered by: {{field}} = {{name}}</div>
+{{endif}}
+<table class="table">
+<thead><tr>
+{{for:column:columns}}
+    <th>{{column}}</th>
+    {{if:column|eq(primaryKey)}}
+        <th></th>
+    {{endif}}
+{{endfor}}
+</tr></thead><tbody>
+{{for:record:records}}
+    <tr>
+    {{for:value:key:record}}
+        <td>{{value}}</td>
+        {{if:key|eq(primaryKey)}}
+            <td style="border-right: 2px solid #ddd; width: 40px;">
+                <a class="btn btn-default btn-xs" href="/{{table}}/read/{{value}}">+</a>
+            </td>
+        {{endif}}
+    {{endfor}}
+    </tr>
+{{endfor}}
+</tbody></table>
+
+
+
+                $html .= '';
+                if ($key == $primaryKey) {
+                    $html .= '<td style="border-right: 2px solid #ddd; width: 40px;">';
+                    $href = $this->url($table, 'read', $record[$primaryKey]);
+                    $html .= '<a class="btn btn-default btn-xs" href="' . $href . '"> + </a> ';
+                    $html .= '</td>';
+                }
+            }
+            $html .= '</tr>';
+        }
+        $html .= '</tbody></table>';
+
+        $maxPage = ceil($data['results'] / $pageSize);
+        if ($maxPage > 1) {
+            $html .= '<div style="float:right">';
+            $html .= "page $pageNumber / $maxPage ";
+            if ($pageNumber - 1 >= 1) {
+                $href = '?page=' . ($pageNumber - 1) . ',' . $pageSize;
+                $html .= '<a href="' . $href . '" class="btn btn-default">&lt;</a> ';
+            } else {
+                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>&lt;</a> ';
+            }
+            if ($pageNumber + 1 <= $maxPage) {
+                $href = '?page=' . ($pageNumber + 1) . ',' . $pageSize;
+                $html .= '<a href="' . $href . '" class="btn btn-default">&gt;</a> ';
+            } else {
+                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>&gt;</a> ';
+            }
+            $html .= '</div>';
+        }
+
+        if ($primaryKey) {
+            $href = $this->url($table, 'create');
+            $html .= '<a href="' . $href . '" class="btn btn-primary">Add</a> ';
+        }
+
+        if ($related) {
+            $html .= '<br/><br/><h4>Related</h4>';
+            $html .= '<ul>';
+            foreach ($references as $field => $relation) {
+                if ($relation) {
+                    $href = $this->url($relation, 'list');
+                    $html .= '<li><a href="' . $href . '">' . $relation . '</a></li>';
+                }
+            }
+            foreach ($referenced as $relation) {
+                $href = $this->url($relation[0], 'list');
+                $html .= '<li><a href="' . $href . '">' . $relation[0] . '</a></li>';
+            }
+            $html .= '</ul>';
+        }
+
+        return $html;
