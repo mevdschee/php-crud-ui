@@ -18,7 +18,7 @@ class RecordController
     {
         $router->register('GET', '/*/list', array($this, '_list'));
         $router->register('POST', '/records/*', array($this, 'create'));
-        $router->register('GET', '/records/*/*', array($this, 'read'));
+        $router->register('GET', '/*/read/*', array($this, 'read'));
         $router->register('PUT', '/records/*/*', array($this, 'update'));
         $router->register('DELETE', '/records/*/*', array($this, 'delete'));
         $this->service = $service;
@@ -28,11 +28,15 @@ class RecordController
     public function _list(ServerRequestInterface $request): ResponseInterface
     {
         $table = RequestUtils::getPathSegment($request, 1);
+        $action = RequestUtils::getPathSegment($request, 2);
+        $field = RequestUtils::getPathSegment($request, 3);
+        $id = RequestUtils::getPathSegment($request, 4);
+        $name = RequestUtils::getPathSegment($request, 5);
         $params = RequestUtils::getParams($request);
-        if (!$this->service->hasTable($table)) {
+        if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        return $this->responder->success($this->service->_list($table, $params));
+        return $this->responder->success($this->service->_list($table, $action, $field, $id, $name, $params));
     }
 
     public function read(ServerRequestInterface $request): ResponseInterface

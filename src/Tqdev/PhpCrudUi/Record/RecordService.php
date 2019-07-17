@@ -1,7 +1,6 @@
 <?php
 namespace Tqdev\PhpCrudUi\Record;
 
-use Tqdev\PhpCrudApi\Record\Document\ListDocument;
 use Tqdev\PhpCrudUi\Column\DefinitionService;
 use Tqdev\PhpCrudUi\Curl\Curl;
 
@@ -16,9 +15,9 @@ class RecordService
         $this->definition = $definition;
     }
 
-    public function hasTable(string $table): bool
+    public function hasTable(string $table, string $action): bool
     {
-        return $this->definition->hasTable($table);
+        return $this->definition->hasTable($table, $action);
     }
 
     public function getType(string $table): string
@@ -62,29 +61,110 @@ class RecordService
         return $this->db->deleteSingle($table, $id);
     }
 
-    public function _list(string $tableName, array $params): ListDocument
+    private function url($table, $action, $id = '', $field = '', $name = '')
     {
-        $properties = $this->getProperties($table, $action, $definition);
-        $references = $this->getReferences($table, $properties);
-        $referenced = $this->getReferenced($table, $properties);
-        $primaryKey = $this->getPrimaryKey($table, $properties);
+        return rtrim("/src/$table/$action/$id/$field/$name", '/');
+    }
 
-        $table = $this->reflection->getTable($tableName);
-        $this->joiner->addMandatoryColumns($table, $params);
-        $columnNames = $this->columns->getNames($table, true, $params);
-        $condition = $this->filters->getCombinedConditions($table, $params);
-        $columnOrdering = $this->ordering->getColumnOrdering($table, $params);
-        if (!$this->pagination->hasPage($params)) {
-            $offset = 0;
-            $limit = $this->pagination->getPageLimit($params);
-            $count = 0;
-        } else {
-            $offset = $this->pagination->getPageOffset($params);
-            $limit = $this->pagination->getPageLimit($params);
-            $count = $this->db->selectCount($table, $condition);
+    public function _list(string $table, string $action, string $field, string $id, string $name, array $params) /*: object */
+    {
+        $references = $this->definition->getReferences($table, $action);
+        $referenced = $this->definition->getReferenced($table, $action);
+        $primaryKey = $this->definition->getPrimaryKey($table, $action);
+        $columns = $this->definition->getColumns($table, $action);
+
+        list($pageNumber, $pageSize) = explode(',', @$_GET['page'] ?: '1,5', 2);
+
+        $args = array();
+        if ($field) {
+            $args['filter'] = $field . ',eq,' . $id;
         }
-        $records = $this->db->selectAll($table, $columnNames, $condition, $columnOrdering, $offset, $limit);
-        $this->joiner->addJoins($table, $records, $params, $this->db);
-        return new ListDocument($records, $count);
+        $args['join'] = array_values(array_filter($references));
+        $args['page'] = "$pageNumber,$pageSize";
+        $data = $this->curl->getRecords($table, $args);
+
+        $html = '<h2>' . $table . ': list</h2>';
+
+        if ($field) {
+            $href = $this->url($table, 'list');
+            $html .= '<div class="well well-sm"><div style="float:right;">';
+            $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">Clear filter</a>';
+            $html .= '</div>Filtered by: ' . $field . ' = ' . $name . '</div>';
+        }
+
+        $html .= '<table class="table">';
+        $html .= '<thead><tr>';
+        if ($primaryKey) {
+            $html .= '<th>' . $primaryKey . '</th>';
+            $html .= '<th></th>';
+        }
+        foreach ($columns as $column) {
+            if ($column != $primaryKey) {
+                $html .= '<th>' . $column . '</th>';
+            }
+        }
+        $html .= '</tr></thead><tbody>';
+        foreach ($data['records'] as $record) {
+            $html .= '<tr>';
+            foreach ($record as $key => $value) {
+                $html .= '<td>';
+                if ($references[$key]) {
+                    $html .= htmlentities($this->definition->referenceText($references[$key], $record[$key]));
+                } else {
+                    $html .= htmlentities($value);
+                }
+                $html .= '</td>';
+                if ($key == $primaryKey) {
+                    $html .= '<td style="border-right: 2px solid #ddd; width: 40px;">';
+                    $href = $this->url($table, 'read', $record[$primaryKey]);
+                    $html .= '<a class="btn btn-default btn-xs" href="' . $href . '"> + </a> ';
+                    $html .= '</td>';
+                }
+            }
+            $html .= '</tr>';
+        }
+        $html .= '</tbody></table>';
+
+        $maxPage = ceil($data['results'] / $pageSize);
+        if ($maxPage > 1) {
+            $html .= '<div style="float:right">';
+            $html .= "page $pageNumber / $maxPage ";
+            if ($pageNumber - 1 >= 1) {
+                $href = '?page=' . ($pageNumber - 1) . ',' . $pageSize;
+                $html .= '<a href="' . $href . '" class="btn btn-default">&lt;</a> ';
+            } else {
+                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>&lt;</a> ';
+            }
+            if ($pageNumber + 1 <= $maxPage) {
+                $href = '?page=' . ($pageNumber + 1) . ',' . $pageSize;
+                $html .= '<a href="' . $href . '" class="btn btn-default">&gt;</a> ';
+            } else {
+                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>&gt;</a> ';
+            }
+            $html .= '</div>';
+        }
+
+        if ($primaryKey) {
+            $href = $this->url($table, 'create');
+            $html .= '<a href="' . $href . '" class="btn btn-primary">Add</a> ';
+        }
+
+        if ($related) {
+            $html .= '<br/><br/><h4>Related</h4>';
+            $html .= '<ul>';
+            foreach ($references as $field => $relation) {
+                if ($relation) {
+                    $href = $this->url($relation, 'list');
+                    $html .= '<li><a href="' . $href . '">' . $relation . '</a></li>';
+                }
+            }
+            foreach ($referenced as $relation) {
+                $href = $this->url($relation[0], 'list');
+                $html .= '<li><a href="' . $href . '">' . $relation[0] . '</a></li>';
+            }
+            $html .= '</ul>';
+        }
+
+        return $html;
     }
 }

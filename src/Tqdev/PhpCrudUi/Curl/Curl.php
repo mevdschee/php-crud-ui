@@ -10,9 +10,15 @@ class Curl
         $this->url = $url;
     }
 
-    public function get(string $path)
+    public function getOpenApi()
     {
-        return $this->call('GET', $path);
+        return $this->call('GET', '/openapi');
+    }
+
+    public function getRecords(string $table, array $args)
+    {
+        $urlArgs = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
+        return $this->call('GET', '/records/' . urlencode($table) . $urlArgs);
     }
 
     private function call(string $method, string $path, $data = false)

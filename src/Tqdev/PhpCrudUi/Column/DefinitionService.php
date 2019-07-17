@@ -11,18 +11,21 @@ class DefinitionService
     public function __construct(Curl $curl)
     {
         $this->curl = $curl;
+        $this->definition = $this->getDefinition();
+        $this->properties = array();
     }
 
-    protected function getDefinition(string $url)
+    private function getDefinition(): array
     {
         if (!isset($_SESSION['definition'])) {
-            $_SESSION['definition'] = $this->curl->get('/openapi');
+            $_SESSION['definition'] = $this->curl->getOpenApi();
         }
         return $_SESSION['definition'];
     }
 
-    public function resolve($definition, $path)
+    private function resolve($path)
     {
+        $definition = $this->definition;
         while (null !== ($element = array_shift($path))) {
             //echo '"'.$element.'",';
             if (!isset($definition[$element])) {
@@ -34,24 +37,28 @@ class DefinitionService
         return $definition;
     }
 
-    public function getProperties($table, $action, $definition)
+    private function getProperties(string $table, string $action)
     {
-        if (!$table || !$definition) {
-            return false;
+        $key = $action . '-' . $table;
+        if (!isset($this->properties[$key])) {
+            if ($action == 'list') {
+                $path = array('components', 'schemas', $key, 'properties', 'records', 'items', 'properties');
+            } else {
+                $path = array('components', 'schemas', $key, 'properties');
+            }
+            $this->properties[$key] = $this->resolve($path);
         }
-        if ($action == 'list') {
-            $path = array('components', 'schemas', $action . '-' . $table, 'properties', 'records', 'items', 'properties');
-        } else {
-            $path = array('components', 'schemas', $action . '-' . $table, 'properties');
-        }
-        return $this->resolve($definition, $path);
+        return $this->properties[$key];
     }
 
-    public function getReferences($table, $properties)
+    public function hasTable(string $table, string $action): bool
     {
-        if (!$table || !$properties) {
-            return false;
-        }
+        return (bool) $this->getProperties($table, $action);
+    }
+
+    public function getReferences(string $table, string $action)
+    {
+        $properties = $this->getProperties($table, $action);
 
         $references = array();
         foreach ($properties as $field => $property) {
@@ -60,11 +67,9 @@ class DefinitionService
         return $references;
     }
 
-    public function getReferenced($table, $properties)
+    public function getReferenced(string $table, string $action)
     {
-        if (!$table || !$properties) {
-            return false;
-        }
+        $properties = $this->getProperties($table, $action);
 
         $referenced = array();
         foreach ($properties as $field => $property) {
@@ -78,11 +83,9 @@ class DefinitionService
         return $referenced;
     }
 
-    public function getPrimaryKey($table, $properties)
+    public function getPrimaryKey(string $table, string $action)
     {
-        if (!$table || !$properties) {
-            return false;
-        }
+        $properties = $this->getProperties($table, $action);
 
         foreach ($properties as $field => $property) {
             if (isset($property['x-primary-key'])) {
@@ -91,4 +94,38 @@ class DefinitionService
         }
         return false;
     }
+
+    private function getDisplayColumn($columns)
+    {
+        // TODO: make configurable
+        $names = array('name', 'title', 'description', 'username');
+        foreach ($names as $name) {
+            if (in_array($name, $columns)) {
+                return $name;
+            }
+
+        }
+        return $columns[0];
+    }
+
+    public function getColumns(string $table, string $action): array
+    {
+        $properties = $this->getProperties($table, 'read');
+        return array_keys($properties);
+    }
+
+    public function referenceText(string $table, /* object */ $record)
+    {
+        $properties = $this->getProperties($table, 'read');
+        $displayColumn = $this->getDisplayColumn(array_keys($properties));
+        return $record[$displayColumn];
+    }
+
+    public function referenceId(string $table, /* object */ $record)
+    {
+        $properties = $this->getProperties($table, 'read');
+        $primaryKey = $this->getPrimaryKey($table, $properties);
+        return $record[$primaryKey];
+    }
+
 }
