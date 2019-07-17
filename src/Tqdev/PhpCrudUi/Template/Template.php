@@ -12,11 +12,12 @@ class Template
         return $string;
     }
 
-    public static function render($template, $data, $functions = array(), $escape = 'html')
+    public static function render($template, $data, $functions = array(), $escape = 'html'): TemplateString
     {
         $tokens = Template::tokenize($template);
         $tree = Template::createSyntaxTree($tokens);
-        return Template::renderChildren($tree, $data, $functions, $escape);
+        $string = Template::renderChildren($tree, $data, $functions, $escape);
+        return new TemplateString($string);
     }
 
     private static function createNode($type, $expression)
@@ -267,6 +268,9 @@ class Template
             $value = Template::applyFunctions($value, $parts, $functions, $data);
         } catch (\Throwable $e) {
             return Template::escape($escape, '{{' . $node->expression . '!!' . $e->getMessage() . '}}');
+        }
+        if ($value instanceof TemplateString) {
+            return $value;
         }
         return Template::escape($escape, $value);
     }
