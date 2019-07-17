@@ -37,9 +37,11 @@ class RecordController
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        $content = $this->service->_list($table, $action, $field, $id, $name, $params);
-        $template = file_get_contents('../templates/layouts/default.html');
-        $html = Template::render($template, array('menu' => array(), 'content' => $content));
+        $data = $this->service->_list($table, $action, $field, $id, $name, $params);
+        $view = file_get_contents("../templates/record/list.html");
+        $content = Template::render($view, $data);
+        $layout = file_get_contents("../templates/layouts/default.html");
+        $html = Template::render($layout, array('menu' => array(), 'content' => $content),false,false);
         return $this->responder->success($html);
     }
 

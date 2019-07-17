@@ -71,6 +71,7 @@ class RecordService
         $references = $this->definition->getReferences($table, $action);
         $referenced = $this->definition->getReferenced($table, $action);
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
+        
         $columns = $this->definition->getColumns($table, $action);
 
         list($pageNumber, $pageSize) = explode(',', @$_GET['page'] ?: '1,5', 2);
@@ -83,47 +84,25 @@ class RecordService
         $args['page'] = "$pageNumber,$pageSize";
         $data = $this->curl->getRecords($table, $args);
 
-        $html = '<h2>' . $table . ': list</h2>';
-
-        if ($field) {
-            $href = $this->url($table, 'list');
-            $html .= '<div class="well well-sm"><div style="float:right;">';
-            $html .= '<a class="btn btn-default btn-xs" href="' . $href . '">Clear filter</a>';
-            $html .= '</div>Filtered by: ' . $field . ' = ' . $name . '</div>';
-        }
-
-        $html .= '<table class="table">';
-        $html .= '<thead><tr>';
-        if ($primaryKey) {
-            $html .= '<th>' . $primaryKey . '</th>';
-            $html .= '<th></th>';
-        }
-        foreach ($columns as $column) {
-            if ($column != $primaryKey) {
-                $html .= '<th>' . $column . '</th>';
-            }
-        }
-        $html .= '</tr></thead><tbody>';
-        foreach ($data['records'] as $record) {
-            $html .= '<tr>';
+        foreach ($data['records'] as $i => $record) {
             foreach ($record as $key => $value) {
-                $html .= '<td>';
                 if ($references[$key]) {
-                    $html .= htmlentities($this->definition->referenceText($references[$key], $record[$key]));
-                } else {
-                    $html .= htmlentities($value);
-                }
-                $html .= '</td>';
-                if ($key == $primaryKey) {
-                    $html .= '<td style="border-right: 2px solid #ddd; width: 40px;">';
-                    $href = $this->url($table, 'read', $record[$primaryKey]);
-                    $html .= '<a class="btn btn-default btn-xs" href="' . $href . '"> + </a> ';
-                    $html .= '</td>';
+                    $value = $this->definition->referenceText($references[$key], $record[$key]);
+                    $data['records'][$i][$key] = $value;
                 }
             }
-            $html .= '</tr>';
         }
-        $html .= '</tbody></table>';
+
+        return array(
+            'table' => $table,
+            'action' => $action,
+            'field' => $field,
+            'id' => $id,
+            'name' =>$name,
+            'primaryKey' => $primaryKey,
+            'columns' => $columns,
+            'records' => $data['records'],
+        );
 
         $maxPage = ceil($data['results'] / $pageSize);
         if ($maxPage > 1) {

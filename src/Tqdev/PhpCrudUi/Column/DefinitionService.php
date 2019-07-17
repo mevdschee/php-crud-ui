@@ -110,7 +110,7 @@ class DefinitionService
 
     public function getColumns(string $table, string $action): array
     {
-        $properties = $this->getProperties($table, 'read');
+        $properties = $this->getProperties($table, $action);
         return array_keys($properties);
     }
 
