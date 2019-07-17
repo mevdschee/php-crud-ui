@@ -27,20 +27,6 @@
 {{endfor}}
 </tbody></table>
 
-
-
-                $html .= '';
-                if ($key == $primaryKey) {
-                    $html .= '<td style="border-right: 2px solid #ddd; width: 40px;">';
-                    $href = $this->url($table, 'read', $record[$primaryKey]);
-                    $html .= '<a class="btn btn-default btn-xs" href="' . $href . '"> + </a> ';
-                    $html .= '</td>';
-                }
-            }
-            $html .= '</tr>';
-        }
-        $html .= '</tbody></table>';
-
         $maxPage = ceil($data['results'] / $pageSize);
         if ($maxPage > 1) {
             $html .= '<div style="float:right">';

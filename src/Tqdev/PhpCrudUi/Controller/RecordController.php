@@ -39,7 +39,7 @@ class RecordController
         }
         $data = $this->service->_list($table, $action, $field, $id, $name, $params);
         $view = file_get_contents("../templates/record/list.html");
-        $content = Template::render($view, $data);
+        $content = Template::render($view, $data,['eq'=>function($a,$b){return $a==$b;}]);
         $layout = file_get_contents("../templates/layouts/default.html");
         $html = Template::render($layout, array('menu' => array(), 'content' => $content),false,false);
         return $this->responder->success($html);
