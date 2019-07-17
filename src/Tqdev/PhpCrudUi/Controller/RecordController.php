@@ -8,7 +8,6 @@ use Tqdev\PhpCrudApi\Middleware\Router\Router;
 use Tqdev\PhpCrudApi\Record\ErrorCode;
 use Tqdev\PhpCrudApi\RequestUtils;
 use Tqdev\PhpCrudUi\Record\RecordService;
-use Tqdev\PhpCrudUi\Template\Template;
 
 class RecordController
 {
@@ -38,11 +37,7 @@ class RecordController
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
         $data = $this->service->_list($table, $action, $field, $id, $name, $params);
-        $view = file_get_contents("../templates/record/list.html");
-        $content = Template::render($view, $data,['eq'=>function($a,$b){return $a==$b;}]);
-        $layout = file_get_contents("../templates/layouts/default.html");
-        $html = Template::render($layout, array('menu' => array(), 'content' => $content),false,false);
-        return $this->responder->success($html);
+        return $this->responder->success($data);
     }
 
     public function read(ServerRequestInterface $request): ResponseInterface

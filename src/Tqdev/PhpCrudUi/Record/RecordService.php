@@ -71,7 +71,7 @@ class RecordService
         $references = $this->definition->getReferences($table, $action);
         $referenced = $this->definition->getReferenced($table, $action);
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
-        
+
         $columns = $this->definition->getColumns($table, $action);
 
         list($pageNumber, $pageSize) = explode(',', @$_GET['page'] ?: '1,5', 2);
@@ -94,11 +94,13 @@ class RecordService
         }
 
         return array(
+            '__layout' => 'layouts/default',
+            '__view' => 'record/list',
             'table' => $table,
             'action' => $action,
             'field' => $field,
             'id' => $id,
-            'name' =>$name,
+            'name' => $name,
             'primaryKey' => $primaryKey,
             'columns' => $columns,
             'records' => $data['records'],

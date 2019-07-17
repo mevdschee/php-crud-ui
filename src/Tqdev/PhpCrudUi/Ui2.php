@@ -9,8 +9,8 @@ use Tqdev\PhpCrudApi\Middleware\Router\SimpleRouter;
 use Tqdev\PhpCrudApi\Record\ErrorCode;
 use Tqdev\PhpCrudApi\ResponseUtils;
 use Tqdev\PhpCrudUi\Column\DefinitionService;
-use Tqdev\PhpCrudUi\Controller\HtmlResponder;
 use Tqdev\PhpCrudUi\Controller\RecordController;
+use Tqdev\PhpCrudUi\Controller\TemplateResponder;
 use Tqdev\PhpCrudUi\Curl\Curl;
 use Tqdev\PhpCrudUi\Record\RecordService;
 
@@ -26,7 +26,7 @@ class Ui2 implements RequestHandlerInterface
         $prefix = sprintf('phpcrudui-%s-%s-', $config->getUrl(), substr(md5(__FILE__), 0, 8));
         $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
         $definition = new DefinitionService($curl);
-        $responder = new HtmlResponder();
+        $responder = new TemplateResponder();
         $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime(), $config->getDebug());
         foreach ($config->getControllers() as $controller) {
             switch ($controller) {
