@@ -3,6 +3,7 @@ namespace Tqdev\PhpCrudUi\Record;
 
 use Tqdev\PhpCrudUi\Column\DefinitionService;
 use Tqdev\PhpCrudUi\Curl\Curl;
+use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
 class RecordService
 {
@@ -33,20 +34,6 @@ class RecordService
         return $this->db->createSingle($table, $columnValues);
     }
 
-    public function read(string $tableName, string $id, array $params) /*: ?object*/
-    {
-        $table = $this->reflection->getTable($tableName);
-        $this->joiner->addMandatoryColumns($table, $params);
-        $columnNames = $this->columns->getNames($table, true, $params);
-        $record = $this->db->selectSingle($table, $columnNames, $id);
-        if ($record == null) {
-            return null;
-        }
-        $records = array($record);
-        $this->joiner->addJoins($table, $records, $params, $this->db);
-        return $records[0];
-    }
-
     public function update(string $tableName, string $id, /* object */ $record, array $params) /*: ?int*/
     {
         $this->sanitizeRecord($tableName, $record, $id);
@@ -66,7 +53,44 @@ class RecordService
         return rtrim("/src/$table/$action/$id/$field/$name", '/');
     }
 
-    public function _list(string $table, string $action, string $field, string $id, string $name, array $params) /*: object */
+    public function read(string $table, string $action, string $id, array $params): TemplateDocument
+    {
+        $references = $this->definition->getReferences($table, $action);
+        $referenced = $this->definition->getReferenced($table, $action);
+        $primaryKey = $this->definition->getPrimaryKey($table, $action);
+
+        $columns = $this->definition->getColumns($table, $action);
+
+        $args = array();
+        $args['join'] = array_values(array_filter($references));
+        $record = $this->curl->getRecord($table, $id, $args);
+
+        foreach ($record as $key => $value) {
+            $relatedTable = false;
+            $relatedId = false;
+            $text = $value;
+            if ($references[$key]) {
+                $relatedTable = $references[$key];
+                $relatedId = $this->definition->referenceId($relatedTable, $value);
+                $text = $this->definition->referenceText($relatedTable, $value);
+            }
+            $record[$key] = array('text' => $text, 'table'=>$relatedTable, 'id' => $relatedId);
+        }
+
+        $variables = array(
+            'table' => $table,
+            'action' => $action,
+            'id' => $id,
+            'references' => $references,
+            'referenced' => $referenced,
+            'record' => $record,
+        );
+
+        return new TemplateDocument('layouts/default', 'record/view', $variables);
+    }
+
+    
+    public function _list(string $table, string $action, string $field, string $id, string $name, array $params): TemplateDocument
     {
         $references = $this->definition->getReferences($table, $action);
         $referenced = $this->definition->getReferenced($table, $action);
@@ -95,14 +119,14 @@ class RecordService
 
         $maxPage = ceil($data['results'] / $pageSize);
 
-        return array(
-            '__layout' => 'layouts/default',
-            '__view' => 'record/list',
+        $variables = array(
             'table' => $table,
             'action' => $action,
             'field' => $field,
             'id' => $id,
             'name' => $name,
+            'references' => $references,
+            'referenced' => $referenced,
             'primaryKey' => $primaryKey,
             'columns' => $columns,
             'records' => $data['records'],
@@ -111,27 +135,6 @@ class RecordService
             'pageSize' => $pageSize,
         );
 
-        if ($primaryKey) {
-            $href = $this->url($table, 'create');
-            $html .= '<a href="' . $href . '" class="btn btn-primary">Add</a> ';
-        }
-
-        if ($related) {
-            $html .= '<br/><br/><h4>Related</h4>';
-            $html .= '<ul>';
-            foreach ($references as $field => $relation) {
-                if ($relation) {
-                    $href = $this->url($relation, 'list');
-                    $html .= '<li><a href="' . $href . '">' . $relation . '</a></li>';
-                }
-            }
-            foreach ($referenced as $relation) {
-                $href = $this->url($relation[0], 'list');
-                $html .= '<li><a href="' . $href . '">' . $relation[0] . '</a></li>';
-            }
-            $html .= '</ul>';
-        }
-
-        return $html;
+        return new TemplateDocument('layouts/default', 'record/list', $variables);            
     }
 }

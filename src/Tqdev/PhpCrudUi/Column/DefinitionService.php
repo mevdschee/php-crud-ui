@@ -124,7 +124,7 @@ class DefinitionService
     public function referenceId(string $table, /* object */ $record)
     {
         $properties = $this->getProperties($table, 'read');
-        $primaryKey = $this->getPrimaryKey($table, $properties);
+        $primaryKey = $this->getPrimaryKey($table, 'read');
         return $record[$primaryKey];
     }
 

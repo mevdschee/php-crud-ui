@@ -16,11 +16,11 @@ class RecordController
 
     public function __construct(Router $router, Responder $responder, RecordService $service)
     {
-        $router->register('GET', '/*/list', array($this, '_list'));
         $router->register('POST', '/records/*', array($this, 'create'));
         $router->register('GET', '/*/read/*', array($this, 'read'));
         $router->register('PUT', '/records/*/*', array($this, 'update'));
         $router->register('DELETE', '/records/*/*', array($this, 'delete'));
+        $router->register('GET', '/*/list', array($this, '_list'));
         $this->service = $service;
         $this->responder = $responder;
     }
@@ -42,29 +42,15 @@ class RecordController
 
     public function read(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 2);
-        if (!$this->service->hasTable($table)) {
-            return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
-        }
-        if ($this->service->getType($table) != 'table') {
-            return $this->responder->error(ErrorCode::OPERATION_NOT_SUPPORTED, __FUNCTION__);
-        }
+        $table = RequestUtils::getPathSegment($request, 1);
+        $action = RequestUtils::getPathSegment($request, 2);
         $id = RequestUtils::getPathSegment($request, 3);
         $params = RequestUtils::getParams($request);
-        if (strpos($id, ',') !== false) {
-            $ids = explode(',', $id);
-            $result = [];
-            for ($i = 0; $i < count($ids); $i++) {
-                array_push($result, $this->service->read($table, $ids[$i], $params));
-            }
-            return $this->responder->success($result);
-        } else {
-            $response = $this->service->read($table, $id, $params);
-            if ($response === null) {
-                return $this->responder->error(ErrorCode::RECORD_NOT_FOUND, $id);
-            }
-            return $this->responder->success($response);
+        if (!$this->service->hasTable($table, $action)) {
+            return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
+        $data = $this->service->read($table, $action, $id, $params);
+        return $this->responder->success($data);
     }
 
     public function create(ServerRequestInterface $request): ResponseInterface
