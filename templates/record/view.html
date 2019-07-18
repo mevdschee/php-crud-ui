@@ -18,12 +18,8 @@
 {{endfor}}
 </tbody></table>
 
-
-
-$href = $this->url($base, $subject, 'update', $record[$primaryKey]);
-$html .= '<a class="btn btn-primary" href="' . $href . '">Edit</a> ';
-$href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
-$html .= '<a class="btn btn-danger" href="' . $href . '">Delete</a> ';
+<a class="btn btn-primary" href="/{{table}}/update/{{id}}">Edit</a>
+<a class="btn btn-danger" href="/{{table}}/delete/{{id}}">Delete</a>
 
 if ($related) {
     $html .= '<br/><br/><h4>Related</h4>';

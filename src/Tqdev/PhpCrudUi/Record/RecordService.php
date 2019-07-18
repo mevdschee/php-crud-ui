@@ -21,36 +21,12 @@ class RecordService
         return $this->definition->hasTable($table, $action);
     }
 
-    public function getType(string $table): string
-    {
-        return $this->definition->getType($table);
-    }
-
     public function create(string $tableName, /* object */ $record, array $params) /*: ?int*/
     {
         $this->sanitizeRecord($tableName, $record, '');
         $table = $this->reflection->getTable($tableName);
         $columnValues = $this->columns->getValues($table, true, $record, $params);
         return $this->db->createSingle($table, $columnValues);
-    }
-
-    public function update(string $tableName, string $id, /* object */ $record, array $params) /*: ?int*/
-    {
-        $this->sanitizeRecord($tableName, $record, $id);
-        $table = $this->reflection->getTable($tableName);
-        $columnValues = $this->columns->getValues($table, true, $record, $params);
-        return $this->db->updateSingle($table, $columnValues, $id);
-    }
-
-    public function delete(string $tableName, string $id, array $params) /*: ?int*/
-    {
-        $table = $this->reflection->getTable($tableName);
-        return $this->db->deleteSingle($table, $id);
-    }
-
-    private function url($table, $action, $id = '', $field = '', $name = '')
-    {
-        return rtrim("/src/$table/$action/$id/$field/$name", '/');
     }
 
     public function read(string $table, string $action, string $id, array $params): TemplateDocument
@@ -89,7 +65,25 @@ class RecordService
         return new TemplateDocument('layouts/default', 'record/view', $variables);
     }
 
-    
+    public function update(string $tableName, string $id, /* object */ $record, array $params) /*: ?int*/
+    {
+        $this->sanitizeRecord($tableName, $record, $id);
+        $table = $this->reflection->getTable($tableName);
+        $columnValues = $this->columns->getValues($table, true, $record, $params);
+        return $this->db->updateSingle($table, $columnValues, $id);
+    }
+
+    public function delete(string $tableName, string $id, array $params) /*: ?int*/
+    {
+        $table = $this->reflection->getTable($tableName);
+        return $this->db->deleteSingle($table, $id);
+    }
+
+    private function url($table, $action, $id = '', $field = '', $name = '')
+    {
+        return rtrim("/src/$table/$action/$id/$field/$name", '/');
+    }
+
     public function _list(string $table, string $action, string $field, string $id, string $name, array $params): TemplateDocument
     {
         $references = $this->definition->getReferences($table, $action);

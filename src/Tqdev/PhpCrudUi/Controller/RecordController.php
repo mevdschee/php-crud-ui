@@ -25,34 +25,6 @@ class RecordController
         $this->responder = $responder;
     }
 
-    public function _list(ServerRequestInterface $request): ResponseInterface
-    {
-        $table = RequestUtils::getPathSegment($request, 1);
-        $action = RequestUtils::getPathSegment($request, 2);
-        $field = RequestUtils::getPathSegment($request, 3);
-        $id = RequestUtils::getPathSegment($request, 4);
-        $name = RequestUtils::getPathSegment($request, 5);
-        $params = RequestUtils::getParams($request);
-        if (!$this->service->hasTable($table, $action)) {
-            return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
-        }
-        $data = $this->service->_list($table, $action, $field, $id, $name, $params);
-        return $this->responder->success($data);
-    }
-
-    public function read(ServerRequestInterface $request): ResponseInterface
-    {
-        $table = RequestUtils::getPathSegment($request, 1);
-        $action = RequestUtils::getPathSegment($request, 2);
-        $id = RequestUtils::getPathSegment($request, 3);
-        $params = RequestUtils::getParams($request);
-        if (!$this->service->hasTable($table, $action)) {
-            return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
-        }
-        $data = $this->service->read($table, $action, $id, $params);
-        return $this->responder->success($data);
-    }
-
     public function create(ServerRequestInterface $request): ResponseInterface
     {
         $table = RequestUtils::getPathSegment($request, 2);
@@ -78,6 +50,19 @@ class RecordController
         }
     }
 
+    public function read(ServerRequestInterface $request): ResponseInterface
+    {
+        $table = RequestUtils::getPathSegment($request, 1);
+        $action = RequestUtils::getPathSegment($request, 2);
+        $id = RequestUtils::getPathSegment($request, 3);
+        $params = RequestUtils::getParams($request);
+        if (!$this->service->hasTable($table, $action)) {
+            return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
+        }
+        $data = $this->service->read($table, $action, $id, $params);
+        return $this->responder->success($data);
+    }
+    
     public function update(ServerRequestInterface $request): ResponseInterface
     {
         $table = RequestUtils::getPathSegment($request, 2);
@@ -132,6 +117,21 @@ class RecordController
         } else {
             return $this->responder->success($this->service->delete($table, $id, $params));
         }
+    }
+
+    public function _list(ServerRequestInterface $request): ResponseInterface
+    {
+        $table = RequestUtils::getPathSegment($request, 1);
+        $action = RequestUtils::getPathSegment($request, 2);
+        $field = RequestUtils::getPathSegment($request, 3);
+        $id = RequestUtils::getPathSegment($request, 4);
+        $name = RequestUtils::getPathSegment($request, 5);
+        $params = RequestUtils::getParams($request);
+        if (!$this->service->hasTable($table, $action)) {
+            return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
+        }
+        $data = $this->service->_list($table, $action, $field, $id, $name, $params);
+        return $this->responder->success($data);
     }
 
 }

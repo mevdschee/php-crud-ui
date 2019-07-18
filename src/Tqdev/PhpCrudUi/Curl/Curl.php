@@ -15,16 +15,19 @@ class Curl
         return $this->call('GET', '/openapi');
     }
 
+    private function getQueryString($args): string
+    {
+        return rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
+    }
+
     public function getRecords(string $table, array $args)
     {
-        $urlArgs = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
-        return $this->call('GET', '/records/' . urlencode($table) . $urlArgs);
+        return $this->call('GET', '/records/' . urlencode($table) . $this->getQueryString($args));
     }
     
     public function getRecord(string $table, string $id, array $args)
     {
-        $urlArgs = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
-        return $this->call('GET', '/records/' . urlencode($table) . '/' . urlencode($id) .$urlArgs);
+        return $this->call('GET', '/records/' . urlencode($table) . '/' . urlencode($id) . $this->getQueryString($args));
     }
 
     private function call(string $method, string $path, $data = false)

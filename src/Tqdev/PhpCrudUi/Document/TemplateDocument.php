@@ -15,6 +15,11 @@ class TemplateDocument
         $this->variables = $variables;
     }
 
+    public function addVariables(array $variables)
+    {
+        $this->variables = array_merge($this->variables, $variables);
+    }
+
     public function __toString(): string
     {
         $functions = [

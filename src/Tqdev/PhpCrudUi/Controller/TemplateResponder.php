@@ -6,9 +6,17 @@ use Tqdev\PhpCrudApi\Controller\Responder;
 use Tqdev\PhpCrudApi\Record\Document\ErrorDocument;
 use Tqdev\PhpCrudApi\Record\ErrorCode;
 use Tqdev\PhpCrudApi\ResponseFactory;
+use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
 class TemplateResponder implements Responder
 {
+    private $variables = array();
+
+    public function setVariable(string $name, string $value)
+    {   
+        $this->variables[$name] = $value;
+    }
+
     public function error(int $error, string $argument, $details = null): ResponseInterface
     {
         $errorCode = new ErrorCode($error);
@@ -19,6 +27,7 @@ class TemplateResponder implements Responder
 
     public function success($result): ResponseInterface
     {
+        $result->addVariables($this->variables);
         return ResponseFactory::fromHtml(ResponseFactory::OK, $result);
     }
 
