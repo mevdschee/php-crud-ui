@@ -68,37 +68,32 @@ class RecordController
         return $this->responder->success($data);
     }
 
-    public function update(ServerRequestInterface $request): ResponseInterface
+    public function updateForm(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 2);
-        if (!$this->service->hasTable($table)) {
+        $table = RequestUtils::getPathSegment($request, 1);
+        $action = RequestUtils::getPathSegment($request, 2);
+        $id = RequestUtils::getPathSegment($request, 3);
+        if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        if ($this->service->getType($table) != 'table') {
-            return $this->responder->error(ErrorCode::OPERATION_NOT_SUPPORTED, __FUNCTION__);
-        }
+        $data = $this->service->updateForm($table, $action, $id, $record);
+        return $this->responder->success($data);
+    }
+
+    public function update(ServerRequestInterface $request): ResponseInterface
+    {
+        $table = RequestUtils::getPathSegment($request, 1);
+        $action = RequestUtils::getPathSegment($request, 2);
         $id = RequestUtils::getPathSegment($request, 3);
-        $params = RequestUtils::getParams($request);
+        if (!$this->service->hasTable($table, $action)) {
+            return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
+        }
         $record = $request->getParsedBody();
         if ($record === null) {
             return $this->responder->error(ErrorCode::HTTP_MESSAGE_NOT_READABLE, '');
         }
-        $ids = explode(',', $id);
-        if (is_array($record)) {
-            if (count($ids) != count($record)) {
-                return $this->responder->error(ErrorCode::ARGUMENT_COUNT_MISMATCH, $id);
-            }
-            $result = array();
-            for ($i = 0; $i < count($ids); $i++) {
-                $result[] = $this->service->update($table, $ids[$i], $record[$i], $params);
-            }
-            return $this->responder->success($result);
-        } else {
-            if (count($ids) != 1) {
-                return $this->responder->error(ErrorCode::ARGUMENT_COUNT_MISMATCH, $id);
-            }
-            return $this->responder->success($this->service->update($table, $id, $record, $params));
-        }
+        $data = $this->service->update($table, $action, $id, $record);
+        return $this->responder->success($data);
     }
 
     public function deleteForm(ServerRequestInterface $request): ResponseInterface

@@ -118,12 +118,44 @@ class RecordService
 
     public function updateForm(string $table, string $action, string $id): TemplateDocument
     {
+        $references = $this->definition->getReferences($table, $action);
+        $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
+        $columns = $this->definition->getColumns($table, $action);
+
+        $record = $this->curl->getRecord($table, $id, []);
+
+        foreach ($record as $key => $value) {
+            $values = $this->getDropDownValues($references[$key]);
+            $record[$key] = array('value' => $value, 'values' => $values);
+        }
+
+        $variables = array(
+            'table' => $table,
+            'action' => $action,
+            'id' => $id,
+            'primaryKey' => $primaryKey,
+            'record' => $record,
+        );
+
+        return new TemplateDocument('layouts/default', 'record/update', $variables);
     }
 
     public function update(string $table, string $action, string $id, /* object */ $record): TemplateDocument
     {
+        $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
+        $affected = $this->curl->editRecord($table, $id, $record);
+
+        $variables = array(
+            'table' => $table,
+            'action' => $action,
+            'id' => $id,
+            'primaryKey' => $primaryKey,
+            'affected' => $affected,
+        );
+
+        return new TemplateDocument('layouts/default', 'record/updated', $variables);
     }
 
     public function deleteForm(string $table, string $action, string $id): TemplateDocument

@@ -35,6 +35,11 @@ class Curl
         return $this->call('DELETE', '/records/' . urlencode($table) . '/' . urlencode($id));
     }
 
+    public function editRecord(string $table, string $id, $record)
+    {
+        return $this->call('PUT', '/records/' . urlencode($table) . '/' . urlencode($id), [], $record);
+    }
+
     private function call(string $method, string $path, array $args = [], $data = false)
     {
         $query = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
