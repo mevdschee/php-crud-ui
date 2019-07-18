@@ -2,6 +2,7 @@
 use Tqdev\PhpCrudApi\RequestFactory;
 use Tqdev\PhpCrudApi\ResponseUtils;
 use Tqdev\PhpCrudUi\Config;
+use Tqdev\PhpCrudUi\Ui;
 
 require '../vendor/autoload.php';
 
