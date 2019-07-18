@@ -113,7 +113,7 @@ class RecordService
             'record' => $record,
         );
 
-        return new TemplateDocument('layouts/default', 'record/view', $variables);
+        return new TemplateDocument('layouts/default', 'record/read', $variables);
     }
 
     public function updateForm(string $table, string $action, string $id): TemplateDocument
@@ -202,7 +202,8 @@ class RecordService
 
         $columns = $this->definition->getColumns($table, $action);
 
-        list($pageNumber, $pageSize) = explode(',', @$_GET['page'] ?: '1,5', 2);
+        $pageParams = isset($params['page']) ? $params['page'][0] : '1,5';
+        list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
 
         $args = array();
         if ($field) {
