@@ -1,16 +1,15 @@
 <?php
 namespace Tqdev\PhpCrudUi\Column;
 
-use Tqdev\PhpCrudUi\Curl\Curl;
+use Tqdev\PhpCrudUi\Client\CrudApi;
 
 class DefinitionService
 {
+    private $api;
 
-    private $curl;
-
-    public function __construct(Curl $curl)
+    public function __construct(CrudApi $api)
     {
-        $this->curl = $curl;
+        $this->api = $api;
         $this->definition = $this->getDefinition();
         $this->properties = array();
     }
@@ -18,7 +17,7 @@ class DefinitionService
     private function getDefinition(): array
     {
         if (!isset($_SESSION['definition'])) {
-            $_SESSION['definition'] = $this->curl->getOpenApi();
+            $_SESSION['definition'] = $this->api->getOpenApi();
         }
         return $_SESSION['definition'];
     }

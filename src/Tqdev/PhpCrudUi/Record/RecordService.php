@@ -1,18 +1,18 @@
 <?php
 namespace Tqdev\PhpCrudUi\Record;
 
+use Tqdev\PhpCrudUi\Client\CrudApi;
 use Tqdev\PhpCrudUi\Column\DefinitionService;
-use Tqdev\PhpCrudUi\Curl\Curl;
 use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
 class RecordService
 {
-    private $curl;
+    private $api;
     private $definition;
 
-    public function __construct(Curl $curl, DefinitionService $definition)
+    public function __construct(CrudApi $api, DefinitionService $definition)
     {
-        $this->curl = $curl;
+        $this->api = $api;
         $this->definition = $definition;
     }
 
@@ -27,7 +27,7 @@ class RecordService
         if ($relatedTable) {
             $pair = $this->definition->getColumnPair($relatedTable);
             $args = array('include' => implode(',', $pair));
-            $data = $this->curl->getRecords($relatedTable, $args);
+            $data = $this->api->getRecords($relatedTable, $args);
             foreach ($data['records'] as $record) {
                 if (count($pair) > 1) {
                     $values[$record[$pair[0]]] = $record[$pair[1]];
@@ -65,7 +65,7 @@ class RecordService
     {
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
-        $id = $this->curl->addRecord($table, $record);
+        $id = $this->api->addRecord($table, $record);
 
         $variables = array(
             'table' => $table,
@@ -87,7 +87,7 @@ class RecordService
 
         $args = array();
         $args['join'] = array_values(array_filter($references));
-        $record = $this->curl->getRecord($table, $id, $args);
+        $record = $this->api->getRecord($table, $id, $args);
 
         $name = $this->definition->referenceText($table, $record);
 
@@ -123,7 +123,7 @@ class RecordService
 
         $columns = $this->definition->getColumns($table, $action);
 
-        $record = $this->curl->getRecord($table, $id, []);
+        $record = $this->api->getRecord($table, $id, []);
 
         foreach ($record as $key => $value) {
             $values = $this->getDropDownValues($references[$key]);
@@ -145,7 +145,7 @@ class RecordService
     {
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
-        $affected = $this->curl->editRecord($table, $id, $record);
+        $affected = $this->api->editRecord($table, $id, $record);
 
         $variables = array(
             'table' => $table,
@@ -162,7 +162,7 @@ class RecordService
     {
         $primaryKey = $this->definition->getPrimaryKey($table, 'read');
 
-        $record = $this->curl->getRecord($table, $id, []);
+        $record = $this->api->getRecord($table, $id, []);
 
         $name = $this->definition->referenceText($table, $record);
 
@@ -181,7 +181,7 @@ class RecordService
     {
         $primaryKey = $this->definition->getPrimaryKey($table, 'read');
 
-        $affected = $this->curl->removeRecord($table, $id);
+        $affected = $this->api->removeRecord($table, $id);
 
         $variables = array(
             'table' => $table,
@@ -210,7 +210,7 @@ class RecordService
         }
         $args['join'] = array_values(array_filter($references));
         $args['page'] = "$pageNumber,$pageSize";
-        $data = $this->curl->getRecords($table, $args);
+        $data = $this->api->getRecords($table, $args);
 
         foreach ($data['records'] as $i => $record) {
             foreach ($record as $key => $value) {

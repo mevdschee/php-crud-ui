@@ -1,7 +1,7 @@
 <?php
-namespace Tqdev\PhpCrudUi\Curl;
+namespace Tqdev\PhpCrudUi\Client;
 
-class Curl
+class CrudApi
 {
     private $url;
 
