@@ -7,7 +7,7 @@
         <td>{{key}}</td>
         <td style="border-right: 2px solid #ddd; width: 40px;">
             {{if:value.table}}
-                <a class="btn btn-default btn-xs" href="/{{value.table}}/read/{{value.id}}"> + </a>
+                <a class="btn btn-default btn-xs" href="{{base}}/{{value.table}}/read/{{value.id}}"> + </a>
             {{else}}
                 &nbsp;
             {{endif}}
@@ -18,8 +18,8 @@
 {{endfor}}
 </tbody></table>
 
-<a class="btn btn-primary" href="/{{table}}/update/{{id}}">Edit</a>
-<a class="btn btn-danger" href="/{{table}}/delete/{{id}}">Delete</a>
+<a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
+<a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
 
 if ($related) {
     $html .= '<br/><br/><h4>Related</h4>';

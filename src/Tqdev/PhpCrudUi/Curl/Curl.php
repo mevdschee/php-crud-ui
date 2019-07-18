@@ -15,26 +15,22 @@ class Curl
         return $this->call('GET', '/openapi');
     }
 
-    private function getQueryString($args): string
-    {
-        return rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
-    }
-
     public function getRecords(string $table, array $args)
     {
-        return $this->call('GET', '/records/' . urlencode($table) . $this->getQueryString($args));
+        return $this->call('GET', '/records/' . urlencode($table), $args);
     }
     
     public function getRecord(string $table, string $id, array $args)
     {
-        return $this->call('GET', '/records/' . urlencode($table) . '/' . urlencode($id) . $this->getQueryString($args));
+        return $this->call('GET', '/records/' . urlencode($table) . '/' . urlencode($id), $args);
     }
 
-    private function call(string $method, string $path, $data = false)
+    private function call(string $method, string $path, array $args = [], $data = false)
     {
+        $query = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_URL, $this->url . $path);
+        curl_setopt($ch, CURLOPT_URL, $this->url . $path . $query);
         if ($data) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             $headers = array();

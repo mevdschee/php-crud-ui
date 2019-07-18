@@ -1,7 +1,7 @@
 <h2>{{table}}: {{action}}</h2>
 {{if:field}}
     <div class="well well-sm"><div style="float:right;">
-    <a class="btn btn-default btn-xs" href="/{{table}}/list">Clear filter</a>
+    <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/list">Clear filter</a>
     </div>Filtered by: {{field}} = {{name}}</div>
 {{endif}}
 <table class="table">
@@ -19,7 +19,7 @@
         <td>{{value}}</td>
         {{if:key|eq(primaryKey)}}
             <td style="border-right: 2px solid #ddd; width: 40px;">
-                <a class="btn btn-default btn-xs" href="/{{table}}/read/{{value}}">+</a>
+                <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/read/{{value}}">+</a>
             </td>
         {{endif}}
     {{endfor}}
@@ -42,7 +42,7 @@
     </div>
 {{endif}}
 {{if:primaryKey}}
-    <a href="/{{table}}/create" class="btn btn-primary">Add</a>
+    <a href="{{base}}/{{table}}/create" class="btn btn-primary">Add</a>
 {{endif}}
 <br/>
 <br/>
@@ -50,10 +50,10 @@
 <ul>
 {{for:relation:field:references}}
     {{if:relation}}
-        <li><a href="/{{relation}}/list">{{relation}}</a></li>
+        <li><a href="{{base}}/{{relation}}/list">{{relation}}</a></li>
     {{endif}}
 {{endfor}}
 {{for:relation:referenced}}
-    <li><a href="/{{relation.0}}/list">{{relation.0}}</a></li>
+    <li><a href="{{base}}/{{relation.0}}/list">{{relation.0}}</a></li>
 {{endfor}}
 </ul>
