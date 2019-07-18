@@ -21,21 +21,13 @@
 <a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
 <a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
 
-if ($related) {
-    $html .= '<br/><br/><h4>Related</h4>';
-    $html .= '<ul>';
-    foreach ($references as $field => $relation) {
-        if ($relation) {
-            $href = $this->url($base, $relation, 'list');
-            $html .= '<li><a href="' . $href . '">' . $relation . '</a></li>';
-        }
-    }
-    foreach ($referenced as $i => $relation) {
-        $name = $this->referenceText($subject, $record, $definition);
-        $href = $this->url($base, $relation[0], 'list', $relation[1], $record[$primaryKey], $name);
-        $html .= '<li><a href="' . $href . '">' . $relation[0] . ' (filtered)</a></li>';
-    }
-    $html .= '</ul>';
-}
-
-return $html;
+<h4>Related</h4>
+<ul>
+{{for:relation:field:references}}
+    {{if:relation}}
+        <li><a href="{{base}}/{{relation}}/list">{{relation}}</a></li>
+    {{endif}}
+{{endfor}}
+{{for:relation:referenced}}
+    <li><a href="{{base}}/{{relation.0}}/list/{{relation.1}}/{{id}}/{{name}}">{{relation.0}} (filtered)</a></li>
+{{endfor}}

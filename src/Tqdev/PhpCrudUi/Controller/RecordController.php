@@ -16,11 +16,12 @@ class RecordController
 
     public function __construct(Router $router, Responder $responder, RecordService $service)
     {
-        $router->register('POST', '/records/*', array($this, 'create'));
+        $router->register('POST', '/*/create', array($this, 'create'));
         $router->register('GET', '/*/read/*', array($this, 'read'));
-        $router->register('PUT', '/records/*/*', array($this, 'update'));
-        $router->register('DELETE', '/records/*/*', array($this, 'delete'));
+        $router->register('PUT', '/*/update/*', array($this, 'update'));
+        $router->register('DELETE', '/*/delete/*', array($this, 'delete'));
         $router->register('GET', '/*/list', array($this, '_list'));
+        $router->register('GET', '/*/list/*/*/*', array($this, '_list'));
         $this->service = $service;
         $this->responder = $responder;
     }
@@ -62,7 +63,7 @@ class RecordController
         $data = $this->service->read($table, $action, $id, $params);
         return $this->responder->success($data);
     }
-    
+
     public function update(ServerRequestInterface $request): ResponseInterface
     {
         $table = RequestUtils::getPathSegment($request, 2);

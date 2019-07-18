@@ -41,6 +41,8 @@ class RecordService
         $args['join'] = array_values(array_filter($references));
         $record = $this->curl->getRecord($table, $id, $args);
 
+        $name = $this->definition->referenceText($table, $record);
+
         foreach ($record as $key => $value) {
             $relatedTable = false;
             $relatedId = false;
@@ -50,13 +52,14 @@ class RecordService
                 $relatedId = $this->definition->referenceId($relatedTable, $value);
                 $text = $this->definition->referenceText($relatedTable, $value);
             }
-            $record[$key] = array('text' => $text, 'table'=>$relatedTable, 'id' => $relatedId);
+            $record[$key] = array('text' => $text, 'table' => $relatedTable, 'id' => $relatedId);
         }
 
         $variables = array(
             'table' => $table,
             'action' => $action,
             'id' => $id,
+            'name' => $name,
             'references' => $references,
             'referenced' => $referenced,
             'record' => $record,
@@ -129,6 +132,6 @@ class RecordService
             'pageSize' => $pageSize,
         );
 
-        return new TemplateDocument('layouts/default', 'record/list', $variables);            
+        return new TemplateDocument('layouts/default', 'record/list', $variables);
     }
 }
