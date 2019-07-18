@@ -1,0 +1,45 @@
+<h2>{{table}}: view</h2>
+<table class="table">
+<thead><tr><th>key</th><th></th><th>value</th></tr></thead>
+<tbody>
+{{for:value:key:record}}
+    <tr>
+        <td>{{key}}</td>
+        <td style="border-right: 2px solid #ddd; width: 40px;">
+            {{if:value.table}}
+                <a class="btn btn-default btn-xs" href="/{{value.table}}/read/{{value.id}}"> + </a>
+            {{else}}
+                &nbsp;
+            {{endif}}
+        </td><td>
+            {{value.text}}
+        </td>
+    </tr>
+{{endfor}}
+</tbody></table>
+
+
+
+$href = $this->url($base, $subject, 'update', $record[$primaryKey]);
+$html .= '<a class="btn btn-primary" href="' . $href . '">Edit</a> ';
+$href = $this->url($base, $subject, 'delete', $record[$primaryKey]);
+$html .= '<a class="btn btn-danger" href="' . $href . '">Delete</a> ';
+
+if ($related) {
+    $html .= '<br/><br/><h4>Related</h4>';
+    $html .= '<ul>';
+    foreach ($references as $field => $relation) {
+        if ($relation) {
+            $href = $this->url($base, $relation, 'list');
+            $html .= '<li><a href="' . $href . '">' . $relation . '</a></li>';
+        }
+    }
+    foreach ($referenced as $i => $relation) {
+        $name = $this->referenceText($subject, $record, $definition);
+        $href = $this->url($base, $relation[0], 'list', $relation[1], $record[$primaryKey], $name);
+        $html .= '<li><a href="' . $href . '">' . $relation[0] . ' (filtered)</a></li>';
+    }
+    $html .= '</ul>';
+}
+
+return $html;
