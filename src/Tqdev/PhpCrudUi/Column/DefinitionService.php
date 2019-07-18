@@ -114,6 +114,17 @@ class DefinitionService
         return array_keys($properties);
     }
 
+    public function getMenu()
+    {
+        $items = array();
+        if (isset($this->definition['tags'])) {
+            foreach ($this->definition['tags'] as $tag) {
+                array_push($items, $tag['name']);
+            }
+        }
+        return $items;
+    }
+
     public function referenceText(string $table, /* object */ $record)
     {
         $properties = $this->getProperties($table, 'read');

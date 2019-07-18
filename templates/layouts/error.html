@@ -17,10 +17,8 @@
                 <div class="col-md-3">
                     <ul class="nav nav-pills nav-stacked">
                         {{for:item:menu}}
-                            <li{{if:item.active}} class="active"{{endif}}>
-                                <a href="{{item.url}}">
-                                    {{item.name}}
-                                </a>
+                            <li{{if:item|eq(table)}} class="active"{{endif}}>
+                                <a href="{{base}}/{{item}}/list">{{item}}</a>
                             </li>
                         {{endfor}}
                     </ul>

@@ -12,7 +12,7 @@ class TemplateResponder implements Responder
 {
     private $variables = array();
 
-    public function setVariable(string $name, string $value)
+    public function setVariable(string $name, $value)
     {
         $this->variables[$name] = $value;
     }

@@ -30,22 +30,6 @@ class Ui
         return $base . trim("$subject/$action/$id/$field/$name", '/');
     }
 
-    public function menu($subject, $base, $definition)
-    {
-        $items = array();
-        if (isset($definition['tags'])) {
-            foreach ($definition['tags'] as $tag) {
-                $item = array(
-                    'active' => $tag['name'] == $subject,
-                    'name' => $tag['name'],
-                    'url' => $this->url($base, $tag['name'], 'list'),
-                );
-                array_push($items, $item);
-            }
-        }
-        return $items;
-    }
-
     public function executeHome($url, $base, $definition, $method, $request)
     {
         $template = file_get_contents('../templates/home.html');

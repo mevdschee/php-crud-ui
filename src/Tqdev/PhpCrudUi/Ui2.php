@@ -29,6 +29,8 @@ class Ui2 implements RequestHandlerInterface
         $responder = new TemplateResponder();
         $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime(), $config->getDebug());
         $responder->setVariable('base', $router->getBasePath());
+        $responder->setVariable('menu', $definition->getMenu());
+        $responder->setVariable('table', '');
         foreach ($config->getControllers() as $controller) {
             switch ($controller) {
                 case 'records':

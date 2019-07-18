@@ -3,13 +3,14 @@ namespace Tqdev\PhpCrudUi\Document;
 
 use Tqdev\PhpCrudUi\Template\Template;
 
-class TemplateDocument 
+class TemplateDocument
 {
     private $masterTemplate;
     private $contentTemplate;
     private $variables;
 
-    function __construct($masterTemplate, $contentTemplate, $variables) {
+    public function __construct(string $masterTemplate, string $contentTemplate, array $variables)
+    {
         $this->masterTemplate = $masterTemplate;
         $this->contentTemplate = $contentTemplate;
         $this->variables = $variables;
@@ -17,7 +18,7 @@ class TemplateDocument
 
     public function addVariables(array $variables)
     {
-        $this->variables = array_merge($this->variables, $variables);
+        $this->variables = array_merge($variables, $this->variables);
     }
 
     public function __toString(): string
