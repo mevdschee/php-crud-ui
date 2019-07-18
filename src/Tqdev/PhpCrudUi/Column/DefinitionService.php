@@ -26,11 +26,9 @@ class DefinitionService
     {
         $definition = $this->definition;
         while (null !== ($element = array_shift($path))) {
-            //echo '"'.$element.'",';
             if (!isset($definition[$element])) {
                 return false;
             }
-
             $definition = $definition[$element];
         }
         return $definition;
