@@ -21,12 +21,58 @@ class RecordService
         return $this->definition->hasTable($table, $action);
     }
 
-    public function create(string $tableName, /* object */ $record, array $params) /*: ?int*/
+    public function createForm(string $table, string $action): TemplateDocument
     {
-        $this->sanitizeRecord($tableName, $record, '');
-        $table = $this->reflection->getTable($tableName);
-        $columnValues = $this->columns->getValues($table, true, $record, $params);
-        return $this->db->createSingle($table, $columnValues);
+        $references = $this->definition->getReferences($table, $action);
+        $primaryKey = $this->definition->getPrimaryKey($table, $action);
+
+        $columns = $this->definition->getColumns($table, $action);
+
+        foreach ($columns as $i => $column) {
+            $name = $column;
+            $pairs = false;
+            if ($references[$name]) {
+                $relatedTable = $references[$name];
+
+                $pair = $this->definition->getColumnPair($relatedTable, $action);
+                $args = array('include' => implode(',', $pair));
+                $data = $this->curl->getRecords($relatedTable, $args);
+                $pairs = array();
+                foreach ($data['records'] as $record) {
+                    if (count($pair) > 1) {
+                        $pairs[$record[$pair[0]]] = $record[$pair[1]];
+                    } else {
+                        $pairs[$record[$pair[0]]] = $record[$pair[0]];
+                    }
+                }
+            }
+            $columns[$i] = array('name' => $name, 'values' => $pairs);
+        }
+
+        $variables = array(
+            'table' => $table,
+            'action' => $action,
+            'columns' => $columns,
+            'primaryKey' => $primaryKey,
+        );
+
+        return new TemplateDocument('layouts/default', 'record/create', $variables);
+    }
+
+    public function create(string $table, string $action, $record): TemplateDocument
+    {
+        $primaryKey = $this->definition->getPrimaryKey($table, $action);
+
+        $id = $this->curl->addRecord($table, $record);
+
+        $variables = array(
+            'table' => $table,
+            'action' => $action,
+            'id' => $id,
+            'primaryKey' => $primaryKey,
+        );
+
+        return new TemplateDocument('layouts/default', 'record/created', $variables);
     }
 
     public function read(string $table, string $action, string $id, array $params): TemplateDocument

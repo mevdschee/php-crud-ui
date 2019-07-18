@@ -16,6 +16,7 @@ class RecordController
 
     public function __construct(Router $router, Responder $responder, RecordService $service)
     {
+        $router->register('GET', '/*/create', array($this, 'createForm'));
         $router->register('POST', '/*/create', array($this, 'create'));
         $router->register('GET', '/*/read/*', array($this, 'read'));
         $router->register('PUT', '/*/update/*', array($this, 'update'));
@@ -26,29 +27,30 @@ class RecordController
         $this->responder = $responder;
     }
 
-    public function create(ServerRequestInterface $request): ResponseInterface
+    public function createForm(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 2);
-        if (!$this->service->hasTable($table)) {
+        $table = RequestUtils::getPathSegment($request, 1);
+        $action = RequestUtils::getPathSegment($request, 2);
+        if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        if ($this->service->getType($table) != 'table') {
-            return $this->responder->error(ErrorCode::OPERATION_NOT_SUPPORTED, __FUNCTION__);
+        $data = $this->service->createForm($table, $action);
+        return $this->responder->success($data);
+    }
+
+    public function create(ServerRequestInterface $request): ResponseInterface
+    {
+        $table = RequestUtils::getPathSegment($request, 1);
+        $action = RequestUtils::getPathSegment($request, 2);
+        if (!$this->service->hasTable($table, $action)) {
+            return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
         $record = $request->getParsedBody();
         if ($record === null) {
             return $this->responder->error(ErrorCode::HTTP_MESSAGE_NOT_READABLE, '');
         }
-        $params = RequestUtils::getParams($request);
-        if (is_array($record)) {
-            $result = array();
-            foreach ($record as $r) {
-                $result[] = $this->service->create($table, $r, $params);
-            }
-            return $this->responder->success($result);
-        } else {
-            return $this->responder->success($this->service->create($table, $record, $params));
-        }
+        $data = $this->service->create($table, $action, $record);
+        return $this->responder->success($data);
     }
 
     public function read(ServerRequestInterface $request): ResponseInterface

@@ -19,10 +19,15 @@ class Curl
     {
         return $this->call('GET', '/records/' . urlencode($table), $args);
     }
-    
+
     public function getRecord(string $table, string $id, array $args)
     {
         return $this->call('GET', '/records/' . urlencode($table) . '/' . urlencode($id), $args);
+    }
+
+    public function addRecord(string $table, $record)
+    {
+        return $this->call('POST', '/records/' . urlencode($table), [], $record);
     }
 
     private function call(string $method, string $path, array $args = [], $data = false)
@@ -32,10 +37,11 @@ class Curl
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_URL, $this->url . $path . $query);
         if ($data) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            $content = json_encode($data);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
             $headers = array();
             $headers[] = 'Content-Type: application/json';
-            $headers[] = 'Content-Length: ' . strlen($data);
+            $headers[] = 'Content-Length: ' . strlen($content);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

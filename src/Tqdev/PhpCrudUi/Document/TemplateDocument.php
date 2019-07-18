@@ -31,6 +31,7 @@ class TemplateDocument
             'eq' => function ($a, $b) {return $a == $b;},
             'add' => function ($a, $b) {return $a + $b;},
             'sub' => function ($a, $b) {return $a - $b;},
+            'att' => function ($a, $b) {return isset($a[$b]) ? $a[$b] : false;},
         ];
 
         $data = $this->variables;

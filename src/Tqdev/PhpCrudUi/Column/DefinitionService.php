@@ -108,6 +108,14 @@ class DefinitionService
         return $columns[0];
     }
 
+    public function getColumnPair(string $table, string $action)
+    {
+        $primaryKey = $this->getPrimaryKey($table, 'list');
+        $columns = $this->getColumns($table, 'list');
+        $displayColumn = $this->getDisplayColumn($columns);
+        return array($primaryKey, $displayColumn);
+    }
+
     public function getColumns(string $table, string $action): array
     {
         $properties = $this->getProperties($table, $action);
