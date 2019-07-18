@@ -19,8 +19,10 @@ class RecordController
         $router->register('GET', '/*/create', array($this, 'createForm'));
         $router->register('POST', '/*/create', array($this, 'create'));
         $router->register('GET', '/*/read/*', array($this, 'read'));
-        $router->register('PUT', '/*/update/*', array($this, 'update'));
-        $router->register('DELETE', '/*/delete/*', array($this, 'delete'));
+        $router->register('GET', '/*/update/*', array($this, 'updateForm'));
+        $router->register('POST', '/*/update/*', array($this, 'update'));
+        $router->register('GET', '/*/delete/*', array($this, 'deleteForm'));
+        $router->register('POST', '/*/delete/*', array($this, 'delete'));
         $router->register('GET', '/*/list', array($this, '_list'));
         $router->register('GET', '/*/list/*/*/*', array($this, '_list'));
         $this->service = $service;
@@ -99,27 +101,28 @@ class RecordController
         }
     }
 
-    public function delete(ServerRequestInterface $request): ResponseInterface
+    public function deleteForm(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 2);
-        if (!$this->service->hasTable($table)) {
+        $table = RequestUtils::getPathSegment($request, 1);
+        $action = RequestUtils::getPathSegment($request, 2);
+        $id = RequestUtils::getPathSegment($request, 3);
+        if (!$this->service->hasTable($table, 'read')) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        if ($this->service->getType($table) != 'table') {
-            return $this->responder->error(ErrorCode::OPERATION_NOT_SUPPORTED, __FUNCTION__);
-        }
+        $data = $this->service->deleteForm($table, $action, $id);
+        return $this->responder->success($data);
+    }
+
+    public function delete(ServerRequestInterface $request): ResponseInterface
+    {
+        $table = RequestUtils::getPathSegment($request, 1);
+        $action = RequestUtils::getPathSegment($request, 2);
         $id = RequestUtils::getPathSegment($request, 3);
-        $params = RequestUtils::getParams($request);
-        $ids = explode(',', $id);
-        if (count($ids) > 1) {
-            $result = array();
-            for ($i = 0; $i < count($ids); $i++) {
-                $result[] = $this->service->delete($table, $ids[$i], $params);
-            }
-            return $this->responder->success($result);
-        } else {
-            return $this->responder->success($this->service->delete($table, $id, $params));
+        if (!$this->service->hasTable($table, 'read')) {
+            return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
+        $data = $this->service->delete($table, $action, $id);
+        return $this->responder->success($data);
     }
 
     public function _list(ServerRequestInterface $request): ResponseInterface

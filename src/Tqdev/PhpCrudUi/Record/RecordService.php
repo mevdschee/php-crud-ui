@@ -21,6 +21,24 @@ class RecordService
         return $this->definition->hasTable($table, $action);
     }
 
+    private function getDropDownValues(string $relatedTable): array
+    {
+        $values = array();
+        if ($relatedTable) {
+            $pair = $this->definition->getColumnPair($relatedTable);
+            $args = array('include' => implode(',', $pair));
+            $data = $this->curl->getRecords($relatedTable, $args);
+            foreach ($data['records'] as $record) {
+                if (count($pair) > 1) {
+                    $values[$record[$pair[0]]] = $record[$pair[1]];
+                } else {
+                    $values[$record[$pair[0]]] = $record[$pair[0]];
+                }
+            }
+        }
+        return $values;
+    }
+
     public function createForm(string $table, string $action): TemplateDocument
     {
         $references = $this->definition->getReferences($table, $action);
@@ -29,24 +47,8 @@ class RecordService
         $columns = $this->definition->getColumns($table, $action);
 
         foreach ($columns as $i => $column) {
-            $name = $column;
-            $pairs = false;
-            if ($references[$name]) {
-                $relatedTable = $references[$name];
-
-                $pair = $this->definition->getColumnPair($relatedTable, $action);
-                $args = array('include' => implode(',', $pair));
-                $data = $this->curl->getRecords($relatedTable, $args);
-                $pairs = array();
-                foreach ($data['records'] as $record) {
-                    if (count($pair) > 1) {
-                        $pairs[$record[$pair[0]]] = $record[$pair[1]];
-                    } else {
-                        $pairs[$record[$pair[0]]] = $record[$pair[0]];
-                    }
-                }
-            }
-            $columns[$i] = array('name' => $name, 'values' => $pairs);
+            $values = $this->getDropDownValues($references[$column]);
+            $columns[$i] = array('name' => $column, 'values' => $values);
         }
 
         $variables = array(
@@ -59,7 +61,7 @@ class RecordService
         return new TemplateDocument('layouts/default', 'record/create', $variables);
     }
 
-    public function create(string $table, string $action, $record): TemplateDocument
+    public function create(string $table, string $action, /* object */ $record): TemplateDocument
     {
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
@@ -114,23 +116,50 @@ class RecordService
         return new TemplateDocument('layouts/default', 'record/view', $variables);
     }
 
-    public function update(string $tableName, string $id, /* object */ $record, array $params) /*: ?int*/
+    public function updateForm(string $table, string $action, string $id): TemplateDocument
     {
-        $this->sanitizeRecord($tableName, $record, $id);
-        $table = $this->reflection->getTable($tableName);
-        $columnValues = $this->columns->getValues($table, true, $record, $params);
-        return $this->db->updateSingle($table, $columnValues, $id);
+
     }
 
-    public function delete(string $tableName, string $id, array $params) /*: ?int*/
+    public function update(string $table, string $action, string $id, /* object */ $record): TemplateDocument
     {
-        $table = $this->reflection->getTable($tableName);
-        return $this->db->deleteSingle($table, $id);
+
     }
 
-    private function url($table, $action, $id = '', $field = '', $name = '')
+    public function deleteForm(string $table, string $action, string $id): TemplateDocument
     {
-        return rtrim("/src/$table/$action/$id/$field/$name", '/');
+        $primaryKey = $this->definition->getPrimaryKey($table, 'read');
+
+        $record = $this->curl->getRecord($table, $id, []);
+
+        $name = $this->definition->referenceText($table, $record);
+
+        $variables = array(
+            'table' => $table,
+            'action' => $action,
+            'id' => $id,
+            'primaryKey' => $primaryKey,
+            'name' => $name,
+        );
+
+        return new TemplateDocument('layouts/default', 'record/delete', $variables);
+    }
+
+    public function delete(string $table, string $action, string $id): TemplateDocument
+    {
+        $primaryKey = $this->definition->getPrimaryKey($table, 'read');
+
+        $affected = $this->curl->removeRecord($table, $id);
+
+        $variables = array(
+            'table' => $table,
+            'action' => $action,
+            'id' => $id,
+            'primaryKey' => $primaryKey,
+            'affected' => $affected,
+        );
+
+        return new TemplateDocument('layouts/default', 'record/deleted', $variables);
     }
 
     public function _list(string $table, string $action, string $field, string $id, string $name, array $params): TemplateDocument
