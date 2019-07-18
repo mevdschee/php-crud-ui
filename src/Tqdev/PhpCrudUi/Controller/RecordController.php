@@ -36,8 +36,8 @@ class RecordController
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        $data = $this->service->createForm($table, $action);
-        return $this->responder->success($data);
+        $result = $this->service->createForm($table, $action);
+        return $this->responder->success($result);
     }
 
     public function create(ServerRequestInterface $request): ResponseInterface
@@ -51,8 +51,8 @@ class RecordController
         if ($record === null) {
             return $this->responder->error(ErrorCode::HTTP_MESSAGE_NOT_READABLE, '');
         }
-        $data = $this->service->create($table, $action, $record);
-        return $this->responder->success($data);
+        $result = $this->service->create($table, $action, $record);
+        return $this->responder->success($result);
     }
 
     public function read(ServerRequestInterface $request): ResponseInterface
@@ -64,8 +64,8 @@ class RecordController
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        $data = $this->service->read($table, $action, $id, $params);
-        return $this->responder->success($data);
+        $result = $this->service->read($table, $action, $id, $params);
+        return $this->responder->success($result);
     }
 
     public function updateForm(ServerRequestInterface $request): ResponseInterface
@@ -76,8 +76,8 @@ class RecordController
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        $data = $this->service->updateForm($table, $action, $id, $record);
-        return $this->responder->success($data);
+        $result = $this->service->updateForm($table, $action, $id, $record);
+        return $this->responder->success($result);
     }
 
     public function update(ServerRequestInterface $request): ResponseInterface
@@ -92,8 +92,8 @@ class RecordController
         if ($record === null) {
             return $this->responder->error(ErrorCode::HTTP_MESSAGE_NOT_READABLE, '');
         }
-        $data = $this->service->update($table, $action, $id, $record);
-        return $this->responder->success($data);
+        $result = $this->service->update($table, $action, $id, $record);
+        return $this->responder->success($result);
     }
 
     public function deleteForm(ServerRequestInterface $request): ResponseInterface
@@ -104,8 +104,8 @@ class RecordController
         if (!$this->service->hasTable($table, 'read')) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        $data = $this->service->deleteForm($table, $action, $id);
-        return $this->responder->success($data);
+        $result = $this->service->deleteForm($table, $action, $id);
+        return $this->responder->success($result);
     }
 
     public function delete(ServerRequestInterface $request): ResponseInterface
@@ -116,8 +116,8 @@ class RecordController
         if (!$this->service->hasTable($table, 'read')) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        $data = $this->service->delete($table, $action, $id);
-        return $this->responder->success($data);
+        $result = $this->service->delete($table, $action, $id);
+        return $this->responder->success($result);
     }
 
     public function _list(ServerRequestInterface $request): ResponseInterface
@@ -131,8 +131,8 @@ class RecordController
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        $data = $this->service->_list($table, $action, $field, $id, $name, $params);
-        return $this->responder->success($data);
+        $result = $this->service->_list($table, $action, $field, $id, $name, $params);
+        return $this->responder->success($result);
     }
 
 }
