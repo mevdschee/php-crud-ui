@@ -13,7 +13,15 @@ class TemplateResponder implements Responder
 
     private function applyTemplates($data): string
     {
-        $functions = ['eq' => function ($a, $b) {return $a == $b;}];
+        $functions = [
+            'lt' => function ($a, $b) {return $a < $b;},
+            'gt' => function ($a, $b) {return $a > $b;},
+            'le' => function ($a, $b) {return $a <= $b;},
+            'ge' => function ($a, $b) {return $a >= $b;},
+            'eq' => function ($a, $b) {return $a == $b;},
+            'add' => function ($a, $b) {return $a + $b;},
+            'sub' => function ($a, $b) {return $a - $b;},
+        ];
         $view = file_get_contents('../templates/' . $data['__view'] . '.html');
         $content = Template::render($view, $data, $functions);
         $layout = file_get_contents('../templates/' . $data['__layout'] . '.html');

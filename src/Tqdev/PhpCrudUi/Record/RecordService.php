@@ -93,6 +93,8 @@ class RecordService
             }
         }
 
+        $maxPage = ceil($data['results'] / $pageSize);
+
         return array(
             '__layout' => 'layouts/default',
             '__view' => 'record/list',
@@ -104,26 +106,10 @@ class RecordService
             'primaryKey' => $primaryKey,
             'columns' => $columns,
             'records' => $data['records'],
+            'maxPage' => $maxPage,
+            'pageNumber' => $pageNumber,
+            'pageSize' => $pageSize,
         );
-
-        $maxPage = ceil($data['results'] / $pageSize);
-        if ($maxPage > 1) {
-            $html .= '<div style="float:right">';
-            $html .= "page $pageNumber / $maxPage ";
-            if ($pageNumber - 1 >= 1) {
-                $href = '?page=' . ($pageNumber - 1) . ',' . $pageSize;
-                $html .= '<a href="' . $href . '" class="btn btn-default">&lt;</a> ';
-            } else {
-                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>&lt;</a> ';
-            }
-            if ($pageNumber + 1 <= $maxPage) {
-                $href = '?page=' . ($pageNumber + 1) . ',' . $pageSize;
-                $html .= '<a href="' . $href . '" class="btn btn-default">&gt;</a> ';
-            } else {
-                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>&gt;</a> ';
-            }
-            $html .= '</div>';
-        }
 
         if ($primaryKey) {
             $href = $this->url($table, 'create');

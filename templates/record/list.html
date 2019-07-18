@@ -26,30 +26,24 @@
     </tr>
 {{endfor}}
 </tbody></table>
-
-        $maxPage = ceil($data['results'] / $pageSize);
-        if ($maxPage > 1) {
-            $html .= '<div style="float:right">';
-            $html .= "page $pageNumber / $maxPage ";
-            if ($pageNumber - 1 >= 1) {
-                $href = '?page=' . ($pageNumber - 1) . ',' . $pageSize;
-                $html .= '<a href="' . $href . '" class="btn btn-default">&lt;</a> ';
-            } else {
-                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>&lt;</a> ';
-            }
-            if ($pageNumber + 1 <= $maxPage) {
-                $href = '?page=' . ($pageNumber + 1) . ',' . $pageSize;
-                $html .= '<a href="' . $href . '" class="btn btn-default">&gt;</a> ';
-            } else {
-                $html .= '<a href="javascript:void(0);" class="btn btn-default" disabled>&gt;</a> ';
-            }
-            $html .= '</div>';
-        }
-
-        if ($primaryKey) {
-            $href = $this->url($table, 'create');
-            $html .= '<a href="' . $href . '" class="btn btn-primary">Add</a> ';
-        }
+{{if:maxPage|gt(1)}}
+    <div style="float:right">
+        page {{pageNumber}} / {{maxPage}}
+        {{if:pageNumber|gt(1)}}
+            <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="btn btn-default">&lt;</a>
+        {{else}}
+            <a href="javascript:void(0);" class="btn btn-default" disabled>&lt;</a>
+        {{endif}}
+        {{if:pageNumber|lt(maxPage)}}
+            <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="btn btn-default">&gt;</a>
+        {{else}}
+            <a href="javascript:void(0);" class="btn btn-default" disabled>&gt;</a>
+        {{endif}}
+    </div>
+{{endif}}
+{{if:primaryKey}}
+    <a href="/{{table}}/create" class="btn btn-primary">Add</a>
+{{endif}}
 
         if ($related) {
             $html .= '<br/><br/><h4>Related</h4>';
