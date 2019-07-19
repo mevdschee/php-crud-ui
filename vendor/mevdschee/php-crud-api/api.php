@@ -1690,30 +1690,20 @@ interface Cache
 
 class CacheFactory
 {
-    const PREFIX = 'phpcrudapi-%s-%s-%s-';
-
-    private static function getPrefix(Config $config): string
+    public static function create(string $type, string $prefix, string $config): Cache
     {
-        $driver = $config->getDriver();
-        $database = $config->getDatabase();
-        $filehash = substr(md5(__FILE__), 0, 8);
-        return sprintf(self::PREFIX, $driver, $database, $filehash);
-    }
-
-    public static function create(Config $config): Cache
-    {
-        switch ($config->getCacheType()) {
+        switch ($type) {
             case 'TempFile':
-                $cache = new TempFileCache(self::getPrefix($config), $config->getCachePath());
+                $cache = new TempFileCache($prefix, $config);
                 break;
             case 'Redis':
-                $cache = new RedisCache(self::getPrefix($config), $config->getCachePath());
+                $cache = new RedisCache($prefix, $config);
                 break;
             case 'Memcache':
-                $cache = new MemcacheCache(self::getPrefix($config), $config->getCachePath());
+                $cache = new MemcacheCache($prefix, $config);
                 break;
             case 'Memcached':
-                $cache = new MemcachedCache(self::getPrefix($config), $config->getCachePath());
+                $cache = new MemcachedCache($prefix, $config);
                 break;
             default:
                 $cache = new NoCache();
@@ -2834,6 +2824,25 @@ class GeoJsonController
 
 }
 
+// file: src/Tqdev/PhpCrudApi/Controller/JsonResponder.php
+
+class JsonResponder implements Responder
+{
+    public function error(int $error, string $argument, $details = null): ResponseInterface
+    {
+        $errorCode = new ErrorCode($error);
+        $status = $errorCode->getStatus();
+        $document = new ErrorDocument($errorCode, $argument, $details);
+        return ResponseFactory::fromObject($status, $document);
+    }
+
+    public function success($result): ResponseInterface
+    {
+        return ResponseFactory::fromObject(ResponseFactory::OK, $result);
+    }
+
+}
+
 // file: src/Tqdev/PhpCrudApi/Controller/OpenApiController.php
 
 class OpenApiController
@@ -3029,20 +3038,11 @@ class RecordController
 
 // file: src/Tqdev/PhpCrudApi/Controller/Responder.php
 
-class Responder
+interface Responder
 {
-    public function error(int $error, string $argument, $details = null): ResponseInterface
-    {
-        $errorCode = new ErrorCode($error);
-        $status = $errorCode->getStatus();
-        $document = new ErrorDocument($errorCode, $argument, $details);
-        return ResponseFactory::fromObject($status, $document);
-    }
+    public function error(int $error, string $argument, $details = null): ResponseInterface;
 
-    public function success($result): ResponseInterface
-    {
-        return ResponseFactory::fromObject(ResponseFactory::OK, $result);
-    }
+    public function success($result): ResponseInterface;
 
 }
 
@@ -4793,7 +4793,7 @@ class SimpleRouter implements Router
 
     public function __construct(string $basePath, Responder $responder, Cache $cache, int $ttl, bool $debug)
     {
-        $this->basePath = $basePath;
+        $this->basePath = $this->detectBasePath($basePath);
         $this->responder = $responder;
         $this->cache = $cache;
         $this->ttl = $ttl;
@@ -4802,6 +4802,24 @@ class SimpleRouter implements Router
         $this->routes = $this->loadPathTree();
         $this->routeHandlers = [];
         $this->middlewares = array();
+    }
+
+    private function detectBasePath(string $basePath): string
+    {
+        if ($basePath) {
+            return $basePath;
+        }
+        if (isset($_SERVER['REQUEST_URI'])) {
+            $fullPath = urldecode(explode('?', $_SERVER['REQUEST_URI'])[0]);
+            if (isset($_SERVER['PATH_INFO'])) {
+                $path = $_SERVER['PATH_INFO'];
+                if (substr($fullPath, -1 * strlen($path)) == $path) {
+                    return substr($fullPath, 0, -1 * strlen($path));
+                }
+            }
+            return $fullPath;
+        }
+        return '/';
     }
 
     private function loadPathTree(): PathTree
@@ -4821,7 +4839,11 @@ class SimpleRouter implements Router
         $routeNumber = count($this->routeHandlers);
         $this->routeHandlers[$routeNumber] = $handler;
         if ($this->registration) {
-            $parts = explode('/', trim($path, '/'));
+            $path = trim($path, '/');
+            $parts = array();
+            if ($path) {
+                $parts = explode('/', $path);
+            }
             array_unshift($parts, $method);
             $this->routes->put($parts, $routeNumber);
         }
@@ -4855,18 +4877,18 @@ class SimpleRouter implements Router
 
     private function removeBasePath(ServerRequestInterface $request): ServerRequestInterface
     {
-        if ($this->basePath) {
-            $path = $request->getUri()->getPath();
-            $basePath = rtrim($this->basePath, '/');
-            if (substr($path, 0, strlen($basePath)) == $basePath) {
-                $path = substr($path, strlen($basePath));
-                $request = $request->withUri($request->getUri()->withPath($path));
-            }
-        } elseif (isset($_SERVER['PATH_INFO'])) {
-            $path = $_SERVER['PATH_INFO'];
+        $path = $request->getUri()->getPath();
+        $basePath = rtrim($this->basePath, '/');
+        if (substr($path, 0, strlen($basePath)) == $basePath) {
+            $path = substr($path, strlen($basePath));
             $request = $request->withUri($request->getUri()->withPath($path));
         }
         return $request;
+    }
+
+    public function getBasePath(): string
+    {
+        return $this->basePath;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -7354,9 +7376,10 @@ class Api implements RequestHandlerInterface
             $config->getUsername(),
             $config->getPassword()
         );
-        $cache = CacheFactory::create($config);
+        $prefix = sprintf('phpcrudapi-%s-%s-%s-', $config->getDriver(), $config->getDatabase(), substr(md5(__FILE__), 0, 8));
+        $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
         $reflection = new ReflectionService($db, $cache, $config->getCacheTime());
-        $responder = new Responder();
+        $responder = new JsonResponder();
         $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime(), $config->getDebug());
         foreach ($config->getMiddlewares() as $middleware => $properties) {
             switch ($middleware) {
@@ -7433,11 +7456,47 @@ class Api implements RequestHandlerInterface
         $this->debug = $config->getDebug();
     }
 
+    private function parseBody(string $body) /*: ?object*/
+    {
+        $first = substr($body, 0, 1);
+        if ($first == '[' || $first == '{') {
+            $object = json_decode($body);
+            $causeCode = json_last_error();
+            if ($causeCode !== JSON_ERROR_NONE) {
+                $object = null;
+            }
+        } else {
+            parse_str($body, $input);
+            foreach ($input as $key => $value) {
+                if (substr($key, -9) == '__is_null') {
+                    $input[substr($key, 0, -9)] = null;
+                    unset($input[$key]);
+                }
+            }
+            $object = (object) $input;
+        }
+        return $object;
+    }
+
+    private function addParsedBody(ServerRequestInterface $request): ServerRequestInterface
+    {
+        $body = $request->getBody();
+        if ($body->isReadable() && $body->isSeekable()) {
+            $contents = $body->getContents();
+            $body->rewind();
+            if ($contents) {
+                $parsedBody = $this->parseBody($contents);
+                $request = $request->withParsedBody($parsedBody);
+            }
+        }
+        return $request;
+    }
+
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $response = null;
         try {
-            $response = $this->router->route($request);
+            $response = $this->router->route($this->addParsedBody($request));
         } catch (\Throwable $e) {
             $response = $this->responder->error(ErrorCode::ERROR_NOT_FOUND, $e->getMessage());
             if ($this->debug) {
@@ -7617,37 +7676,13 @@ class Config
 
 class RequestFactory
 {
-    private static function parseBody(string $body) /*: ?object*/
-    {
-        $first = substr($body, 0, 1);
-        if ($first == '[' || $first == '{') {
-            $object = json_decode($body);
-            $causeCode = json_last_error();
-            if ($causeCode !== JSON_ERROR_NONE) {
-                $object = null;
-            }
-        } else {
-            parse_str($body, $input);
-            foreach ($input as $key => $value) {
-                if (substr($key, -9) == '__is_null') {
-                    $input[substr($key, 0, -9)] = null;
-                    unset($input[$key]);
-                }
-            }
-            $object = (object) $input;
-        }
-        return $object;
-    }
-
     public static function fromGlobals(): ServerRequestInterface
     {
         $psr17Factory = new Psr17Factory();
         $creator = new ServerRequestCreator($psr17Factory, $psr17Factory, $psr17Factory, $psr17Factory);
         $serverRequest = $creator->fromGlobals();
-        $body = file_get_contents('php://input');
-        if ($body) {
-            $serverRequest = $serverRequest->withParsedBody(self::parseBody($body));
-        }
+        $stream = $psr17Factory->createStreamFromFile('php://input');
+        $serverRequest = $serverRequest->withBody($stream);
         return $serverRequest;
     }
 
@@ -7670,7 +7705,6 @@ class RequestFactory
             $stream = $psr17Factory->createStream($body);
             $stream->rewind();
             $serverRequest = $serverRequest->withBody($stream);
-            $serverRequest = $serverRequest->withParsedBody(self::parseBody($body));
         }
         return $serverRequest;
     }
@@ -7784,15 +7818,25 @@ class ResponseFactory
     const UNPROCESSABLE_ENTITY = 422;
     const INTERNAL_SERVER_ERROR = 500;
 
+    public static function fromHtml(int $status, string $html): ResponseInterface
+    {
+        return self::from($status, 'text/html', $html);
+    }
+
     public static function fromObject(int $status, $body): ResponseInterface
+    {
+        $content = json_encode($body, JSON_UNESCAPED_UNICODE);
+        return self::from($status, 'application/json', $content);
+    }
+
+    private static function from(int $status, string $contentType, string $content): ResponseInterface
     {
         $psr17Factory = new Psr17Factory();
         $response = $psr17Factory->createResponse($status);
-        $content = json_encode($body, JSON_UNESCAPED_UNICODE);
         $stream = $psr17Factory->createStream($content);
         $stream->rewind();
         $response = $response->withBody($stream);
-        $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withHeader('Content-Type', $contentType);
         $response = $response->withHeader('Content-Length', strlen($content));
         return $response;
     }

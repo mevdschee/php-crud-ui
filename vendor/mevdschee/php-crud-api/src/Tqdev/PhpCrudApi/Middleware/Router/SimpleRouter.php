@@ -25,7 +25,7 @@ class SimpleRouter implements Router
 
     public function __construct(string $basePath, Responder $responder, Cache $cache, int $ttl, bool $debug)
     {
-        $this->basePath = $basePath;
+        $this->basePath = $this->detectBasePath($basePath);
         $this->responder = $responder;
         $this->cache = $cache;
         $this->ttl = $ttl;
@@ -34,6 +34,24 @@ class SimpleRouter implements Router
         $this->routes = $this->loadPathTree();
         $this->routeHandlers = [];
         $this->middlewares = array();
+    }
+
+    private function detectBasePath(string $basePath): string
+    {
+        if ($basePath) {
+            return $basePath;
+        }
+        if (isset($_SERVER['REQUEST_URI'])) {
+            $fullPath = urldecode(explode('?', $_SERVER['REQUEST_URI'])[0]);
+            if (isset($_SERVER['PATH_INFO'])) {
+                $path = $_SERVER['PATH_INFO'];
+                if (substr($fullPath, -1 * strlen($path)) == $path) {
+                    return substr($fullPath, 0, -1 * strlen($path));
+                }
+            }
+            return $fullPath;
+        }
+        return '/';
     }
 
     private function loadPathTree(): PathTree
@@ -53,7 +71,11 @@ class SimpleRouter implements Router
         $routeNumber = count($this->routeHandlers);
         $this->routeHandlers[$routeNumber] = $handler;
         if ($this->registration) {
-            $parts = explode('/', trim($path, '/'));
+            $path = trim($path, '/');
+            $parts = array();
+            if ($path) {
+                $parts = explode('/', $path);
+            }
             array_unshift($parts, $method);
             $this->routes->put($parts, $routeNumber);
         }
@@ -87,18 +109,18 @@ class SimpleRouter implements Router
 
     private function removeBasePath(ServerRequestInterface $request): ServerRequestInterface
     {
-        if ($this->basePath) {
-            $path = $request->getUri()->getPath();
-            $basePath = rtrim($this->basePath, '/');
-            if (substr($path, 0, strlen($basePath)) == $basePath) {
-                $path = substr($path, strlen($basePath));
-                $request = $request->withUri($request->getUri()->withPath($path));
-            }
-        } elseif (isset($_SERVER['PATH_INFO'])) {
-            $path = $_SERVER['PATH_INFO'];
+        $path = $request->getUri()->getPath();
+        $basePath = rtrim($this->basePath, '/');
+        if (substr($path, 0, strlen($basePath)) == $basePath) {
+            $path = substr($path, strlen($basePath));
             $request = $request->withUri($request->getUri()->withPath($path));
         }
         return $request;
+    }
+
+    public function getBasePath(): string
+    {
+        return $this->basePath;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
