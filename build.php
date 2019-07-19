@@ -42,18 +42,26 @@ function runDir(string $base, string $dir, array &$lines, array $ignore): int
     foreach ($entries as $entry) {
         $filename = "$base/$dir/$entry";
         if (is_file($filename)) {
-            if (substr($entry, -4) != '.php') {
-                continue;
-            }
-            $data = file_get_contents($filename);
-            $data = preg_replace('|/\*\*.*?\*/|s', '', $data);
-            array_push($lines, "// file: $dir/$entry");
-            foreach (explode("\n", $data) as $line) {
-                if (!preg_match('/^<\?php|^namespace |^use |vendor\/autoload|declare\s*\(\s*strict_types\s*=\s*1|^\s*\/\//', $line)) {
+            if (substr($entry, -4) == '.php') {
+                $data = file_get_contents($filename);
+                $data = preg_replace('|/\*\*.*?\*/|s', '', $data);
+                array_push($lines, "// file: $dir/$entry");
+                foreach (explode("\n", $data) as $line) {
+                    if (!preg_match('/^<\?php|^namespace |^use |vendor\/autoload|declare\s*\(\s*strict_types\s*=\s*1|^\s*\/\//', $line)) {
+                        array_push($lines, $line);
+                    }
+                }
+                $count++;
+            } elseif (substr($entry, -5) == '.html') {
+                $data = file_get_contents($filename);
+                array_push($lines, "// file: $dir/$entry", "");
+                array_push($lines, "\$_HTML['$dir/$entry'] = <<<'END_OF_HTML'");
+                foreach (explode("\n", $data) as $line) {
                     array_push($lines, $line);
                 }
+                array_push($lines, "END_OF_HTML;", "");
+                $count++;
             }
-            $count++;
         }
     }
     return $count;
@@ -76,6 +84,8 @@ function addHeader(array &$lines)
  **/
 
 namespace Tqdev\PhpCrudUi;
+
+global \$_HTML; \$_HTML = array();
 
 EOF;
     foreach (explode("\n", $head) as $line) {
@@ -110,4 +120,4 @@ $ignore = [
     'vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Config.php',
 ];
 
-run(__DIR__, ['vendor/psr', 'vendor/nyholm', 'vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi', 'src'], 'ui.php', $ignore);
+run(__DIR__, ['templates', 'vendor/psr', 'vendor/nyholm', 'vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi', 'src'], 'ui.php', $ignore);

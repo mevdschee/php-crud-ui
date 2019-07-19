@@ -21,6 +21,16 @@ class TemplateDocument
         $this->variables = array_merge($variables, $this->variables);
     }
 
+    private function getHtmlFileContents(string $template)
+    {
+        global $_HTML;
+        $filename = 'templates/' . $template . '.html';
+        if (isset($_HTML[$filename])) {
+            return $_HTML[$filename];
+        }
+        return file_get_contents('../' . $filename);
+    }
+
     public function __toString(): string
     {
         $functions = [
@@ -34,9 +44,9 @@ class TemplateDocument
         ];
 
         $data = $this->variables;
-        $content = file_get_contents('../templates/' . $this->contentTemplate . '.html');
+        $content = $this->getHtmlFileContents($this->contentTemplate);
         $data['content'] = Template::render($content, $data, $functions);
-        $master = file_get_contents('../templates/' . $this->masterTemplate . '.html');
+        $master = $this->getHtmlFileContents($this->masterTemplate);
         return (string) Template::render($master, $data, $functions);
     }
 }

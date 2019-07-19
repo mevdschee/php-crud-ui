@@ -13,6 +13,303 @@
 
 namespace Tqdev\PhpCrudUi;
 
+global $_HTML; $_HTML = array();
+
+// file: templates/error/show.html
+
+$_HTML['templates/error/show.html'] = <<<'END_OF_HTML'
+<h2>Error</h2>
+
+<strong>code:</strong><br/>
+<p>{{code}}</p>
+
+<strong>message:</strong><br/>
+<p>{{message}}</p>
+
+<strong>details:</strong><br/>
+<pre>{{details}}</pre>
+END_OF_HTML;
+
+// file: templates/layouts/default.html
+
+$_HTML['templates/layouts/default.html'] = <<<'END_OF_HTML'
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>PHP-CRUD-UI</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h3><a href="{{base}}">PHP-CRUD-UI</a></h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <ul class="nav nav-pills nav-stacked">
+                        {{for:item:menu}}
+                            <li{{if:item|eq(table)}} class="active"{{endif}}>
+                                <a href="{{base}}/{{item}}/list">{{item}}</a>
+                            </li>
+                        {{endfor}}
+                    </ul>
+                </div>
+                <div class="col-md-9">
+                    {{content}}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+END_OF_HTML;
+
+// file: templates/layouts/error.html
+
+$_HTML['templates/layouts/error.html'] = <<<'END_OF_HTML'
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>PHP-CRUD-UI</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h3><a href="{{base}}">PHP-CRUD-UI</a></h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <ul class="nav nav-pills nav-stacked">
+                        {{for:item:menu}}
+                            <li{{if:item|eq(table)}} class="active"{{endif}}>
+                                <a href="{{base}}/{{item}}/list">{{item}}</a>
+                            </li>
+                        {{endfor}}
+                    </ul>
+                </div>
+                <div class="col-md-9">
+                    {{content}}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+END_OF_HTML;
+
+// file: templates/record/create.html
+
+$_HTML['templates/record/create.html'] = <<<'END_OF_HTML'
+<h2>{{table}}: create</h2>
+
+<form method="post">
+    {{for:column:columns}}
+        <div class="form-group">
+            <label for="{{column.name}}">{{column.name}}</label>
+            {{if:column.values}}
+                <select id="{{column.name}}" name="{{column.name}}" class="form-control">
+                    <option value=""></option>
+                    {{for:label:value:column.values}}
+                        <option value="{{value}}">{{label}}</option>
+                    {{endfor}}
+                </select>
+            {{else}}
+                <input class="form-control" id="{{column.name}}" name="{{column.name}}" value=""{{if:column.name|eq(primaryKey)}} disabled{{endif}}/>
+            {{endif}}
+        </div>
+    {{endfor}}
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+END_OF_HTML;
+
+// file: templates/record/created.html
+
+$_HTML['templates/record/created.html'] = <<<'END_OF_HTML'
+<h2>{{table}}: create</h2>
+
+<p>Added with {{primaryKey}} {{id}}</p>
+
+<a href="{{base}}/{{table}}/list" class="btn btn-primary">Ok</a>
+END_OF_HTML;
+
+// file: templates/record/delete.html
+
+$_HTML['templates/record/delete.html'] = <<<'END_OF_HTML'
+<h2>{{table}}: delete {{name}}</h2>
+
+<p>The action cannot be undone.</p>
+
+<form method="post">
+    <input type="hidden" name="{{primaryKey}}" value="{{id}}"/>
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="{{base}}/{{table}}/read/{{id}}" class="btn btn-default">Cancel</a>
+</form>
+END_OF_HTML;
+
+// file: templates/record/deleted.html
+
+$_HTML['templates/record/deleted.html'] = <<<'END_OF_HTML'
+<h2>{{table}}: delete</h2>
+
+<p>Deleted with {{primaryKey}} {{id}}</p>
+
+<a href="{{base}}/{{table}}/list" class="btn btn-primary">Ok</a>
+END_OF_HTML;
+
+// file: templates/record/home.html
+
+$_HTML['templates/record/home.html'] = <<<'END_OF_HTML'
+<p>Nothing</p>
+END_OF_HTML;
+
+// file: templates/record/list.html
+
+$_HTML['templates/record/list.html'] = <<<'END_OF_HTML'
+<h2>{{table}}: list</h2>
+{{if:field}}
+    <div class="well well-sm"><div style="float:right;">
+    <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/list">Clear filter</a>
+    </div>Filtered by: {{field}} = {{name}}</div>
+{{endif}}
+<table class="table">
+<thead><tr>
+{{for:column:columns}}
+    <th>{{column}}</th>
+    {{if:column|eq(primaryKey)}}
+        <th></th>
+    {{endif}}
+{{endfor}}
+</tr></thead><tbody>
+{{for:record:records}}
+    <tr>
+    {{for:value:key:record}}
+        <td>{{value}}</td>
+        {{if:key|eq(primaryKey)}}
+            <td style="border-right: 2px solid #ddd; width: 40px;">
+                <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/read/{{value}}">+</a>
+            </td>
+        {{endif}}
+    {{endfor}}
+    </tr>
+{{endfor}}
+</tbody></table>
+{{if:maxPage|gt(1)}}
+    <div style="float:right">
+        page {{pageNumber}} / {{maxPage}}
+        {{if:pageNumber|gt(1)}}
+            <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="btn btn-default">&lt;</a>
+        {{else}}
+            <a href="javascript:void(0);" class="btn btn-default" disabled>&lt;</a>
+        {{endif}}
+        {{if:pageNumber|lt(maxPage)}}
+            <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="btn btn-default">&gt;</a>
+        {{else}}
+            <a href="javascript:void(0);" class="btn btn-default" disabled>&gt;</a>
+        {{endif}}
+    </div>
+{{endif}}
+{{if:primaryKey}}
+    <a href="{{base}}/{{table}}/create" class="btn btn-primary">Add</a>
+{{endif}}
+<br/>
+<br/>
+<h4>Related</h4>
+<ul>
+{{for:relation:field:references}}
+    {{if:relation}}
+        <li><a href="{{base}}/{{relation}}/list">{{relation}}</a></li>
+    {{endif}}
+{{endfor}}
+{{for:relation:referenced}}
+    <li><a href="{{base}}/{{relation.0}}/list">{{relation.0}}</a></li>
+{{endfor}}
+</ul>
+
+END_OF_HTML;
+
+// file: templates/record/read.html
+
+$_HTML['templates/record/read.html'] = <<<'END_OF_HTML'
+<h2>{{table}}: view</h2>
+<table class="table">
+<thead><tr><th>key</th><th></th><th>value</th></tr></thead>
+<tbody>
+{{for:value:key:record}}
+    <tr>
+        <td>{{key}}</td>
+        <td style="border-right: 2px solid #ddd; width: 40px;">
+            {{if:value.table}}
+                <a class="btn btn-default btn-xs" href="{{base}}/{{value.table}}/read/{{value.id}}"> + </a>
+            {{else}}
+                &nbsp;
+            {{endif}}
+        </td><td>
+            {{value.text}}
+        </td>
+    </tr>
+{{endfor}}
+</tbody></table>
+
+<a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
+<a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
+
+<h4>Related</h4>
+<ul>
+{{for:relation:field:references}}
+    {{if:relation}}
+        <li><a href="{{base}}/{{relation}}/list">{{relation}}</a></li>
+    {{endif}}
+{{endfor}}
+{{for:relation:referenced}}
+    <li><a href="{{base}}/{{relation.0}}/list/{{relation.1}}/{{id}}/{{name}}">{{relation.0}} (filtered)</a></li>
+{{endfor}}
+
+END_OF_HTML;
+
+// file: templates/record/update.html
+
+$_HTML['templates/record/update.html'] = <<<'END_OF_HTML'
+<h2>{{table}}: create</h2>
+
+<form method="post">
+    {{for:value:key:record}}
+        <div class="form-group">
+            <label for="{{key}}">{{key}}</label>
+            {{if:value.values}}
+                <select id="{{key}}" name="{{key}}" class="form-control">
+                    <option value=""></option>
+                    {{for:v:k:value.values}}
+                        <option value="{{k}}"{{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
+                    {{endfor}}
+                </select>
+            {{else}}
+                <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
+            {{endif}}
+        </div>
+    {{endfor}}
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+END_OF_HTML;
+
+// file: templates/record/updated.html
+
+$_HTML['templates/record/updated.html'] = <<<'END_OF_HTML'
+<h2>{{table}}: update</h2>
+
+<p>Updated with {{primaryKey}} {{id}}</p>
+
+<a href="{{base}}/{{table}}/read/{{id}}" class="btn btn-primary">Ok</a>
+END_OF_HTML;
+
 // file: vendor/psr/http-factory/src/RequestFactoryInterface.php
 
 interface RequestFactoryInterface
@@ -8124,6 +8421,16 @@ class TemplateDocument
         $this->variables = array_merge($variables, $this->variables);
     }
 
+    private function getHtmlFileContents(string $template)
+    {
+        global $_HTML;
+        $filename = 'templates/' . $template . '.html';
+        if (isset($_HTML[$filename])) {
+            return $_HTML[$filename];
+        }
+        return file_get_contents('../' . $filename);
+    }
+
     public function __toString(): string
     {
         $functions = [
@@ -8137,9 +8444,9 @@ class TemplateDocument
         ];
 
         $data = $this->variables;
-        $content = file_get_contents('../templates/' . $this->contentTemplate . '.html');
+        $content = $this->getHtmlFileContents($this->contentTemplate);
         $data['content'] = Template::render($content, $data, $functions);
-        $master = file_get_contents('../templates/' . $this->masterTemplate . '.html');
+        $master = $this->getHtmlFileContents($this->masterTemplate);
         return (string) Template::render($master, $data, $functions);
     }
 }
