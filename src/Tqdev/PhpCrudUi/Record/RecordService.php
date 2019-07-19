@@ -39,6 +39,11 @@ class RecordService
         return $values;
     }
 
+    public function home(): TemplateDocument
+    {
+        return new TemplateDocument('layouts/default', 'record/home', array());
+    }
+
     public function createForm(string $table, string $action): TemplateDocument
     {
         $references = $this->definition->getReferences($table, $action);
