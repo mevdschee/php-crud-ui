@@ -9,10 +9,10 @@ use Tqdev\PhpCrudApi\Middleware\Router\SimpleRouter;
 use Tqdev\PhpCrudApi\Record\ErrorCode;
 use Tqdev\PhpCrudApi\ResponseUtils;
 use Tqdev\PhpCrudUi\Client\CrudApi;
-use Tqdev\PhpCrudUi\Column\DefinitionService;
-use Tqdev\PhpCrudUi\Controller\RecordController;
+use Tqdev\PhpCrudUi\Column\SpecificationService;
+use Tqdev\PhpCrudUi\Controller\CrudController;
 use Tqdev\PhpCrudUi\Controller\TemplateResponder;
-use Tqdev\PhpCrudUi\Record\RecordService;
+use Tqdev\PhpCrudUi\Record\CrudService;
 
 class Ui implements RequestHandlerInterface
 {
@@ -25,7 +25,7 @@ class Ui implements RequestHandlerInterface
         $api = new CrudApi($config->getUrl());
         $prefix = sprintf('phpcrudui-%s-%s-', substr(md5($config->getUrl()), 0, 12), substr(md5(__FILE__), 0, 12));
         $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
-        $definition = new DefinitionService($api);
+        $definition = new SpecificationService($api);
         $responder = new TemplateResponder();
         $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime(), $config->getDebug());
         $responder->setVariable('base', $router->getBasePath());
@@ -34,8 +34,8 @@ class Ui implements RequestHandlerInterface
         foreach ($config->getControllers() as $controller) {
             switch ($controller) {
                 case 'records':
-                    $records = new RecordService($api, $definition);
-                    new RecordController($router, $responder, $records);
+                    $records = new CrudService($api, $definition);
+                    new CrudController($router, $responder, $records);
                     break;
             }
         }
