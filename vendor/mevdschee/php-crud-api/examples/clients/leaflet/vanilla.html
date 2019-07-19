@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Quick Start - Leaflet</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+	<script src="geojson-layer.js"></script>
+	<script src="geojson-tile-layer.js"></script>
+</head>
+<body>
+
+<div id="mapid" style="width: 600px; height: 400px;"></div>
+<script>
+	var mymap = L.map('mapid').setView([20, 30], 3);
+
+	L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+		maxZoom: 18,
+	}).addTo(mymap);
+
+	L.geoJSONLayer('http://localhost:8000/api.php/geojson/users?bbox={bbox}', {
+		maxZoom: 18,
+	}).addTo(mymap);
+
+	L.geoJSONTileLayer('http://localhost:8000/src/geojson/countries?filter=id,lt,3&tile={z},{x},{y}', {
+		minZoom: 3,
+		maxZoom: 18,
+	}).addTo(mymap);
+</script>
+
+</body>
+</html>

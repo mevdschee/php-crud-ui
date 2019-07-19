@@ -1,0 +1,73 @@
+<html>
+<head>
+<meta charset="utf-8" /> 
+<script>
+
+if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+    alert("Your browser is too old to support HTML5 File API");
+}
+
+function showImagePreview() {
+    var demoImage = document.querySelector('img#preview');
+    var file = document.querySelector('input[type=file]').files[0];
+    var reader = new FileReader();
+    reader.onload = function (event) {
+        console.log(reader.result)
+        demoImage.src = reader.result;
+    }
+    console.log(file)
+    reader.readAsDataURL(file);
+}
+
+function uploadImageFile() {
+    var demoImage = document.querySelector('img#preview');
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function () {
+        if (req.readyState==4) {
+            console.log(req.responseText);
+            listImageFiles();
+        }
+    }
+    url = '/api.php/records/categories';
+    req.open("POST", url);
+    var icon = demoImage.src.split(";")[1].split(",")[1];
+    req.send(JSON.stringify({"name":"upload","icon":icon}));
+}
+
+function listImageFiles() {
+    var ul = document.querySelector('ul');
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function () {
+        if (req.readyState==4) {
+            console.log(req.responseText);
+            output.innerHTML = "";
+            var categories = JSON.parse(req.responseText).records;
+            for (var i=0;i<categories.length;i++) {
+                var li = document.createElement('li');
+                var img = document.createElement('img');
+                var span = document.createElement('span');
+                img.style = 'height:2em;margin:0 .5em;';
+                img.src = "data:image/png;base64," + categories[i].icon;
+                span.innerHTML = categories[i].name;            
+                li.appendChild(img);
+                li.appendChild(span);
+                ul.appendChild(li);
+            }
+        }
+    }
+    url = '/api.php/records/categories';
+    req.open("GET", url);
+    req.send();
+}
+</script>
+</head>
+<body onload="listImageFiles()">
+    <ul id="output"></ul>
+    <hr>
+    <form onsubmit="uploadImageFile(); return false;">
+        <img src="" id="preview" style="height:2em;margin:0 .5em;" alt="PNG preview..."><br><br>
+        <input type="file" onchange="showImagePreview()" accept="image/png"><br><br>
+        <input type="submit" value="Upload PNG">
+    </form>
+</body>
+</html>

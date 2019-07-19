@@ -1,0 +1,15 @@
+GET /records/categories?filter=icon,is,null&filter=id,le,2
+===
+200
+Content-Type: application/json
+Content-Length: 94
+
+{"records":[{"id":1,"name":"announcement","icon":null},{"id":2,"name":"article","icon":null}]}
+===
+GET /records/categories?filter=icon,is&filter=id,le,2
+===
+200
+Content-Type: application/json
+Content-Length: 94
+
+{"records":[{"id":1,"name":"announcement","icon":null},{"id":2,"name":"article","icon":null}]}

@@ -1,0 +1,63 @@
+GET /records/events/1?include=visitors
+===
+200
+Content-Type: application/json
+Content-Length: 14
+
+{"visitors":0}
+===
+PATCH /records/events/1
+
+{"visitors":1}
+===
+200
+Content-Type: application/json
+Content-Length: 1
+
+1
+===
+PATCH /records/events/1
+
+{"visitors":1}
+===
+200
+Content-Type: application/json
+Content-Length: 1
+
+1
+===
+PATCH /records/events/1,1
+
+[{"visitors":1},{"visitors":1}]
+===
+200
+Content-Type: application/json
+Content-Length: 5
+
+[1,1]
+===
+GET /records/events/1?include=visitors
+===
+200
+Content-Type: application/json
+Content-Length: 14
+
+{"visitors":4}
+===
+PATCH /records/events/1
+
+{"visitors":-4}
+===
+200
+Content-Type: application/json
+Content-Length: 1
+
+1
+===
+GET /records/events/1?include=visitors
+===
+200
+Content-Type: application/json
+Content-Length: 14
+
+{"visitors":0}

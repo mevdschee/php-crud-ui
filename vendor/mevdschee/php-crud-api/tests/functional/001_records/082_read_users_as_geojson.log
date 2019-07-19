@@ -1,0 +1,15 @@
+GET /geojson/users/1?exclude=password
+===
+200
+Content-Type: application/json
+Content-Length: 109
+
+{"type":"Feature","id":1,"properties":{"username":"user1"},"geometry":{"type":"Point","coordinates":[30,20]}}
+===
+GET /geojson/users/2?exclude=password
+===
+200
+Content-Type: application/json
+Content-Length: 75
+
+{"type":"Feature","id":2,"properties":{"username":"user2"},"geometry":null}

@@ -1,0 +1,10 @@
+POST /records/posts
+Content-Type: application/json
+
+{"user_id":1,"category_id":1,"content":"test"}
+===
+200
+Content-Type: application/json
+Content-Length: 1
+
+3
