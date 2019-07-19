@@ -23,7 +23,7 @@ class Ui implements RequestHandlerInterface
     public function __construct(Config $config)
     {
         $api = new CrudApi($config->getUrl());
-        $prefix = sprintf('phpcrudui-%s-%s-', $config->getUrl(), substr(md5(__FILE__), 0, 8));
+        $prefix = sprintf('phpcrudui-%s-%s-', substr(md5($config->getUrl()), 0, 8), substr(md5(__FILE__), 0, 8));
         $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
         $definition = new DefinitionService($api);
         $responder = new TemplateResponder();
