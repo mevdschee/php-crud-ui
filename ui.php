@@ -8137,9 +8137,9 @@ class TemplateDocument
         ];
 
         $data = $this->variables;
-        $content = file_get_contents('templates/' . $this->contentTemplate . '.html');
+        $content = file_get_contents('../templates/' . $this->contentTemplate . '.html');
         $data['content'] = Template::render($content, $data, $functions);
-        $master = file_get_contents('templates/' . $this->masterTemplate . '.html');
+        $master = file_get_contents('../templates/' . $this->masterTemplate . '.html');
         return (string) Template::render($master, $data, $functions);
     }
 }
