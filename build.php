@@ -120,4 +120,12 @@ $ignore = [
     'vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Config.php',
 ];
 
-run(__DIR__, ['templates', 'vendor/psr', 'vendor/nyholm', 'vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi', 'src'], 'ui.php', $ignore);
+$dirs = [
+    'templates',
+    'vendor/psr',
+    'vendor/nyholm',
+    'vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi',
+    'src',
+];
+
+run(__DIR__, $dirs, 'ui.php', $ignore);
