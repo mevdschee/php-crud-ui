@@ -44,11 +44,25 @@ class Ui implements RequestHandlerInterface
         $this->debug = $config->getDebug();
     }
 
+    private function addParsedBody(ServerRequestInterface $request): ServerRequestInterface
+    {
+        $body = $request->getBody();
+        if ($body->isReadable() && $body->isSeekable()) {
+            $contents = $body->getContents();
+            $body->rewind();
+            if ($contents) {
+                parse_str($contents, $parsedBody);
+                $request = $request->withParsedBody($parsedBody);
+            }
+        }
+        return $request;
+    }
+
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $response = null;
         try {
-            $response = $this->router->route($request);
+            $response = $this->router->route($this->addParsedBody($request));
         } catch (\Throwable $e) {
             $response = $this->responder->error(ErrorCode::ERROR_NOT_FOUND, $e->getMessage());
             if ($this->debug) {
