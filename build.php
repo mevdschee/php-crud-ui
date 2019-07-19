@@ -9,7 +9,7 @@ function removeIgnored(string $dir, array &$entries, array $ignore)
     }
 }
 
-function prioritySort(string $dir, array &$entries, array $priority)
+function prioritySort(string $dir, array &$entries)
 {
     $first = array();
     foreach ($entries as $i => $entry) {
@@ -24,19 +24,19 @@ function prioritySort(string $dir, array &$entries, array $priority)
     }
 }
 
-function runDir(string $base, string $dir, array &$lines, array $ignore, array $priority): int
+function runDir(string $base, string $dir, array &$lines, array $ignore): int
 {
     $count = 0;
     $entries = scandir($dir);
     removeIgnored($dir, $entries, $ignore);
-    prioritySort($dir, $entries, $priority);
+    prioritySort($dir, $entries);
     foreach ($entries as $entry) {
         if ($entry === '.' || $entry === '..') {
             continue;
         }
         $filename = "$base/$dir/$entry";
         if (is_dir($filename)) {
-            $count += runDir($base, "$dir/$entry", $lines, $ignore, $priority);
+            $count += runDir($base, "$dir/$entry", $lines, $ignore);
         }
     }
     foreach ($entries as $entry) {
@@ -83,16 +83,15 @@ EOF;
     }
 }
 
-function run(string $base, array $dirs, string $filename, array $ignore, array $priority)
+function run(string $base, array $dirs, string $filename, array $ignore)
 {
     $lines = [];
     $start = microtime(true);
     addHeader($lines);
     $ignore = array_flip($ignore);
-    $priority = array_flip($priority);
     $count = 0;
     foreach ($dirs as $dir) {
-        $count += runDir($base, $dir, $lines, $ignore, $priority);
+        $count += runDir($base, $dir, $lines, $ignore);
     }
     $data = implode("\n", $lines);
     $data = preg_replace('/\n({)?\s*\n\s*\n/', "\n$1\n", $data);
@@ -107,25 +106,8 @@ function run(string $base, array $dirs, string $filename, array $ignore, array $
 }
 
 $ignore = [
-    'vendor/autoload.php',
-    'vendor/composer',
-    'vendor/php-http',
     'vendor/nyholm/psr7/src/Factory/HttplugFactory.php',
-    'vendor/mevdschee/php-crud-api/api.php',
-    'vendor/mevdschee/php-crud-api/build.php',
-    'vendor/mevdschee/php-crud-api/test.php',
-    'vendor/mevdschee/php-crud-api/update.php',
-    'vendor/mevdschee/php-crud-api/src/index.php',
     'vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Config.php',
-    'vendor/mevdschee/php-crud-api/extras',
-    'vendor/mevdschee/php-crud-api/tests',
-    'vendor/mevdschee/php-crud-api/examples',
-    'vendor/mevdschee/php-crud-api/docker',
-    'vendor/mevdschee/php-crud-api/vendor',
 ];
 
-$priority = [
-    'vendor/psr',
-];
-
-run(__DIR__, ['vendor', 'src'], 'ui.php', $ignore, $priority);
+run(__DIR__, ['vendor/psr', 'vendor/nyholm', 'vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi', 'src'], 'ui.php', $ignore);
