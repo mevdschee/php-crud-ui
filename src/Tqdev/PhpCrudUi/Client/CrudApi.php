@@ -25,17 +25,17 @@ class CrudApi
         return $this->call('GET', '/records/' . urlencode($table) . '/' . urlencode($id), $args);
     }
 
-    public function addRecord(string $table, $record)
+    public function createRecord(string $table, $record)
     {
         return $this->call('POST', '/records/' . urlencode($table), [], $record);
     }
 
-    public function removeRecord(string $table, string $id)
+    public function deleteRecord(string $table, string $id)
     {
         return $this->call('DELETE', '/records/' . urlencode($table) . '/' . urlencode($id));
     }
 
-    public function editRecord(string $table, string $id, $record)
+    public function updateRecord(string $table, string $id, $record)
     {
         return $this->call('PUT', '/records/' . urlencode($table) . '/' . urlencode($id), [], $record);
     }

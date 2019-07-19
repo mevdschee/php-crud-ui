@@ -65,7 +65,7 @@ class RecordService
     {
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
-        $id = $this->api->addRecord($table, $record);
+        $id = $this->api->createRecord($table, $record);
 
         $variables = array(
             'table' => $table,
@@ -145,7 +145,7 @@ class RecordService
     {
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
-        $affected = $this->api->editRecord($table, $id, $record);
+        $affected = $this->api->updateRecord($table, $id, $record);
 
         $variables = array(
             'table' => $table,
@@ -181,7 +181,7 @@ class RecordService
     {
         $primaryKey = $this->definition->getPrimaryKey($table, 'read');
 
-        $affected = $this->api->removeRecord($table, $id);
+        $affected = $this->api->deleteRecord($table, $id);
 
         $variables = array(
             'table' => $table,
