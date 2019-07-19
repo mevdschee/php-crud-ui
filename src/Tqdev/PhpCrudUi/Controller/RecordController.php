@@ -76,7 +76,7 @@ class RecordController
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        $result = $this->service->updateForm($table, $action, $id, $record);
+        $result = $this->service->updateForm($table, $action, $id);
         return $this->responder->success($result);
     }
 
