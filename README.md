@@ -20,3 +20,15 @@ Test the script by opening the following URL:
     http://localhost:8080/ui.php/
 
 Don't forget to modify the configuration at the bottom of the file.
+
+## Compilation
+
+You can compile all files into a single "`ui.php`" file using:
+
+    php build.php
+
+You can access the non-compiled code at the URL:
+
+    http://localhost:8080/src/records/posts/1
+
+The non-compiled code resides in the "`src`" and "`vendor`" directories. The "`vendor`" directory contains the dependencies.
