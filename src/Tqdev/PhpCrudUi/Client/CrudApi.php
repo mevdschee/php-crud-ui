@@ -15,12 +15,12 @@ class CrudApi
         return $this->call('GET', '/openapi');
     }
 
-    public function getRecords(string $table, array $args)
+    public function listRecords(string $table, array $args)
     {
         return $this->call('GET', '/records/' . urlencode($table), $args);
     }
 
-    public function getRecord(string $table, string $id, array $args)
+    public function readRecord(string $table, string $id, array $args)
     {
         return $this->call('GET', '/records/' . urlencode($table) . '/' . urlencode($id), $args);
     }

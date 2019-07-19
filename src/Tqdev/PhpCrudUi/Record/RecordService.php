@@ -27,7 +27,7 @@ class RecordService
         if ($relatedTable) {
             $pair = $this->definition->getColumnPair($relatedTable);
             $args = array('include' => implode(',', $pair));
-            $data = $this->api->getRecords($relatedTable, $args);
+            $data = $this->api->listRecords($relatedTable, $args);
             foreach ($data['records'] as $record) {
                 if (count($pair) > 1) {
                     $values[$record[$pair[0]]] = $record[$pair[1]];
@@ -87,7 +87,7 @@ class RecordService
 
         $args = array();
         $args['join'] = array_values(array_filter($references));
-        $record = $this->api->getRecord($table, $id, $args);
+        $record = $this->api->readRecord($table, $id, $args);
 
         $name = $this->definition->referenceText($table, $record);
 
@@ -123,7 +123,7 @@ class RecordService
 
         $columns = $this->definition->getColumns($table, $action);
 
-        $record = $this->api->getRecord($table, $id, []);
+        $record = $this->api->readRecord($table, $id, []);
 
         foreach ($record as $key => $value) {
             $values = $this->getDropDownValues($references[$key]);
@@ -162,7 +162,7 @@ class RecordService
     {
         $primaryKey = $this->definition->getPrimaryKey($table, 'read');
 
-        $record = $this->api->getRecord($table, $id, []);
+        $record = $this->api->readRecord($table, $id, []);
 
         $name = $this->definition->referenceText($table, $record);
 
@@ -211,7 +211,7 @@ class RecordService
         }
         $args['join'] = array_values(array_filter($references));
         $args['page'] = "$pageNumber,$pageSize";
-        $data = $this->api->getRecords($table, $args);
+        $data = $this->api->listRecords($table, $args);
 
         foreach ($data['records'] as $i => $record) {
             foreach ($record as $key => $value) {
