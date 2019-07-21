@@ -1992,7 +1992,7 @@ namespace Nyholm\Psr7 {
             return $new;
         }
 
-        private function setHeaders(array $headers): void
+        private function setHeaders(array $headers) /*:void*/
         {
             foreach ($headers as $header => $value) {
                 $value = $this->validateAndTrimHeader($header, $value);
@@ -2192,7 +2192,7 @@ namespace Nyholm\Psr7 {
             return $new;
         }
 
-        private function updateHostFromUri(): void
+        private function updateHostFromUri() /*:void*/
         {
             if ('' === $host = $this->uri->getHost()) {
                 return;
@@ -2230,7 +2230,7 @@ namespace Nyholm\Psr7 {
         use MessageTrait;
 
         /** @var array Map of standard HTTP status code/reason phrases */
-        private const PHRASES = [
+        /*private*/ const PHRASES = [
             100 => 'Continue', 101 => 'Switching Protocols', 102 => 'Processing',
             200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content', 207 => 'Multi-status', 208 => 'Already Reported',
             300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 306 => 'Switch Proxy', 307 => 'Temporary Redirect',
@@ -2494,7 +2494,7 @@ namespace Nyholm\Psr7 {
         private $size;
 
         /** @var array Hash of readable and writable stream types */
-        private const READ_WRITE_HASH = [
+        /*private*/ const READ_WRITE_HASH = [
             'read' => [
                 'r' => true, 'w+' => true, 'r+' => true, 'x+' => true, 'c+' => true,
                 'rb' => true, 'w+b' => true, 'r+b' => true, 'x+b' => true,
@@ -2570,7 +2570,7 @@ namespace Nyholm\Psr7 {
             }
         }
 
-        public function close(): void
+        public function close() /*:void*/
         {
             if (isset($this->stream)) {
                 if (\is_resource($this->stream)) {
@@ -2594,7 +2594,7 @@ namespace Nyholm\Psr7 {
             return $result;
         }
 
-        public function getSize(): ?int
+        public function getSize() /*:?int*/
         {
             if (null !== $this->size) {
                 return $this->size;
@@ -2638,7 +2638,7 @@ namespace Nyholm\Psr7 {
             return $this->seekable;
         }
 
-        public function seek($offset, $whence = \SEEK_SET): void
+        public function seek($offset, $whence = \SEEK_SET) /*:void*/
         {
             if (!$this->seekable) {
                 throw new \RuntimeException('Stream is not seekable');
@@ -2649,7 +2649,7 @@ namespace Nyholm\Psr7 {
             }
         }
 
-        public function rewind(): void
+        public function rewind() /*:void*/
         {
             $this->seek(0);
         }
@@ -2732,7 +2732,7 @@ namespace Nyholm\Psr7 {
     final class UploadedFile implements UploadedFileInterface
     {
         /** @var array */
-        private const ERRORS = [
+        /*private*/ const ERRORS = [
             \UPLOAD_ERR_OK => 1,
             \UPLOAD_ERR_INI_SIZE => 1,
             \UPLOAD_ERR_FORM_SIZE => 1,
@@ -2811,7 +2811,7 @@ namespace Nyholm\Psr7 {
         /**
          * @throws \RuntimeException if is moved or not ok
          */
-        private function validateActive(): void
+        private function validateActive() /*:void*/
         {
             if (\UPLOAD_ERR_OK !== $this->error) {
                 throw new \RuntimeException('Cannot retrieve stream due to upload error');
@@ -2835,7 +2835,7 @@ namespace Nyholm\Psr7 {
             return Stream::create($resource);
         }
 
-        public function moveTo($targetPath): void
+        public function moveTo($targetPath) /*:void*/
         {
             $this->validateActive();
 
@@ -2877,12 +2877,12 @@ namespace Nyholm\Psr7 {
             return $this->error;
         }
 
-        public function getClientFilename(): ?string
+        public function getClientFilename() /*:?string*/
         {
             return $this->clientFilename;
         }
 
-        public function getClientMediaType(): ?string
+        public function getClientMediaType() /*:?string*/
         {
             return $this->clientMediaType;
         }
@@ -2905,11 +2905,11 @@ namespace Nyholm\Psr7 {
      */
     final class Uri implements UriInterface
     {
-        private const SCHEMES = ['http' => 80, 'https' => 443];
+        /*private*/ const SCHEMES = ['http' => 80, 'https' => 443];
 
-        private const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
+        /*private*/ const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
 
-        private const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
+        /*private*/ const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
 
         /** @var string Uri scheme. */
         private $scheme = '';
@@ -2991,7 +2991,7 @@ namespace Nyholm\Psr7 {
             return $this->host;
         }
 
-        public function getPort(): ?int
+        public function getPort() /*:?int*/
         {
             return $this->port;
         }
@@ -3159,7 +3159,7 @@ namespace Nyholm\Psr7 {
             return !isset(self::SCHEMES[$scheme]) || $port !== self::SCHEMES[$scheme];
         }
 
-        private function filterPort($port): ?int
+        private function filterPort($port) /*:?int*/
         {
             if (null === $port) {
                 return null;
@@ -9850,6 +9850,173 @@ namespace Tqdev\PhpCrudApi {
                 }
             }
             return $response;
+        }
+    }
+}
+
+// file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Config.php
+namespace Tqdev\PhpCrudApi {
+
+    class Config
+    {
+        private $values = [
+            'driver' => null,
+            'address' => 'localhost',
+            'port' => null,
+            'username' => null,
+            'password' => null,
+            'database' => null,
+            'middlewares' => 'cors',
+            'controllers' => 'records,geojson,openapi',
+            'cacheType' => 'TempFile',
+            'cachePath' => '',
+            'cacheTime' => 10,
+            'debug' => false,
+            'basePath' => '',
+            'openApiBase' => '{"info":{"title":"PHP-CRUD-API","version":"1.0.0"}}',
+        ];
+
+        private function getDefaultDriver(array $values): string
+        {
+            if (isset($values['driver'])) {
+                return $values['driver'];
+            }
+            return 'mysql';
+        }
+
+        private function getDefaultPort(string $driver): int
+        {
+            switch ($driver) {
+                case 'mysql':return 3306;
+                case 'pgsql':return 5432;
+                case 'sqlsrv':return 1433;
+            }
+        }
+
+        private function getDefaultAddress(string $driver): string
+        {
+            switch ($driver) {
+                case 'mysql':return 'localhost';
+                case 'pgsql':return 'localhost';
+                case 'sqlsrv':return 'localhost';
+            }
+        }
+
+        private function getDriverDefaults(string $driver): array
+        {
+            return [
+                'driver' => $driver,
+                'address' => $this->getDefaultAddress($driver),
+                'port' => $this->getDefaultPort($driver),
+            ];
+        }
+
+        public function __construct(array $values)
+        {
+            $driver = $this->getDefaultDriver($values);
+            $defaults = $this->getDriverDefaults($driver);
+            $newValues = array_merge($this->values, $defaults, $values);
+            $newValues = $this->parseMiddlewares($newValues);
+            $diff = array_diff_key($newValues, $this->values);
+            if (!empty($diff)) {
+                $key = array_keys($diff)[0];
+                throw new \Exception("Config has invalid value '$key'");
+            }
+            $this->values = $newValues;
+        }
+
+        private function parseMiddlewares(array $values): array
+        {
+            $newValues = array();
+            $properties = array();
+            $middlewares = array_map('trim', explode(',', $values['middlewares']));
+            foreach ($middlewares as $middleware) {
+                $properties[$middleware] = [];
+            }
+            foreach ($values as $key => $value) {
+                if (strpos($key, '.') === false) {
+                    $newValues[$key] = $value;
+                } else {
+                    list($middleware, $key2) = explode('.', $key, 2);
+                    if (isset($properties[$middleware])) {
+                        $properties[$middleware][$key2] = $value;
+                    } else {
+                        throw new \Exception("Config has invalid value '$key'");
+                    }
+                }
+            }
+            $newValues['middlewares'] = array_reverse($properties, true);
+            return $newValues;
+        }
+
+        public function getDriver(): string
+        {
+            return $this->values['driver'];
+        }
+
+        public function getAddress(): string
+        {
+            return $this->values['address'];
+        }
+
+        public function getPort(): int
+        {
+            return $this->values['port'];
+        }
+
+        public function getUsername(): string
+        {
+            return $this->values['username'];
+        }
+
+        public function getPassword(): string
+        {
+            return $this->values['password'];
+        }
+
+        public function getDatabase(): string
+        {
+            return $this->values['database'];
+        }
+
+        public function getMiddlewares(): array
+        {
+            return $this->values['middlewares'];
+        }
+
+        public function getControllers(): array
+        {
+            return array_map('trim', explode(',', $this->values['controllers']));
+        }
+
+        public function getCacheType(): string
+        {
+            return $this->values['cacheType'];
+        }
+
+        public function getCachePath(): string
+        {
+            return $this->values['cachePath'];
+        }
+
+        public function getCacheTime(): int
+        {
+            return $this->values['cacheTime'];
+        }
+
+        public function getDebug(): bool
+        {
+            return $this->values['debug'];
+        }
+
+        public function getBasePath(): string
+        {
+            return $this->values['basePath'];
+        }
+
+        public function getOpenApiBase(): array
+        {
+            return json_decode($this->values['openApiBase'], true);
         }
     }
 }

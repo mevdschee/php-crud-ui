@@ -109,7 +109,6 @@ function run(string $base, array $dirs, string $filename, array $ignore)
 
 $ignore = [
     'vendor/nyholm/psr7/src/Factory/HttplugFactory.php',
-    'vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Config.php',
 ];
 
 $dirs = [
