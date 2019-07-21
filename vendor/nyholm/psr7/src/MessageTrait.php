@@ -135,7 +135,7 @@ trait MessageTrait
         return $new;
     }
 
-    private function setHeaders(array $headers): void
+    private function setHeaders(array $headers) /*:void*/
     {
         foreach ($headers as $header => $value) {
             $value = $this->validateAndTrimHeader($header, $value);

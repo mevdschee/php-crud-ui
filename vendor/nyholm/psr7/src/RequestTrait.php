@@ -90,7 +90,7 @@ trait RequestTrait
         return $new;
     }
 
-    private function updateHostFromUri(): void
+    private function updateHostFromUri() /*:void*/
     {
         if ('' === $host = $this->uri->getHost()) {
             return;
