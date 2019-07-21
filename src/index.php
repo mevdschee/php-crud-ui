@@ -1,4 +1,7 @@
 <?php
+
+namespace Tqdev\PhpCrudUi;
+
 use Tqdev\PhpCrudApi\RequestFactory;
 use Tqdev\PhpCrudApi\ResponseUtils;
 use Tqdev\PhpCrudUi\Config;

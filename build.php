@@ -9,27 +9,12 @@ function removeIgnored(string $dir, array &$entries, array $ignore)
     }
 }
 
-function prioritySort(string $dir, array &$entries)
-{
-    $first = array();
-    foreach ($entries as $i => $entry) {
-        if (isset($priority[$dir . '/' . $entry])) {
-            array_push($first, $entry);
-            unset($entries[$i]);
-        }
-    }
-    sort($entries);
-    foreach ($first as $entry) {
-        array_unshift($entries, $entry);
-    }
-}
-
 function runDir(string $base, string $dir, array &$lines, array $ignore): int
 {
     $count = 0;
     $entries = scandir($dir);
     removeIgnored($dir, $entries, $ignore);
-    prioritySort($dir, $entries);
+    sort($entries);
     foreach ($entries as $entry) {
         if ($entry === '.' || $entry === '..') {
             continue;
@@ -44,22 +29,30 @@ function runDir(string $base, string $dir, array &$lines, array $ignore): int
         if (is_file($filename)) {
             if (substr($entry, -4) == '.php') {
                 $data = file_get_contents($filename);
-                $data = preg_replace('|/\*\*.*?\*/|s', '', $data);
+                $data = trim(preg_replace('/\s*<\?php\s+/s', '', $data, 1));
                 array_push($lines, "// file: $dir/$entry");
                 foreach (explode("\n", $data) as $line) {
-                    if (!preg_match('/^<\?php|^namespace |^use |vendor\/autoload|declare\s*\(\s*strict_types\s*=\s*1|^\s*\/\//', $line)) {
-                        array_push($lines, $line);
+                    if (preg_match('/vendor\/autoload|declare\s*\(\s*strict_types\s*=\s*1/', $line)) {
+                        continue;
                     }
+                    if ($line) {
+                        $line = '    ' . $line;
+                    }
+                    $line = preg_replace('/^\s*(namespace[^;]+);/', '\1 {', $line);
+                    array_push($lines, $line);
                 }
+                array_push($lines, '}');
+                array_push($lines, '');
                 $count++;
             } elseif (substr($entry, -5) == '.html') {
                 $data = file_get_contents($filename);
-                array_push($lines, "// file: $dir/$entry", "");
+                array_push($lines, "// file: $dir/$entry");
+                array_push($lines, 'namespace _Html {');
                 array_push($lines, "\$_HTML['$dir/$entry'] = <<<'END_OF_HTML'");
                 foreach (explode("\n", $data) as $line) {
                     array_push($lines, $line);
                 }
-                array_push($lines, "END_OF_HTML;", "");
+                array_push($lines, 'END_OF_HTML;', '}', '');
                 $count++;
             }
         }
@@ -72,9 +65,9 @@ function addHeader(array &$lines)
     $head = <<<EOF
 <?php
 /**
- * PHP-CRUD-UI v2               License: MIT
+ * PHP-CRUD-API v2              License: MIT
  * Maurits van der Schee: maurits@vdschee.nl
- * https://github.com/mevdschee/php-crud-ui
+ * https://github.com/mevdschee/php-crud-api
  *
  * Dependencies:
  * - vendor/psr/*: PHP-FIG
@@ -82,15 +75,20 @@ function addHeader(array &$lines)
  * - vendor/nyholm/*: Tobias Nyholm
  *   https://github.com/Nyholm
  **/
-
-namespace Tqdev\PhpCrudUi;
-
-global \$_HTML; \$_HTML = array();
-
+ 
 EOF;
     foreach (explode("\n", $head) as $line) {
         array_push($lines, $line);
     }
+}
+
+function addHtmlGlobal(array &$lines)
+{
+    array_push($lines, 'namespace _Html {');
+    array_push($lines, '    global $_HTML;');
+    array_push($lines, '    $_HTML = array();');
+    array_push($lines, '}');
+    array_push($lines, '');
 }
 
 function run(string $base, array $dirs, string $filename, array $ignore)
@@ -98,6 +96,7 @@ function run(string $base, array $dirs, string $filename, array $ignore)
     $lines = [];
     $start = microtime(true);
     addHeader($lines);
+    addHtmlGlobal($lines);
     $ignore = array_flip($ignore);
     $count = 0;
     foreach ($dirs as $dir) {
