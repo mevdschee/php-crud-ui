@@ -47,7 +47,7 @@ function runDir(string $base, string $dir, array &$lines, array $ignore): int
             } elseif (substr($entry, -5) == '.html') {
                 $data = file_get_contents($filename);
                 array_push($lines, "// file: $dir/$entry");
-                array_push($lines, 'namespace _Html {');
+                array_push($lines, 'namespace {');
                 array_push($lines, "\$_HTML['$dir/$entry'] = <<<'END_OF_HTML'");
                 foreach (explode("\n", $data) as $line) {
                     array_push($lines, $line);
@@ -84,7 +84,7 @@ EOF;
 
 function addHtmlGlobal(array &$lines)
 {
-    array_push($lines, 'namespace _Html {');
+    array_push($lines, 'namespace {');
     array_push($lines, '    global $_HTML;');
     array_push($lines, '    $_HTML = array();');
     array_push($lines, '}');

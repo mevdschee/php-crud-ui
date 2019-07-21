@@ -11,13 +11,13 @@
  *   https://github.com/Nyholm
  **/
  
-namespace _Html {
+namespace {
     global $_HTML;
     $_HTML = array();
 }
 
 // file: templates/error/show.html
-namespace _Html {
+namespace {
 $_HTML['templates/error/show.html'] = <<<'END_OF_HTML'
 <h2>Error</h2>
 
@@ -33,7 +33,7 @@ END_OF_HTML;
 }
 
 // file: templates/layouts/default.html
-namespace _Html {
+namespace {
 $_HTML['templates/layouts/default.html'] = <<<'END_OF_HTML'
 <!DOCTYPE html>
 <html lang="en">
@@ -71,7 +71,7 @@ END_OF_HTML;
 }
 
 // file: templates/layouts/error.html
-namespace _Html {
+namespace {
 $_HTML['templates/layouts/error.html'] = <<<'END_OF_HTML'
 <!DOCTYPE html>
 <html lang="en">
@@ -109,7 +109,7 @@ END_OF_HTML;
 }
 
 // file: templates/record/create.html
-namespace _Html {
+namespace {
 $_HTML['templates/record/create.html'] = <<<'END_OF_HTML'
 <h2>{{table}}: create</h2>
 
@@ -136,7 +136,7 @@ END_OF_HTML;
 }
 
 // file: templates/record/created.html
-namespace _Html {
+namespace {
 $_HTML['templates/record/created.html'] = <<<'END_OF_HTML'
 <h2>{{table}}: create</h2>
 
@@ -147,7 +147,7 @@ END_OF_HTML;
 }
 
 // file: templates/record/delete.html
-namespace _Html {
+namespace {
 $_HTML['templates/record/delete.html'] = <<<'END_OF_HTML'
 <h2>{{table}}: delete {{name}}</h2>
 
@@ -162,7 +162,7 @@ END_OF_HTML;
 }
 
 // file: templates/record/deleted.html
-namespace _Html {
+namespace {
 $_HTML['templates/record/deleted.html'] = <<<'END_OF_HTML'
 <h2>{{table}}: delete</h2>
 
@@ -173,14 +173,14 @@ END_OF_HTML;
 }
 
 // file: templates/record/home.html
-namespace _Html {
+namespace {
 $_HTML['templates/record/home.html'] = <<<'END_OF_HTML'
 <p>Nothing</p>
 END_OF_HTML;
 }
 
 // file: templates/record/list.html
-namespace _Html {
+namespace {
 $_HTML['templates/record/list.html'] = <<<'END_OF_HTML'
 <h2>{{table}}: list</h2>
 {{if:field}}
@@ -246,7 +246,7 @@ END_OF_HTML;
 }
 
 // file: templates/record/read.html
-namespace _Html {
+namespace {
 $_HTML['templates/record/read.html'] = <<<'END_OF_HTML'
 <h2>{{table}}: view</h2>
 <table class="table">
@@ -286,7 +286,7 @@ END_OF_HTML;
 }
 
 // file: templates/record/update.html
-namespace _Html {
+namespace {
 $_HTML['templates/record/update.html'] = <<<'END_OF_HTML'
 <h2>{{table}}: create</h2>
 
@@ -313,7 +313,7 @@ END_OF_HTML;
 }
 
 // file: templates/record/updated.html
-namespace _Html {
+namespace {
 $_HTML['templates/record/updated.html'] = <<<'END_OF_HTML'
 <h2>{{table}}: update</h2>
 
