@@ -10,7 +10,7 @@
  * - vendor/nyholm/*: Tobias Nyholm
  *   https://github.com/Nyholm
  **/
- 
+
 namespace {
     global $_HTML;
     $_HTML = array();
