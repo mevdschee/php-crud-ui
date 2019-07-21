@@ -60,7 +60,7 @@ function runDir(string $base, string $dir, array &$lines, array $ignore): int
 
 function addHeader(array &$lines)
 {
-    $head = <<<EOF
+    $head = <<<'EOF'
 <?php
 /**
  * PHP-CRUD-API v2              License: MIT
@@ -73,20 +73,16 @@ function addHeader(array &$lines)
  * - vendor/nyholm/*: Tobias Nyholm
  *   https://github.com/Nyholm
  **/
- 
+
+namespace {
+    global $_HTML;
+    $_HTML = array();
+}
+
 EOF;
     foreach (explode("\n", $head) as $line) {
         array_push($lines, $line);
     }
-}
-
-function addHtmlGlobal(array &$lines)
-{
-    array_push($lines, 'namespace {');
-    array_push($lines, '    global $_HTML;');
-    array_push($lines, '    $_HTML = array();');
-    array_push($lines, '}');
-    array_push($lines, '');
 }
 
 function run(string $base, array $dirs, string $filename, array $ignore)
@@ -94,7 +90,6 @@ function run(string $base, array $dirs, string $filename, array $ignore)
     $lines = [];
     $start = microtime(true);
     addHeader($lines);
-    addHtmlGlobal($lines);
     $ignore = array_flip($ignore);
     $count = 0;
     foreach ($dirs as $dir) {
