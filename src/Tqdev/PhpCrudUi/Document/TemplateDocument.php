@@ -9,6 +9,7 @@ class TemplateDocument
     private $contentTemplate;
     private $variables;
     private $template;
+    private $templatePath;
 
     public function __construct(string $masterTemplate, string $contentTemplate, array $variables)
     {
@@ -16,6 +17,7 @@ class TemplateDocument
         $this->contentTemplate = $contentTemplate;
         $this->variables = $variables;
         $this->template = new Template('html',$this->getFunctions());
+        $this->templatePath = '';
     }
 
     private function getFunctions(): array
@@ -36,14 +38,19 @@ class TemplateDocument
         $this->variables = array_merge($variables, $this->variables);
     }
 
+    public function setTemplatePath(string $path)
+    {
+        $this->templatePath = rtrim($path,'/');
+    }
+
     private function getHtmlFileContents(string $template)
     {
         global $_HTML;
-        $filename = 'templates/' . $template . '.html';
-        if (isset($_HTML[$filename])) {
-            return $_HTML[$filename];
+        if (isset($_HTML[$template])) {
+            return $_HTML[$template];
         }
-        return file_get_contents('../' . $filename);
+        $filename = $this->templatePath . '/' . $template . '.html';
+        return file_get_contents($filename);
     }
 
     public function __toString(): string

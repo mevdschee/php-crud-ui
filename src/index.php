@@ -11,6 +11,7 @@ require '../vendor/autoload.php';
 
 $config = new Config([
     'url' => 'http://localhost:8000/api.php',
+    'templatePath' => '../templates',
 ]);
 $request = RequestFactory::fromGlobals();
 $ui = new Ui($config);

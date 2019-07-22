@@ -10,7 +10,14 @@ use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
 class TemplateResponder implements Responder
 {
-    private $variables = array();
+    private $variables;
+    private $templatePath;
+
+    public function __construct(string $path)
+    {
+        $this->variables = array();
+        $this->templatePath = $path;
+    }
 
     public function setVariable(string $name, $value)
     {
@@ -24,12 +31,14 @@ class TemplateResponder implements Responder
         $document = new ErrorDocument($errorCode, $argument, $details);
         $result = new TemplateDocument('layouts/error', 'error/show', $document->serialize());
         $result->addVariables($this->variables);
-        return ResponseFactory::fromHtml($status, $result);
+        $result->setTemplatePath($this->templatePath);
+        return ResponseFactory::fromHtml($status, (string) $result);
     }
 
     public function success($result): ResponseInterface
     {
         $result->addVariables($this->variables);
+        $result->setTemplatePath($this->templatePath);
         return ResponseFactory::fromHtml(ResponseFactory::OK, $result);
     }
 

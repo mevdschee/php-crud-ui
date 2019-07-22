@@ -12,6 +12,7 @@ class Config
         'cacheTime' => 10,
         'debug' => false,
         'basePath' => '',
+        'templatePath' => '.',
     ];
 
     public function __construct(array $values)
@@ -65,4 +66,8 @@ class Config
         return $this->values['basePath'];
     }
 
+    public function getTemplatePath(): string
+    {
+        return $this->values['templatePath'];
+    }
 }

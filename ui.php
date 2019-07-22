@@ -18,7 +18,7 @@ namespace {
 
 // file: templates/error/show.html
 namespace {
-$_HTML['templates/error/show.html'] = <<<'END_OF_HTML'
+$_HTML['error/show'] = <<<'END_OF_HTML'
 <h2>Error</h2>
 
 <strong>code:</strong><br/>
@@ -34,7 +34,7 @@ END_OF_HTML;
 
 // file: templates/layouts/default.html
 namespace {
-$_HTML['templates/layouts/default.html'] = <<<'END_OF_HTML'
+$_HTML['layouts/default'] = <<<'END_OF_HTML'
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -72,7 +72,7 @@ END_OF_HTML;
 
 // file: templates/layouts/error.html
 namespace {
-$_HTML['templates/layouts/error.html'] = <<<'END_OF_HTML'
+$_HTML['layouts/error'] = <<<'END_OF_HTML'
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -110,7 +110,7 @@ END_OF_HTML;
 
 // file: templates/record/create.html
 namespace {
-$_HTML['templates/record/create.html'] = <<<'END_OF_HTML'
+$_HTML['record/create'] = <<<'END_OF_HTML'
 <h2>{{table}}: create</h2>
 
 <form method="post">
@@ -137,7 +137,7 @@ END_OF_HTML;
 
 // file: templates/record/created.html
 namespace {
-$_HTML['templates/record/created.html'] = <<<'END_OF_HTML'
+$_HTML['record/created'] = <<<'END_OF_HTML'
 <h2>{{table}}: create</h2>
 
 <p>Added with {{primaryKey}} {{id}}</p>
@@ -148,7 +148,7 @@ END_OF_HTML;
 
 // file: templates/record/delete.html
 namespace {
-$_HTML['templates/record/delete.html'] = <<<'END_OF_HTML'
+$_HTML['record/delete'] = <<<'END_OF_HTML'
 <h2>{{table}}: delete {{name}}</h2>
 
 <p>The action cannot be undone.</p>
@@ -163,7 +163,7 @@ END_OF_HTML;
 
 // file: templates/record/deleted.html
 namespace {
-$_HTML['templates/record/deleted.html'] = <<<'END_OF_HTML'
+$_HTML['record/deleted'] = <<<'END_OF_HTML'
 <h2>{{table}}: delete</h2>
 
 <p>Deleted with {{primaryKey}} {{id}}</p>
@@ -174,14 +174,14 @@ END_OF_HTML;
 
 // file: templates/record/home.html
 namespace {
-$_HTML['templates/record/home.html'] = <<<'END_OF_HTML'
+$_HTML['record/home'] = <<<'END_OF_HTML'
 <p>Nothing</p>
 END_OF_HTML;
 }
 
 // file: templates/record/list.html
 namespace {
-$_HTML['templates/record/list.html'] = <<<'END_OF_HTML'
+$_HTML['record/list'] = <<<'END_OF_HTML'
 <h2>{{table}}: list</h2>
 {{if:field}}
     <div class="well well-sm"><div style="float:right;">
@@ -247,7 +247,7 @@ END_OF_HTML;
 
 // file: templates/record/read.html
 namespace {
-$_HTML['templates/record/read.html'] = <<<'END_OF_HTML'
+$_HTML['record/read'] = <<<'END_OF_HTML'
 <h2>{{table}}: view</h2>
 <table class="table">
 <thead><tr><th>key</th><th></th><th>value</th></tr></thead>
@@ -287,7 +287,7 @@ END_OF_HTML;
 
 // file: templates/record/update.html
 namespace {
-$_HTML['templates/record/update.html'] = <<<'END_OF_HTML'
+$_HTML['record/update'] = <<<'END_OF_HTML'
 <h2>{{table}}: create</h2>
 
 <form method="post">
@@ -314,7 +314,7 @@ END_OF_HTML;
 
 // file: templates/record/updated.html
 namespace {
-$_HTML['templates/record/updated.html'] = <<<'END_OF_HTML'
+$_HTML['record/updated'] = <<<'END_OF_HTML'
 <h2>{{table}}: update</h2>
 
 <p>Updated with {{primaryKey}} {{id}}</p>
@@ -10638,7 +10638,14 @@ namespace Tqdev\PhpCrudUi\Controller {
 
     class TemplateResponder implements Responder
     {
-        private $variables = array();
+        private $variables;
+        private $templatePath;
+
+        public function __construct(string $path)
+        {
+            $this->variables = array();
+            $this->templatePath = $path;
+        }
 
         public function setVariable(string $name, $value)
         {
@@ -10652,12 +10659,14 @@ namespace Tqdev\PhpCrudUi\Controller {
             $document = new ErrorDocument($errorCode, $argument, $details);
             $result = new TemplateDocument('layouts/error', 'error/show', $document->serialize());
             $result->addVariables($this->variables);
-            return ResponseFactory::fromHtml($status, $result);
+            $result->setTemplatePath($this->templatePath);
+            return ResponseFactory::fromHtml($status, (string) $result);
         }
 
         public function success($result): ResponseInterface
         {
             $result->addVariables($this->variables);
+            $result->setTemplatePath($this->templatePath);
             return ResponseFactory::fromHtml(ResponseFactory::OK, $result);
         }
 
@@ -10675,6 +10684,7 @@ namespace Tqdev\PhpCrudUi\Document {
         private $contentTemplate;
         private $variables;
         private $template;
+        private $templatePath;
 
         public function __construct(string $masterTemplate, string $contentTemplate, array $variables)
         {
@@ -10682,6 +10692,7 @@ namespace Tqdev\PhpCrudUi\Document {
             $this->contentTemplate = $contentTemplate;
             $this->variables = $variables;
             $this->template = new Template('html',$this->getFunctions());
+            $this->templatePath = '';
         }
 
         private function getFunctions(): array
@@ -10702,14 +10713,19 @@ namespace Tqdev\PhpCrudUi\Document {
             $this->variables = array_merge($variables, $this->variables);
         }
 
+        public function setTemplatePath(string $path)
+        {
+            $this->templatePath = rtrim($path,'/');
+        }
+
         private function getHtmlFileContents(string $template)
         {
             global $_HTML;
-            $filename = 'templates/' . $template . '.html';
-            if (isset($_HTML[$filename])) {
-                return $_HTML[$filename];
+            if (isset($_HTML[$template])) {
+                return $_HTML[$template];
             }
-            return file_get_contents('../' . $filename);
+            $filename = $this->templatePath . '/' . $template . '.html';
+            return file_get_contents($filename);
         }
 
         public function __toString(): string
@@ -11335,6 +11351,7 @@ namespace Tqdev\PhpCrudUi {
             'cacheTime' => 10,
             'debug' => false,
             'basePath' => '',
+            'templatePath' => '.',
         ];
 
         public function __construct(array $values)
@@ -11388,6 +11405,10 @@ namespace Tqdev\PhpCrudUi {
             return $this->values['basePath'];
         }
 
+        public function getTemplatePath(): string
+        {
+            return $this->values['templatePath'];
+        }
     }
 }
 
@@ -11419,7 +11440,7 @@ namespace Tqdev\PhpCrudUi {
             $prefix = sprintf('phpcrudui-%s-%s-', substr(md5($config->getUrl()), 0, 12), substr(md5(__FILE__), 0, 12));
             $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
             $definition = new SpecificationService($api);
-            $responder = new TemplateResponder();
+            $responder = new TemplateResponder($config->getTemplatePath());
             $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime(), $config->getDebug());
             $responder->setVariable('base', $router->getBasePath());
             $responder->setVariable('menu', $definition->getMenu());
@@ -11477,6 +11498,7 @@ namespace Tqdev\PhpCrudUi {
 
     $config = new Config([
         'url' => 'http://localhost:8000/api.php',
+        'templatePath' => '../templates',
     ]);
     $request = RequestFactory::fromGlobals();
     $ui = new Ui($config);

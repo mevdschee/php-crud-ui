@@ -44,9 +44,10 @@ function runDir(string $base, string $dir, array &$lines, array $ignore): int
                 $count++;
             } elseif (substr($entry, -5) == '.html') {
                 $data = file_get_contents($filename);
+                $id = explode('.',explode('/',"$dir/$entry",2)[1],2)[0];
                 array_push($lines, "// file: $dir/$entry");
                 array_push($lines, 'namespace {');
-                array_push($lines, "\$_HTML['$dir/$entry'] = <<<'END_OF_HTML'");
+                array_push($lines, "\$_HTML['$id'] = <<<'END_OF_HTML'");
                 foreach (explode("\n", $data) as $line) {
                     array_push($lines, $line);
                 }
