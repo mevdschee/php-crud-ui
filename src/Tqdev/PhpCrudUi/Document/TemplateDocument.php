@@ -8,12 +8,27 @@ class TemplateDocument
     private $masterTemplate;
     private $contentTemplate;
     private $variables;
+    private $template;
 
     public function __construct(string $masterTemplate, string $contentTemplate, array $variables)
     {
         $this->masterTemplate = $masterTemplate;
         $this->contentTemplate = $contentTemplate;
         $this->variables = $variables;
+        $this->template = new Template('html',$this->getFunctions());
+    }
+
+    private function getFunctions(): array
+    {
+        return array(
+            'lt' => function ($a, $b) {return $a < $b;},
+            'gt' => function ($a, $b) {return $a > $b;},
+            'le' => function ($a, $b) {return $a <= $b;},
+            'ge' => function ($a, $b) {return $a >= $b;},
+            'eq' => function ($a, $b) {return $a == $b;},
+            'add' => function ($a, $b) {return $a + $b;},
+            'sub' => function ($a, $b) {return $a - $b;},
+        );
     }
 
     public function addVariables(array $variables)
@@ -33,20 +48,10 @@ class TemplateDocument
 
     public function __toString(): string
     {
-        $functions = [
-            'lt' => function ($a, $b) {return $a < $b;},
-            'gt' => function ($a, $b) {return $a > $b;},
-            'le' => function ($a, $b) {return $a <= $b;},
-            'ge' => function ($a, $b) {return $a >= $b;},
-            'eq' => function ($a, $b) {return $a == $b;},
-            'add' => function ($a, $b) {return $a + $b;},
-            'sub' => function ($a, $b) {return $a - $b;},
-        ];
-
         $data = $this->variables;
         $content = $this->getHtmlFileContents($this->contentTemplate);
-        $data['content'] = Template::render($content, $data, $functions);
+        $data['content'] = $this->template->render($content, $data);
         $master = $this->getHtmlFileContents($this->masterTemplate);
-        return (string) Template::render($master, $data, $functions);
+        return (string) $this->template->render($master, $data);
     }
 }
