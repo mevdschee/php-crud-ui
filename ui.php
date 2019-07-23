@@ -10349,9 +10349,7 @@ namespace Tqdev\PhpCrudUi\Column {
         private function getDefinition(): array
         {
             if (!isset($_SESSION['definition'])) {
-                $result = $this->api->getOpenApi();
-                if ($result || !isset($_SERVER['REQUEST_URI']))
-                $_SESSION['definition'] = $result?:[];
+                $_SESSION['definition'] = $this->api->getOpenApi()?:[];
             }
             return $_SESSION['definition'];
         }
@@ -10710,17 +10708,17 @@ namespace Tqdev\PhpCrudUi\Document {
             );
         }
 
-        public function addVariables(array $variables)
+        public function addVariables(array $variables)/*: void*/
         {
             $this->variables = array_merge($variables, $this->variables);
         }
 
-        public function setTemplatePath(string $path)
+        public function setTemplatePath(string $path)/*: void*/
         {
             $this->templatePath = rtrim($path,'/');
         }
 
-        private function getHtmlFileContents(string $template)
+        private function getHtmlFileContents(string $template): string
         {
             global $_HTML;
             if (isset($_HTML[$template])) {
@@ -11001,13 +10999,13 @@ namespace Tqdev\PhpCrudUi\Template {
         private $escape;
         private $functions;
 
-        public function __construct(string $escape, $functions = array())
+        public function __construct(string $escape, array $functions)
         {
             $this->escape = $escape;
             $this->functions = $functions;
         }
 
-        private function escape($string)
+        private function escape(string $string): string
         {
             switch ($this->escape) {
                 case 'html':
@@ -11016,7 +11014,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $string;
         }
 
-        public function render($template, $data): TemplateString
+        public function render(string $template, array $data): TemplateString
         {
             $tokens = $this->tokenize($template);
             $tree = $this->createSyntaxTree($tokens);
@@ -11024,12 +11022,12 @@ namespace Tqdev\PhpCrudUi\Template {
             return new TemplateString($string);
         }
 
-        private function createNode($type, $expression)
+        private function createNode(string $type, string $expression)/*: object*/
         {
             return (object) array('type' => $type, 'expression' => $expression, 'children' => array(), 'value' => null);
         }
 
-        private function tokenize($template)
+        private function tokenize(string $template): array
         {
             $parts = ['', $template];
             $tokens = [];
@@ -11048,7 +11046,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $tokens;
         }
 
-        private function explode($separator, $str, $count = -1)
+        private function explode(string $separator, string $str, int $count = -1): array
         {
             $tokens = [];
             $token = '';
@@ -11088,7 +11086,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $tokens;
         }
 
-        private function createSyntaxTree(&$tokens)
+        private function createSyntaxTree(array $tokens)/*: object*/
         {
             $root = $this->createNode('root', false);
             $current = $root;
@@ -11137,7 +11135,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $root;
         }
 
-        private function renderChildren($node, $data)
+        private function renderChildren(/*object*/ $node, array $data): string
         {
             $result = '';
             $ifNodes = array();
@@ -11172,7 +11170,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $result;
         }
 
-        private function renderIfNode($node, $data)
+        private function renderIfNode(/*object*/ $node, array $data): string
         {
             $parts = $this->explode('|', $node->expression);
             $path = array_shift($parts);
@@ -11190,7 +11188,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $result;
         }
 
-        private function renderElseIfNode($node, $ifNodes, $data)
+        private function renderElseIfNode(/*object*/ $node, array $ifNodes, array $data): string
         {
             if (count($ifNodes) < 1 || $ifNodes[0]->type != 'if') {
                 return $this->escape("{{elseif!!could not find matching `if`}}");
@@ -11217,7 +11215,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $result;
         }
 
-        private function renderElseNode($node, $ifNodes, $data)
+        private function renderElseNode(/*object*/ $node, array $ifNodes, array $data): string
         {
             if (count($ifNodes) < 1 || $ifNodes[0]->type != 'if') {
                 return $this->escape("{{else!!could not find matching `if`}}");
@@ -11233,7 +11231,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $result;
         }
 
-        private function renderForNode($node, $data)
+        private function renderForNode(/*object*/ $node, array $data): string
         {
             $parts = $this->explode('|', $node->expression);
             $path = array_shift($parts);
@@ -11263,7 +11261,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $result;
         }
 
-        private function renderVarNode($node, $data)
+        private function renderVarNode(/*object*/ $node, array $data): string
         {
             $parts = $this->explode('|', $node->expression);
             $path = array_shift($parts);
@@ -11276,10 +11274,10 @@ namespace Tqdev\PhpCrudUi\Template {
             if ($value instanceof TemplateString) {
                 return $value;
             }
-            return $this->escape($value);
+            return $this->escape((string) $value);
         }
 
-        private function resolvePath($path, $data)
+        private function resolvePath(string $path, array $data)/*: object*/
         {
             $current = $data;
             foreach ($this->explode('.', $path) as $p) {
@@ -11291,7 +11289,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $current;
         }
 
-        private function applyFunctions($value, $parts, $data)
+        private function applyFunctions(/*object*/ $value, array $parts, array $data)/*: object*/ 
         {
             foreach ($parts as $part) {
                 $function = $this->explode('(', rtrim($part, ')'), 2);
