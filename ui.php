@@ -10357,9 +10357,13 @@ namespace Tqdev\PhpCrudUi\Column {
             if ($data) {
                 $result = json_decode(gzuncompress($data), true);
             } else {
-                $result = $this->api->getOpenApi()?:[];
-                $data = gzcompress(json_encode($result));
-                $this->cache->set('Definition', $data, $this->ttl);
+                $result = $this->api->getOpenApi();
+                if ($result) {
+                    $data = gzcompress(json_encode($result));
+                    $this->cache->set('Definition', $data, $this->ttl);
+                } else {
+                    $result = [];
+                }
             }
             return $result;
         }
