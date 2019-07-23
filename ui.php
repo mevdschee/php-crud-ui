@@ -10827,9 +10827,6 @@ namespace Tqdev\PhpCrudUi\Record {
         {
             $references = $this->definition->getReferences($table, $action);
             $referenced = $this->definition->getReferenced($table, $action);
-            $primaryKey = $this->definition->getPrimaryKey($table, $action);
-
-            $columns = $this->definition->getColumns($table, $action);
 
             $args = array();
             $args['join'] = array_values(array_filter($references));
@@ -10866,8 +10863,6 @@ namespace Tqdev\PhpCrudUi\Record {
         {
             $references = $this->definition->getReferences($table, $action);
             $primaryKey = $this->definition->getPrimaryKey($table, $action);
-
-            $columns = $this->definition->getColumns($table, $action);
 
             $record = $this->api->readRecord($table, $id, []);
 
@@ -10968,8 +10963,12 @@ namespace Tqdev\PhpCrudUi\Record {
                 }
             }
 
-            $maxPage = ceil($data['results'] / $pageSize);
+            if (!isset($data['results'])) {
+                $data['results'] = count($data['records']);
+            }
 
+            $maxPage = ceil($data['results'] / $pageSize);
+            
             $variables = array(
                 'table' => $table,
                 'action' => $action,
@@ -11088,7 +11087,7 @@ namespace Tqdev\PhpCrudUi\Template {
 
         private function createSyntaxTree(array $tokens)/*: object*/
         {
-            $root = $this->createNode('root', false);
+            $root = $this->createNode('root', '');
             $current = $root;
             $stack = array();
             foreach ($tokens as $i => $token) {
@@ -11234,13 +11233,12 @@ namespace Tqdev\PhpCrudUi\Template {
         private function renderForNode(/*object*/ $node, array $data): string
         {
             $parts = $this->explode('|', $node->expression);
-            $path = array_shift($parts);
-            $path = $this->explode(':', $path, 3);
-            if (count($path) == 2) {
-                list($var, $path) = $path;
+            $pathParts = $this->explode(':', array_shift($parts), 3);
+            if (count($pathParts) == 2) {
+                list($var, $path) = $pathParts;
                 $key = false;
-            } elseif (count($path) == 3) {
-                list($var, $key, $path) = $path;
+            } elseif (count($pathParts) == 3) {
+                list($var, $key, $path) = $pathParts;
             } else {
                 return $this->escape('{{for:' . $node->expression . '!!' . "for must have `for:var:array` format" . '}}');
             }
