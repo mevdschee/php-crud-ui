@@ -33,17 +33,17 @@ class TemplateDocument
         );
     }
 
-    public function addVariables(array $variables)
+    public function addVariables(array $variables)/*: void*/
     {
         $this->variables = array_merge($variables, $this->variables);
     }
 
-    public function setTemplatePath(string $path)
+    public function setTemplatePath(string $path)/*: void*/
     {
         $this->templatePath = rtrim($path,'/');
     }
 
-    private function getHtmlFileContents(string $template)
+    private function getHtmlFileContents(string $template): string
     {
         global $_HTML;
         if (isset($_HTML[$template])) {

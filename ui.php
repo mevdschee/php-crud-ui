@@ -10349,7 +10349,9 @@ namespace Tqdev\PhpCrudUi\Column {
         private function getDefinition(): array
         {
             if (!isset($_SESSION['definition'])) {
-                $_SESSION['definition'] = $this->api->getOpenApi();
+                $result = $this->api->getOpenApi();
+                if ($result || !isset($_SERVER['REQUEST_URI']))
+                $_SESSION['definition'] = $result?:[];
             }
             return $_SESSION['definition'];
         }

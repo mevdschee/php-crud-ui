@@ -17,7 +17,7 @@ class SpecificationService
     private function getDefinition(): array
     {
         if (!isset($_SESSION['definition'])) {
-            $_SESSION['definition'] = $this->api->getOpenApi();
+            $_SESSION['definition'] = $this->api->getOpenApi()?:[];
         }
         return $_SESSION['definition'];
     }
