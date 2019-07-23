@@ -86,9 +86,6 @@ class CrudService
     {
         $references = $this->definition->getReferences($table, $action);
         $referenced = $this->definition->getReferenced($table, $action);
-        $primaryKey = $this->definition->getPrimaryKey($table, $action);
-
-        $columns = $this->definition->getColumns($table, $action);
 
         $args = array();
         $args['join'] = array_values(array_filter($references));
@@ -125,8 +122,6 @@ class CrudService
     {
         $references = $this->definition->getReferences($table, $action);
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
-
-        $columns = $this->definition->getColumns($table, $action);
 
         $record = $this->api->readRecord($table, $id, []);
 
@@ -230,7 +225,7 @@ class CrudService
         if (!isset($data['results'])) {
             $data['results'] = count($data['records']);
         }
-        
+
         $maxPage = ceil($data['results'] / $pageSize);
         
         $variables = array(
