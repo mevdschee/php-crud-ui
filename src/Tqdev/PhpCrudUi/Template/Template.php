@@ -281,7 +281,7 @@ class Template
         if ($value instanceof TemplateString) {
             return $value;
         }
-        return $this->escape($value);
+        return $this->escape((string) $value);
     }
 
     private function resolvePath(string $path, array $data)/*: object*/
