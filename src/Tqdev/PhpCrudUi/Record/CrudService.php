@@ -227,8 +227,12 @@ class CrudService
             }
         }
 
+        if (!isset($data['results'])) {
+            $data['results'] = count($data['records']);
+        }
+        
         $maxPage = ceil($data['results'] / $pageSize);
-
+        
         $variables = array(
             'table' => $table,
             'action' => $action,

@@ -95,7 +95,7 @@ class Template
 
     private function createSyntaxTree(array $tokens)/*: object*/
     {
-        $root = $this->createNode('root', false);
+        $root = $this->createNode('root', '');
         $current = $root;
         $stack = array();
         foreach ($tokens as $i => $token) {
@@ -241,13 +241,12 @@ class Template
     private function renderForNode(/*object*/ $node, array $data): string
     {
         $parts = $this->explode('|', $node->expression);
-        $path = array_shift($parts);
-        $path = $this->explode(':', $path, 3);
-        if (count($path) == 2) {
-            list($var, $path) = $path;
+        $pathParts = $this->explode(':', array_shift($parts), 3);
+        if (count($pathParts) == 2) {
+            list($var, $path) = $pathParts;
             $key = false;
-        } elseif (count($path) == 3) {
-            list($var, $key, $path) = $path;
+        } elseif (count($pathParts) == 3) {
+            list($var, $key, $path) = $pathParts;
         } else {
             return $this->escape('{{for:' . $node->expression . '!!' . "for must have `for:var:array` format" . '}}');
         }
