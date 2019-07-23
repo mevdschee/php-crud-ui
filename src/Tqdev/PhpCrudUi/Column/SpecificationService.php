@@ -2,24 +2,34 @@
 namespace Tqdev\PhpCrudUi\Column;
 
 use Tqdev\PhpCrudUi\Client\CrudApi;
+use Tqdev\PhpCrudApi\Cache\Cache;
 
 class SpecificationService
 {
     private $api;
+    private $cache;
+    private $ttl;
 
-    public function __construct(CrudApi $api)
+    public function __construct(CrudApi $api, Cache $cache, int $ttl)
     {
         $this->api = $api;
+        $this->cache = $cache;
+        $this->ttl = $ttl;
         $this->definition = $this->getDefinition();
         $this->properties = array();
     }
 
     private function getDefinition(): array
     {
-        if (!isset($_SESSION['definition'])) {
-            $_SESSION['definition'] = $this->api->getOpenApi()?:[];
+        $data = $this->cache->get('Definition');
+        if ($data) {
+            $result = json_decode(gzuncompress($data), true);
+        } else {
+            $result = $this->api->getOpenApi()?:[];
+            $data = gzcompress(json_encode($result));
+            $this->cache->set('Definition', $data, $this->ttl);
         }
-        return $_SESSION['definition'];
+        return $result;
     }
 
     private function resolve($path)
