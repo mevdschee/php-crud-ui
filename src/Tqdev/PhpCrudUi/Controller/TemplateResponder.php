@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudUi\Controller;
 
 use Psr\Http\Message\ResponseInterface;
@@ -41,5 +42,4 @@ class TemplateResponder implements Responder
         $result->setTemplatePath($this->templatePath);
         return ResponseFactory::fromHtml(ResponseFactory::OK, $result);
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudUi\Client;
 
 class CrudApi
@@ -59,5 +60,4 @@ class CrudApi
         curl_close($ch);
         return json_decode($response, true);
     }
-
 }

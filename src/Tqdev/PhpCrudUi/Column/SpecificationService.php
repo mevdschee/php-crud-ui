@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudUi\Column;
 
 use Tqdev\PhpCrudUi\Client\CrudApi;
@@ -114,7 +115,6 @@ class SpecificationService
             if (in_array($name, $columns)) {
                 return $name;
             }
-
         }
         return $columns[0];
     }
@@ -157,5 +157,4 @@ class SpecificationService
         $primaryKey = $this->getPrimaryKey($table, 'read');
         return $record[$primaryKey];
     }
-
 }

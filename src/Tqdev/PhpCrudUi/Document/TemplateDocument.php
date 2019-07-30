@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudUi\Document;
 
 use Tqdev\PhpCrudUi\Template\Template;
@@ -16,20 +17,34 @@ class TemplateDocument
         $this->masterTemplate = $masterTemplate;
         $this->contentTemplate = $contentTemplate;
         $this->variables = $variables;
-        $this->template = new Template('html',$this->getFunctions());
+        $this->template = new Template('html', $this->getFunctions());
         $this->templatePath = '';
     }
 
     private function getFunctions(): array
     {
         return array(
-            'lt' => function ($a, $b) {return $a < $b;},
-            'gt' => function ($a, $b) {return $a > $b;},
-            'le' => function ($a, $b) {return $a <= $b;},
-            'ge' => function ($a, $b) {return $a >= $b;},
-            'eq' => function ($a, $b) {return $a == $b;},
-            'add' => function ($a, $b) {return $a + $b;},
-            'sub' => function ($a, $b) {return $a - $b;},
+            'lt' => function ($a, $b) {
+                return $a < $b;
+            },
+            'gt' => function ($a, $b) {
+                return $a > $b;
+            },
+            'le' => function ($a, $b) {
+                return $a <= $b;
+            },
+            'ge' => function ($a, $b) {
+                return $a >= $b;
+            },
+            'eq' => function ($a, $b) {
+                return $a == $b;
+            },
+            'add' => function ($a, $b) {
+                return $a + $b;
+            },
+            'sub' => function ($a, $b) {
+                return $a - $b;
+            },
         );
     }
 
@@ -40,7 +55,7 @@ class TemplateDocument
 
     public function setTemplatePath(string $path)/*: void*/
     {
-        $this->templatePath = rtrim($path,'/');
+        $this->templatePath = rtrim($path, '/');
     }
 
     private function getHtmlFileContents(string $template): string
