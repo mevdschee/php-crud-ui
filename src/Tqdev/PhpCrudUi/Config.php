@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudUi;
 
 class Config

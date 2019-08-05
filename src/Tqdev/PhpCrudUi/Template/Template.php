@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudUi\Template;
 
 class Template
@@ -142,7 +143,7 @@ class Template
         return $root;
     }
 
-    private function renderChildren(/*object*/ $node, array $data): string
+    private function renderChildren(/*object*/$node, array $data): string
     {
         $result = '';
         $ifNodes = array();
@@ -177,7 +178,7 @@ class Template
         return $result;
     }
 
-    private function renderIfNode(/*object*/ $node, array $data): string
+    private function renderIfNode(/*object*/$node, array $data): string
     {
         $parts = $this->explode('|', $node->expression);
         $path = array_shift($parts);
@@ -195,7 +196,7 @@ class Template
         return $result;
     }
 
-    private function renderElseIfNode(/*object*/ $node, array $ifNodes, array $data): string
+    private function renderElseIfNode(/*object*/$node, array $ifNodes, array $data): string
     {
         if (count($ifNodes) < 1 || $ifNodes[0]->type != 'if') {
             return $this->escape("{{elseif!!could not find matching `if`}}");
@@ -222,7 +223,7 @@ class Template
         return $result;
     }
 
-    private function renderElseNode(/*object*/ $node, array $ifNodes, array $data): string
+    private function renderElseNode(/*object*/$node, array $ifNodes, array $data): string
     {
         if (count($ifNodes) < 1 || $ifNodes[0]->type != 'if') {
             return $this->escape("{{else!!could not find matching `if`}}");
@@ -238,7 +239,7 @@ class Template
         return $result;
     }
 
-    private function renderForNode(/*object*/ $node, array $data): string
+    private function renderForNode(/*object*/$node, array $data): string
     {
         $parts = $this->explode('|', $node->expression);
         $pathParts = $this->explode(':', array_shift($parts), 3);
@@ -267,7 +268,7 @@ class Template
         return $result;
     }
 
-    private function renderVarNode(/*object*/ $node, array $data): string
+    private function renderVarNode(/*object*/$node, array $data): string
     {
         $parts = $this->explode('|', $node->expression);
         $path = array_shift($parts);
@@ -295,7 +296,7 @@ class Template
         return $current;
     }
 
-    private function applyFunctions(/*object*/ $value, array $parts, array $data)/*: object*/ 
+    private function applyFunctions(/*object*/$value, array $parts, array $data)/*: object*/
     {
         foreach ($parts as $part) {
             $function = $this->explode('(', rtrim($part, ')'), 2);
@@ -320,5 +321,4 @@ class Template
         }
         return $value;
     }
-
 }

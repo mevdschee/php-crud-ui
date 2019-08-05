@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudUi\Template;
 
 class TemplateString

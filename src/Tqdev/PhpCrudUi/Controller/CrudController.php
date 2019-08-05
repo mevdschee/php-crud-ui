@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudUi\Controller;
 
 use Psr\Http\Message\ResponseInterface;
@@ -141,5 +142,4 @@ class CrudController
         $result = $this->service->_list($table, $action, $field, $id, $name, $params);
         return $this->responder->success($result);
     }
-
 }

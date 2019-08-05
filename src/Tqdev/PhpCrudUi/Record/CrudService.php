@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudUi\Record;
 
 use Tqdev\PhpCrudUi\Client\CrudApi;
@@ -227,7 +228,7 @@ class CrudService
         }
 
         $maxPage = ceil($data['results'] / $pageSize);
-        
+
         $variables = array(
             'table' => $table,
             'action' => $action,
