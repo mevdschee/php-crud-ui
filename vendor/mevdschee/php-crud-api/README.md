@@ -99,7 +99,7 @@ The following features are supported:
   - Supports a JSON array as input (batch insert)
   - Sanitize and validate input using callbacks
   - Permission system for databases, tables, columns and records
-  - Multi-tenant database layouts are supported
+  - Multi-tenant single and multi database layouts are supported
   - Multi-domain CORS support for cross-domain requests
   - Support for reading joined results from multiple tables
   - Search support on multiple criteria
@@ -110,6 +110,7 @@ The following features are supported:
   - Spatial/GIS fields and filters supported with WKT and GeoJSON
   - Generate API documentation using OpenAPI tools
   - Authentication via JWT token or username/password
+  - Database connection parameters may depend on authentication
   - Support for reading database structure in JSON
   - Support for modifying database structure using REST endpoint
   - Security enhancing middleware is included
@@ -136,77 +137,6 @@ You can update all dependencies of this project using the following command:
 This script will install and run [Composer](https://getcomposer.org/) to update the dependencies.
 
 NB: The update script will also patch the dependencies in the vendor directory for PHP 7.0 compatibility.
-
-## Middleware
-
-You can enable the following middleware using the "middlewares" config parameter:
-
-- "firewall": Limit access to specific IP addresses
-- "cors": Support for CORS requests (enabled by default)
-- "xsrf": Block XSRF attacks using the 'Double Submit Cookie' method
-- "ajaxOnly": Restrict non-AJAX requests to prevent XSRF attacks
-- "dbAuth": Support for "Database Authentication"
-- "jwtAuth": Support for "JWT Authentication"
-- "basicAuth": Support for "Basic Authentication"
-- "authorization": Restrict access to certain tables or columns
-- "validation": Return input validation errors for custom rules
-- "ipAddress": Fill a protected field with the IP address on create
-- "sanitation": Apply input sanitation on create and update
-- "multiTenancy": Restricts tenants access in a multi-tenant scenario
-- "pageLimits": Restricts list operations to prevent database scraping
-- "joinLimits": Restricts join parameters to prevent database scraping
-- "customization": Provides handlers for request and response customization
-
-The "middlewares" config parameter is a comma separated list of enabled middlewares.
-You can tune the middleware behavior using middleware specific configuration parameters:
-
-- "firewall.reverseProxy": Set to "true" when a reverse proxy is used ("")
-- "firewall.allowedIpAddresses": List of IP addresses that are allowed to connect ("")
-- "cors.allowedOrigins": The origins allowed in the CORS headers ("*")
-- "cors.allowHeaders": The headers allowed in the CORS request ("Content-Type, X-XSRF-TOKEN")
-- "cors.allowMethods": The methods allowed in the CORS request ("OPTIONS, GET, PUT, POST, DELETE, PATCH")
-- "cors.allowCredentials": To allow credentials in the CORS request ("true")
-- "cors.exposeHeaders": Whitelist headers that browsers are allowed to access ("")
-- "cors.maxAge": The time that the CORS grant is valid in seconds ("1728000")
-- "xsrf.excludeMethods": The methods that do not require XSRF protection ("OPTIONS,GET")
-- "xsrf.cookieName": The name of the XSRF protection cookie ("XSRF-TOKEN")
-- "xsrf.headerName": The name of the XSRF protection header ("X-XSRF-TOKEN")
-- "ajaxOnly.excludeMethods": The methods that do not require AJAX ("OPTIONS,GET")
-- "ajaxOnly.headerName": The name of the required header ("X-Requested-With")
-- "ajaxOnly.headerValue": The value of the required header ("XMLHttpRequest")
-- "dbAuth.mode": Set to "optional" if you want to allow anonymous access ("required")
-- "dbAuth.usersTable": The table that is used to store the users in ("users")
-- "dbAuth.usernameColumn": The users table column that holds usernames ("username")
-- "dbAuth.passwordColumn": The users table column that holds passwords ("password")
-- "dbAuth.returnedColumns": The columns returned on successful login, empty means 'all' ("")
-- "jwtAuth.mode": Set to "optional" if you want to allow anonymous access ("required")
-- "jwtAuth.header": Name of the header containing the JWT token ("X-Authorization")
-- "jwtAuth.leeway": The acceptable number of seconds of clock skew ("5")
-- "jwtAuth.ttl": The number of seconds the token is valid ("30")
-- "jwtAuth.secret": The shared secret used to sign the JWT token with ("")
-- "jwtAuth.algorithms": The algorithms that are allowed, empty means 'all' ("")
-- "jwtAuth.audiences": The audiences that are allowed, empty means 'all' ("")
-- "jwtAuth.issuers": The issuers that are allowed, empty means 'all' ("")
-- "basicAuth.mode": Set to "optional" if you want to allow anonymous access ("required")
-- "basicAuth.realm": Text to prompt when showing login ("Username and password required")
-- "basicAuth.passwordFile": The file to read for username/password combinations (".htpasswd")
-- "authorization.tableHandler": Handler to implement table authorization rules ("")
-- "authorization.columnHandler": Handler to implement column authorization rules ("")
-- "authorization.recordHandler": Handler to implement record authorization filter rules ("")
-- "validation.handler": Handler to implement validation rules for input values ("")
-- "ipAddress.tables": Tables to search for columns to override with IP address ("")
-- "ipAddress.columns": Columns to protect and override with the IP address on create ("")
-- "sanitation.handler": Handler to implement sanitation rules for input values ("")
-- "multiTenancy.handler": Handler to implement simple multi-tenancy rules ("")
-- "pageLimits.pages": The maximum page number that a list operation allows ("100")
-- "pageLimits.records": The maximum number of records returned by a list operation ("1000")
-- "joinLimits.depth": The maximum depth (length) that is allowed in a join path ("3")
-- "joinLimits.tables": The maximum number of tables that you are allowed to join ("10")
-- "joinLimits.records": The maximum number of records returned for a joined entity ("1000")
-- "customization.beforeHandler": Handler to implement request customization ("")
-- "customization.afterHandler": Handler to implement response customization ("")
-
-If you don't specify these parameters in the configuration, then the default values (between brackets) are used.
 
 ## TreeQL, a pragmatic GraphQL
 
@@ -639,6 +569,86 @@ The following Geometry types are supported by the GeoJSON implementation:
 
 The GeoJSON functionality is enabled by default, but can be disabled using the "controllers" configuration.
 
+## Middleware
+
+You can enable the following middleware using the "middlewares" config parameter:
+
+- "firewall": Limit access to specific IP addresses
+- "cors": Support for CORS requests (enabled by default)
+- "xsrf": Block XSRF attacks using the 'Double Submit Cookie' method
+- "ajaxOnly": Restrict non-AJAX requests to prevent XSRF attacks
+- "dbAuth": Support for "Database Authentication"
+- "jwtAuth": Support for "JWT Authentication"
+- "basicAuth": Support for "Basic Authentication"
+- "reconnect": Reconnect to the database with different parameters
+- "authorization": Restrict access to certain tables or columns
+- "validation": Return input validation errors for custom rules
+- "ipAddress": Fill a protected field with the IP address on create
+- "sanitation": Apply input sanitation on create and update
+- "multiTenancy": Restricts tenants access in a multi-tenant scenario
+- "pageLimits": Restricts list operations to prevent database scraping
+- "joinLimits": Restricts join parameters to prevent database scraping
+- "customization": Provides handlers for request and response customization
+
+The "middlewares" config parameter is a comma separated list of enabled middlewares.
+You can tune the middleware behavior using middleware specific configuration parameters:
+
+- "firewall.reverseProxy": Set to "true" when a reverse proxy is used ("")
+- "firewall.allowedIpAddresses": List of IP addresses that are allowed to connect ("")
+- "cors.allowedOrigins": The origins allowed in the CORS headers ("*")
+- "cors.allowHeaders": The headers allowed in the CORS request ("Content-Type, X-XSRF-TOKEN")
+- "cors.allowMethods": The methods allowed in the CORS request ("OPTIONS, GET, PUT, POST, DELETE, PATCH")
+- "cors.allowCredentials": To allow credentials in the CORS request ("true")
+- "cors.exposeHeaders": Whitelist headers that browsers are allowed to access ("")
+- "cors.maxAge": The time that the CORS grant is valid in seconds ("1728000")
+- "xsrf.excludeMethods": The methods that do not require XSRF protection ("OPTIONS,GET")
+- "xsrf.cookieName": The name of the XSRF protection cookie ("XSRF-TOKEN")
+- "xsrf.headerName": The name of the XSRF protection header ("X-XSRF-TOKEN")
+- "ajaxOnly.excludeMethods": The methods that do not require AJAX ("OPTIONS,GET")
+- "ajaxOnly.headerName": The name of the required header ("X-Requested-With")
+- "ajaxOnly.headerValue": The value of the required header ("XMLHttpRequest")
+- "dbAuth.mode": Set to "optional" if you want to allow anonymous access ("required")
+- "dbAuth.usersTable": The table that is used to store the users in ("users")
+- "dbAuth.usernameColumn": The users table column that holds usernames ("username")
+- "dbAuth.passwordColumn": The users table column that holds passwords ("password")
+- "dbAuth.returnedColumns": The columns returned on successful login, empty means 'all' ("")
+- "jwtAuth.mode": Set to "optional" if you want to allow anonymous access ("required")
+- "jwtAuth.header": Name of the header containing the JWT token ("X-Authorization")
+- "jwtAuth.leeway": The acceptable number of seconds of clock skew ("5")
+- "jwtAuth.ttl": The number of seconds the token is valid ("30")
+- "jwtAuth.secret": The shared secret used to sign the JWT token with ("")
+- "jwtAuth.algorithms": The algorithms that are allowed, empty means 'all' ("")
+- "jwtAuth.audiences": The audiences that are allowed, empty means 'all' ("")
+- "jwtAuth.issuers": The issuers that are allowed, empty means 'all' ("")
+- "basicAuth.mode": Set to "optional" if you want to allow anonymous access ("required")
+- "basicAuth.realm": Text to prompt when showing login ("Username and password required")
+- "basicAuth.passwordFile": The file to read for username/password combinations (".htpasswd")
+- "reconnect.driverHandler": Handler to implement retrieval of the database driver ("")
+- "reconnect.addressHandler": Handler to implement retrieval of the database address ("")
+- "reconnect.portHandler": Handler to implement retrieval of the database port ("")
+- "reconnect.databaseHandler": Handler to implement retrieval of the database name ("")
+- "reconnect.usernameHandler": Handler to implement retrieval of the database username ("")
+- "reconnect.passwordHandler": Handler to implement retrieval of the database password ("")
+- "authorization.tableHandler": Handler to implement table authorization rules ("")
+- "authorization.columnHandler": Handler to implement column authorization rules ("")
+- "authorization.recordHandler": Handler to implement record authorization filter rules ("")
+- "validation.handler": Handler to implement validation rules for input values ("")
+- "ipAddress.tables": Tables to search for columns to override with IP address ("")
+- "ipAddress.columns": Columns to protect and override with the IP address on create ("")
+- "sanitation.handler": Handler to implement sanitation rules for input values ("")
+- "multiTenancy.handler": Handler to implement simple multi-tenancy rules ("")
+- "pageLimits.pages": The maximum page number that a list operation allows ("100")
+- "pageLimits.records": The maximum number of records returned by a list operation ("1000")
+- "joinLimits.depth": The maximum depth (length) that is allowed in a join path ("3")
+- "joinLimits.tables": The maximum number of tables that you are allowed to join ("10")
+- "joinLimits.records": The maximum number of records returned for a joined entity ("1000")
+- "customization.beforeHandler": Handler to implement request customization ("")
+- "customization.afterHandler": Handler to implement response customization ("")
+
+If you don't specify these parameters in the configuration, then the default values (between brackets) are used.
+
+In the sections below you find more information on the built-in middleware.
+
 ### Authentication
 
 Currently there are three types of authentication supported. They all store the authenticated user in the `$_SESSION` super global.
@@ -761,7 +771,7 @@ You can also change the `url` variable, used to test the API with authentication
 
 [More info](https://firebase.google.com/docs/auth/admin/verify-id-tokens#verify_id_tokens_using_a_third-party_jwt_library)
 
-## Authorizing operations
+### Authorizing operations
 
 The Authorization model acts on "operations". The most important ones are listed here:
 
@@ -808,6 +818,25 @@ This construct adds a filter to every executed query.
 
 NB: You need to handle the creation of invalid records with a validation (or sanitation) handler.
 
+### SQL GRANT authorization
+
+You can alternatively use database permissons (SQL GRANT statements) to define the authorization model. In this case you
+should not use the "authorization" middleware, but you do need to use the "reconnect" middleware. The handlers of the
+"reconnect" middleware allow you to specify the correct username and password, like this:
+
+    'reconnect.usernameHandler' => function () {
+        return 'mevdschee';
+    },
+    'reconnect.passwordHandler' => function () {
+        return 'secret123';
+    },
+
+This will make the API connect to the database specifying "mevdschee" as the username and "secret123" as the password.
+The OpenAPI specification is less specific on allowed and disallowed operations, when you are using database permissions,
+as the permissions are not read in the reflection step.
+
+NB: You may want to retrieve the username and password from the session (the "$_SESSION" variable).
+
 ### Sanitizing input
 
 By default all input is accepted and sent to the database. If you want to strip (certain) HTML tags before storing you may add 
@@ -850,8 +879,17 @@ You can parse this output to make form fields show up with a red border and thei
 
 ### Multi-tenancy support
 
-You may use the "multiTenancy" middleware when you have a multi-tenant database. 
-If your tenants are identified by the "customer_id" column you can use the following handler:
+Two forms of multi-tenancy are supported:
+
+ - Single database, where every table has a tenant column (using the "multiTenancy" middleware).
+ - Multi database, where every tenant has it's own database (using the "reconnect" middleware).
+
+Below is an explanation of the corresponding middlewares.
+
+#### Multi-tenancy middleware
+
+You may use the "multiTenancy" middleware when you have a single multi-tenant database. 
+If your tenants are identified by the "customer_id" column, then you can use the following handler:
 
     'multiTenancy.handler' => function ($operation, $tableName) {
         return ['customer_id' => 12];
@@ -859,6 +897,22 @@ If your tenants are identified by the "customer_id" column you can use the follo
 
 This construct adds a filter requiring "customer_id" to be "12" to every operation (except for "create").
 It also sets the column "customer_id" on "create" to "12" and removes the column from any other write operation.
+
+NB: You may want to retrieve the customer id from the session (the "$_SESSION" variable).
+
+#### Reconnect middleware
+
+You may use the "reconnect" middleware when you have a separate database for each tenant.
+If the tenant has it's own database named "customer_12", then you can use the following handler:
+
+    'reconnect.databaseHandler' => function () {
+        return 'customer_12';
+    },
+
+This will make the API reconnect to the database specifying "customer_12" as the database name. If you don't want
+to use the same credentials, then you should also implement the "usernameHandler" and "passwordHandler".
+
+NB: You may want to retrieve the database name from the session (the "$_SESSION" variable).
 
 ### Prevent database scraping
 
@@ -1003,6 +1057,7 @@ NB: Any non-error response will have status: 200 OK
 
 I am testing mainly on Ubuntu and I have the following test setups:
 
+  - (Docker) Debian 10 with PHP 7.3, MariaDB 10.3, PostgreSQL 11.4 (PostGIS 2.5)
   - (Docker) Debian 9 with PHP 7.0, MariaDB 10.1, PostgreSQL 9.6 (PostGIS 2.3)
   - (Docker) Ubuntu 16.04 with PHP 7.0, MariaDB 10.0, PostgreSQL 9.5 (PostGIS 2.2) and SQL Server 2017
   - (Docker) Ubuntu 18.04 with PHP 7.2, MySQL 5.7, PostgreSQL 10.4 (PostGIS 2.4)
@@ -1059,6 +1114,17 @@ Install docker using the following commands and then logout and login for the ch
 To run the docker tests run "build_all.sh" and "run_all.sh" from the docker directory. The output should be:
 
     ================================================
+    Debian 10 (PHP 7.3)
+    ================================================
+    [1/4] Starting MariaDB 10.3 ..... done
+    [2/4] Starting PostgreSQL 11.4 .. done
+    [3/4] Starting SQLServer 2017 ... skipped
+    [4/4] Cloning PHP-CRUD-API v2 ... skipped
+    ------------------------------------------------
+    mysql: 100 tests ran in 3623 ms, 0 failed
+    pgsql: 100 tests ran in 1310 ms, 0 failed
+    sqlsrv: skipped, driver not loaded
+    ================================================
     Debian 9 (PHP 7.0)
     ================================================
     [1/4] Starting MariaDB 10.1 ..... done
@@ -1066,8 +1132,8 @@ To run the docker tests run "build_all.sh" and "run_all.sh" from the docker dire
     [3/4] Starting SQLServer 2017 ... skipped
     [4/4] Cloning PHP-CRUD-API v2 ... skipped
     ------------------------------------------------
-    mysql: 95 tests ran in 2651 ms, 0 failed
-    pgsql: 95 tests ran in 573 ms, 0 failed
+    mysql: 100 tests ran in 4844 ms, 0 failed
+    pgsql: 100 tests ran in 1394 ms, 0 failed
     sqlsrv: skipped, driver not loaded
     ================================================
     Ubuntu 16.04 (PHP 7.0)
@@ -1077,9 +1143,9 @@ To run the docker tests run "build_all.sh" and "run_all.sh" from the docker dire
     [3/4] Starting SQLServer 2017 ... done
     [4/4] Cloning PHP-CRUD-API v2 ... skipped
     ------------------------------------------------
-    mysql: 95 tests ran in 2670 ms, 0 failed
-    pgsql: 95 tests ran in 550 ms, 0 failed
-    sqlsrv: 95 tests ran in 6624 ms, 0 failed
+    mysql: 100 tests ran in 4932 ms, 0 failed
+    pgsql: 100 tests ran in 1394 ms, 0 failed
+    sqlsrv: 100 tests ran in 50977 ms, 0 failed
     ================================================
     Ubuntu 18.04 (PHP 7.2)
     ================================================
@@ -1088,17 +1154,18 @@ To run the docker tests run "build_all.sh" and "run_all.sh" from the docker dire
     [3/4] Starting SQLServer 2017 ... skipped
     [4/4] Cloning PHP-CRUD-API v2 ... skipped
     ------------------------------------------------
-    mysql: 95 tests ran in 3186 ms, 0 failed
-    pgsql: 95 tests ran in 556 ms, 0 failed
+    mysql: 100 tests ran in 4327 ms, 0 failed
+    pgsql: 100 tests ran in 1396 ms, 0 failed
     sqlsrv: skipped, driver not loaded
 
-The above test run (including starting up the databases) takes less than one minute on my machine.
+The above test run (including starting up the databases) takes less than 5 minutes on my slow laptop.
 
     $ ./run.sh 
-    1) debian9
-    2) ubuntu16
-    3) ubuntu18
-    > 3
+    1) debian10
+    2) debian9
+    3) ubuntu16
+    4) ubuntu18
+    > 4
     ================================================
     Ubuntu 18.04 (PHP 7.2)
     ================================================
@@ -1107,8 +1174,8 @@ The above test run (including starting up the databases) takes less than one min
     [3/4] Starting SQLServer 2017 ... skipped
     [4/4] Cloning PHP-CRUD-API v2 ... skipped
     ------------------------------------------------
-    mysql: 95 tests ran in 3186 ms, 0 failed
-    pgsql: 95 tests ran in 556 ms, 0 failed
+    mysql: 100 tests ran in 4327 ms, 0 failed
+    pgsql: 100 tests ran in 1396 ms, 0 failed
     sqlsrv: skipped, driver not loaded
     root@b7ab9472e08f:/php-crud-api# 
 

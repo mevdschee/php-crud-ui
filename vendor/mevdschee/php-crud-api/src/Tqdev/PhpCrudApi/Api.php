@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudApi;
 
 use Psr\Http\Message\ResponseInterface;
@@ -24,6 +25,7 @@ use Tqdev\PhpCrudApi\Middleware\FirewallMiddleware;
 use Tqdev\PhpCrudApi\Middleware\IpAddressMiddleware;
 use Tqdev\PhpCrudApi\Middleware\JoinLimitsMiddleware;
 use Tqdev\PhpCrudApi\Middleware\JwtAuthMiddleware;
+use Tqdev\PhpCrudApi\Middleware\ReconnectMiddleware;
 use Tqdev\PhpCrudApi\Middleware\MultiTenancyMiddleware;
 use Tqdev\PhpCrudApi\Middleware\PageLimitsMiddleware;
 use Tqdev\PhpCrudApi\Middleware\Router\SimpleRouter;
@@ -51,7 +53,7 @@ class Api implements RequestHandlerInterface
             $config->getUsername(),
             $config->getPassword()
         );
-        $prefix = sprintf('phpcrudapi-%s-%s-%s-', $config->getDriver(), $config->getDatabase(), substr(md5(__FILE__), 0, 8));
+        $prefix = sprintf('phpcrudapi-%s-', substr(md5(__FILE__), 0, 8));
         $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
         $reflection = new ReflectionService($db, $cache, $config->getCacheTime());
         $responder = new JsonResponder();
@@ -72,6 +74,9 @@ class Api implements RequestHandlerInterface
                     break;
                 case 'dbAuth':
                     new DbAuthMiddleware($router, $responder, $properties, $reflection, $db);
+                    break;
+                case 'reconnect':
+                    new ReconnectMiddleware($router, $responder, $properties, $reflection, $db);
                     break;
                 case 'validation':
                     new ValidationMiddleware($router, $responder, $properties, $reflection);
