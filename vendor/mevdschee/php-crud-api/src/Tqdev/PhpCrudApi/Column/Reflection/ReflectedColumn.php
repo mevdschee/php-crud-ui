@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudApi\Column\Reflection;
 
 use Tqdev\PhpCrudApi\Database\GenericReflection;
@@ -44,7 +45,7 @@ class ReflectedColumn implements \JsonSerializable
         return new ReflectedColumn($name, $type, $length, $precision, $scale, $nullable, $pk, $fk);
     }
 
-    public static function fromJson( /* object */$json): ReflectedColumn
+    public static function fromJson(/* object */$json): ReflectedColumn
     {
         $name = $json->name;
         $type = $json->type;

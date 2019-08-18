@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudApi;
 
 use Psr\Http\Message\ResponseInterface;
@@ -26,6 +27,7 @@ use Tqdev\PhpCrudApi\Middleware\JoinLimitsMiddleware;
 use Tqdev\PhpCrudApi\Middleware\JwtAuthMiddleware;
 use Tqdev\PhpCrudApi\Middleware\MultiTenancyMiddleware;
 use Tqdev\PhpCrudApi\Middleware\PageLimitsMiddleware;
+use Tqdev\PhpCrudApi\Middleware\ReconnectMiddleware;
 use Tqdev\PhpCrudApi\Middleware\Router\SimpleRouter;
 use Tqdev\PhpCrudApi\Middleware\SanitationMiddleware;
 use Tqdev\PhpCrudApi\Middleware\ValidationMiddleware;
@@ -51,7 +53,7 @@ class Api implements RequestHandlerInterface
             $config->getUsername(),
             $config->getPassword()
         );
-        $prefix = sprintf('phpcrudapi-%s-%s-%s-', $config->getDriver(), $config->getDatabase(), substr(md5(__FILE__), 0, 8));
+        $prefix = sprintf('phpcrudapi-%s-', substr(md5(__FILE__), 0, 8));
         $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
         $reflection = new ReflectionService($db, $cache, $config->getCacheTime());
         $responder = new JsonResponder();
@@ -72,6 +74,9 @@ class Api implements RequestHandlerInterface
                     break;
                 case 'dbAuth':
                     new DbAuthMiddleware($router, $responder, $properties, $reflection, $db);
+                    break;
+                case 'reconnect':
+                    new ReconnectMiddleware($router, $responder, $properties, $reflection, $db);
                     break;
                 case 'validation':
                     new ValidationMiddleware($router, $responder, $properties, $reflection);
@@ -155,14 +160,30 @@ class Api implements RequestHandlerInterface
 
     private function addParsedBody(ServerRequestInterface $request): ServerRequestInterface
     {
-        $body = $request->getBody();
-        if ($body->isReadable() && $body->isSeekable()) {
-            $contents = $body->getContents();
-            $body->rewind();
-            if ($contents) {
-                $parsedBody = $this->parseBody($contents);
-                $request = $request->withParsedBody($parsedBody);
+        $parsedBody = $request->getParsedBody();
+        if ($parsedBody) {
+            $request = $this->applySlim3Hack($request);
+        } else {
+            $body = $request->getBody();
+            if ($body->isReadable() && $body->isSeekable()) {
+                $contents = $body->getContents();
+                $body->rewind();
+                if ($contents) {
+                    $parsedBody = $this->parseBody($contents);
+                    $request = $request->withParsedBody($parsedBody);
+                }
             }
+        }
+        return $request;
+    }
+
+    private function applySlim3Hack(ServerRequestInterface $request): ServerRequestInterface
+    {
+        if (get_class($request) == 'Slim\Http\Request') {
+            $parsedBody = $request->getParsedBody();
+            $contents = json_encode($parsedBody);
+            $parsedBody = $this->parseBody($contents);
+            $request = $request->withParsedBody($parsedBody);
         }
         return $request;
     }

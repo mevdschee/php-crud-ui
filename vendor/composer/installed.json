@@ -1,17 +1,17 @@
 [
     {
         "name": "mevdschee/php-crud-api",
-        "version": "v2.3.15",
-        "version_normalized": "2.3.15.0",
+        "version": "v2.4.3",
+        "version_normalized": "2.4.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/mevdschee/php-crud-api.git",
-            "reference": "68ee0897bb3d694058e77ea3065f058713c1316e"
+            "reference": "acd810b91581295c8181e617a7c6539eafaefb16"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/mevdschee/php-crud-api/zipball/68ee0897bb3d694058e77ea3065f058713c1316e",
-            "reference": "68ee0897bb3d694058e77ea3065f058713c1316e",
+            "url": "https://api.github.com/repos/mevdschee/php-crud-api/zipball/acd810b91581295c8181e617a7c6539eafaefb16",
+            "reference": "acd810b91581295c8181e617a7c6539eafaefb16",
             "shasum": ""
         },
         "require": {
@@ -31,7 +31,7 @@
             "ext-memcached": "*",
             "ext-redis": "*"
         },
-        "time": "2019-07-23T12:13:57+00:00",
+        "time": "2019-08-18T20:14:35+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

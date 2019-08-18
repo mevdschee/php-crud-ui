@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudApi\Database;
 
 use Tqdev\PhpCrudApi\Column\Reflection\ReflectedTable;
@@ -9,7 +10,11 @@ use Tqdev\PhpCrudApi\Record\Condition\Condition;
 class GenericDB
 {
     private $driver;
+    private $address;
+    private $port;
     private $database;
+    private $username;
+    private $password;
     private $pdo;
     private $reflection;
     private $definition;
@@ -17,28 +22,33 @@ class GenericDB
     private $columns;
     private $converter;
 
-    private function getDsn(string $address, int $port, string $database): string
+    private function getDsn(): string
     {
         switch ($this->driver) {
-            case 'mysql':return "$this->driver:host=$address;port=$port;dbname=$database;charset=utf8mb4";
-            case 'pgsql':return "$this->driver:host=$address port=$port dbname=$database options='--client_encoding=UTF8'";
-            case 'sqlsrv':return "$this->driver:Server=$address,$port;Database=$database";
+            case 'mysql':
+                return "$this->driver:host=$this->address;port=$this->port;dbname=$this->database;charset=utf8mb4";
+            case 'pgsql':
+                return "$this->driver:host=$this->address port=$this->port dbname=$this->database options='--client_encoding=UTF8'";
+            case 'sqlsrv':
+                return "$this->driver:Server=$this->address,$this->port;Database=$this->database";
         }
     }
 
     private function getCommands(): array
     {
         switch ($this->driver) {
-            case 'mysql':return [
+            case 'mysql':
+                return [
                     'SET SESSION sql_warnings=1;',
                     'SET NAMES utf8mb4;',
                     'SET SESSION sql_mode = "ANSI,TRADITIONAL";',
                 ];
-            case 'pgsql':return [
+            case 'pgsql':
+                return [
                     "SET NAMES 'UTF8';",
                 ];
-            case 'sqlsrv':return [
-                ];
+            case 'sqlsrv':
+                return [];
         }
     }
 
@@ -49,41 +59,80 @@ class GenericDB
             \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
         );
         switch ($this->driver) {
-            case 'mysql':return $options + [
+            case 'mysql':
+                return $options + [
                     \PDO::ATTR_EMULATE_PREPARES => false,
                     \PDO::MYSQL_ATTR_FOUND_ROWS => true,
                     \PDO::ATTR_PERSISTENT => true,
                 ];
-            case 'pgsql':return $options + [
+            case 'pgsql':
+                return $options + [
                     \PDO::ATTR_EMULATE_PREPARES => false,
                     \PDO::ATTR_PERSISTENT => true,
                 ];
-            case 'sqlsrv':return $options + [
+            case 'sqlsrv':
+                return $options + [
                     \PDO::SQLSRV_ATTR_DIRECT_QUERY => false,
                     \PDO::SQLSRV_ATTR_FETCHES_NUMERIC_TYPE => true,
                 ];
         }
     }
 
+    private function initPdo(): bool
+    {
+        if ($this->pdo) {
+            $result = $this->pdo->reconstruct($this->getDsn(), $this->username, $this->password, $this->getOptions());
+        } else {
+            $this->pdo = new LazyPdo($this->getDsn(), $this->username, $this->password, $this->getOptions());
+            $result = true;
+        }
+        $commands = $this->getCommands();
+        foreach ($commands as $command) {
+            $this->pdo->addInitCommand($command);
+        }
+        $this->reflection = new GenericReflection($this->pdo, $this->driver, $this->database);
+        $this->definition = new GenericDefinition($this->pdo, $this->driver, $this->database);
+        $this->conditions = new ConditionsBuilder($this->driver);
+        $this->columns = new ColumnsBuilder($this->driver);
+        $this->converter = new DataConverter($this->driver);
+        return $result;
+    }
+
     public function __construct(string $driver, string $address, int $port, string $database, string $username, string $password)
     {
         $this->driver = $driver;
+        $this->address = $address;
+        $this->port = $port;
         $this->database = $database;
-        $dsn = $this->getDsn($address, $port, $database);
-        $options = $this->getOptions();
-        $this->pdo = new \PDO($dsn, $username, $password, $options);
-        $commands = $this->getCommands();
-        foreach ($commands as $command) {
-            $this->pdo->query($command);
-        }
-        $this->reflection = new GenericReflection($this->pdo, $driver, $database);
-        $this->definition = new GenericDefinition($this->pdo, $driver, $database);
-        $this->conditions = new ConditionsBuilder($driver);
-        $this->columns = new ColumnsBuilder($driver);
-        $this->converter = new DataConverter($driver);
+        $this->username = $username;
+        $this->password = $password;
+        $this->initPdo();
     }
 
-    public function pdo(): \PDO
+    public function reconstruct(string $driver, string $address, int $port, string $database, string $username, string $password): bool
+    {
+        if ($driver) {
+            $this->driver = $driver;
+        }
+        if ($address) {
+            $this->address = $address;
+        }
+        if ($port) {
+            $this->port = $port;
+        }
+        if ($database) {
+            $this->database = $database;
+        }
+        if ($username) {
+            $this->username = $username;
+        }
+        if ($password) {
+            $this->password = $password;
+        }
+        return $this->initPdo();
+    }
+
+    public function pdo(): LazyPdo
     {
         return $this->pdo;
     }
@@ -256,5 +305,16 @@ class GenericDB
         //echo "- $sql -- " . json_encode($parameters, JSON_UNESCAPED_UNICODE) . "\n";
         $stmt->execute($parameters);
         return $stmt;
+    }
+
+    public function getCacheKey(): string
+    {
+        return md5(json_encode([
+            $this->driver,
+            $this->address,
+            $this->port,
+            $this->database,
+            $this->username
+        ]));
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Tqdev\PhpCrudApi;
 
 use Nyholm\Psr7\Factory\Psr17Factory;
@@ -43,5 +44,4 @@ class ResponseFactory
         $psr17Factory = new Psr17Factory();
         return $psr17Factory->createResponse($status);
     }
-
 }

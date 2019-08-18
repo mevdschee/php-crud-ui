@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP-CRUD-UI v2               License: MIT
  * Maurits van der Schee: maurits@vdschee.nl
@@ -18,7 +19,7 @@ namespace {
 
 // file: templates/error/show.html
 namespace {
-$_HTML['error/show'] = <<<'END_OF_HTML'
+    $_HTML['error/show'] = <<<'END_OF_HTML'
 <h2>Error</h2>
 
 <strong>code:</strong><br/>
@@ -34,7 +35,7 @@ END_OF_HTML;
 
 // file: templates/layouts/default.html
 namespace {
-$_HTML['layouts/default'] = <<<'END_OF_HTML'
+    $_HTML['layouts/default'] = <<<'END_OF_HTML'
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -72,7 +73,7 @@ END_OF_HTML;
 
 // file: templates/layouts/error.html
 namespace {
-$_HTML['layouts/error'] = <<<'END_OF_HTML'
+    $_HTML['layouts/error'] = <<<'END_OF_HTML'
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -110,7 +111,7 @@ END_OF_HTML;
 
 // file: templates/record/create.html
 namespace {
-$_HTML['record/create'] = <<<'END_OF_HTML'
+    $_HTML['record/create'] = <<<'END_OF_HTML'
 <h2>{{table}}: create</h2>
 
 <form method="post">
@@ -137,7 +138,7 @@ END_OF_HTML;
 
 // file: templates/record/created.html
 namespace {
-$_HTML['record/created'] = <<<'END_OF_HTML'
+    $_HTML['record/created'] = <<<'END_OF_HTML'
 <h2>{{table}}: create</h2>
 
 <p>Added with {{primaryKey}} {{id}}</p>
@@ -148,7 +149,7 @@ END_OF_HTML;
 
 // file: templates/record/delete.html
 namespace {
-$_HTML['record/delete'] = <<<'END_OF_HTML'
+    $_HTML['record/delete'] = <<<'END_OF_HTML'
 <h2>{{table}}: delete {{name}}</h2>
 
 <p>The action cannot be undone.</p>
@@ -163,7 +164,7 @@ END_OF_HTML;
 
 // file: templates/record/deleted.html
 namespace {
-$_HTML['record/deleted'] = <<<'END_OF_HTML'
+    $_HTML['record/deleted'] = <<<'END_OF_HTML'
 <h2>{{table}}: delete</h2>
 
 <p>Deleted with {{primaryKey}} {{id}}</p>
@@ -174,14 +175,14 @@ END_OF_HTML;
 
 // file: templates/record/home.html
 namespace {
-$_HTML['record/home'] = <<<'END_OF_HTML'
+    $_HTML['record/home'] = <<<'END_OF_HTML'
 <p>Nothing</p>
 END_OF_HTML;
 }
 
 // file: templates/record/list.html
 namespace {
-$_HTML['record/list'] = <<<'END_OF_HTML'
+    $_HTML['record/list'] = <<<'END_OF_HTML'
 <h2>{{table}}: list</h2>
 {{if:field}}
     <div class="well well-sm"><div style="float:right;">
@@ -247,7 +248,7 @@ END_OF_HTML;
 
 // file: templates/record/read.html
 namespace {
-$_HTML['record/read'] = <<<'END_OF_HTML'
+    $_HTML['record/read'] = <<<'END_OF_HTML'
 <h2>{{table}}: view</h2>
 <table class="table">
 <thead><tr><th>key</th><th></th><th>value</th></tr></thead>
@@ -287,7 +288,7 @@ END_OF_HTML;
 
 // file: templates/record/update.html
 namespace {
-$_HTML['record/update'] = <<<'END_OF_HTML'
+    $_HTML['record/update'] = <<<'END_OF_HTML'
 <h2>{{table}}: create</h2>
 
 <form method="post">
@@ -314,7 +315,7 @@ END_OF_HTML;
 
 // file: templates/record/updated.html
 namespace {
-$_HTML['record/updated'] = <<<'END_OF_HTML'
+    $_HTML['record/updated'] = <<<'END_OF_HTML'
 <h2>{{table}}: update</h2>
 
 <p>Updated with {{primaryKey}} {{id}}</p>
@@ -1357,7 +1358,7 @@ namespace Psr\Http\Message {
          *     the second or subsequent call to the method.
          */
         public function moveTo($targetPath);
-        
+
         /**
          * Retrieve the file size.
          *
@@ -1368,7 +1369,7 @@ namespace Psr\Http\Message {
          * @return int|null The file size in bytes or null if unknown.
          */
         public function getSize();
-        
+
         /**
          * Retrieve the error associated with the uploaded file.
          *
@@ -1384,7 +1385,7 @@ namespace Psr\Http\Message {
          * @return int One of PHP's UPLOAD_ERR_XXX constants.
          */
         public function getError();
-        
+
         /**
          * Retrieve the filename sent by the client.
          *
@@ -1399,7 +1400,7 @@ namespace Psr\Http\Message {
          *     was provided.
          */
         public function getClientFilename();
-        
+
         /**
          * Retrieve the media type sent by the client.
          *
@@ -2510,8 +2511,7 @@ namespace Nyholm\Psr7 {
         ];
 
         private function __construct()
-        {
-        }
+        { }
 
         /**
          * Creates a new PSR-7 stream.
@@ -2905,11 +2905,14 @@ namespace Nyholm\Psr7 {
      */
     final class Uri implements UriInterface
     {
-        /*private*/ const SCHEMES = ['http' => 80, 'https' => 443];
+        /*private*/
+        const SCHEMES = ['http' => 80, 'https' => 443];
 
-        /*private*/ const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
+        /*private*/
+        const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
 
-        /*private*/ const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
+        /*private*/
+        const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
 
         /** @var string Uri scheme. */
         private $scheme = '';
@@ -3314,7 +3317,7 @@ namespace Nyholm\Psr7Server {
                 }
 
                 if ($value && 0 === \strpos($key, 'CONTENT_')) {
-                    $name = 'content-'.\strtolower(\substr($key, 8));
+                    $name = 'content-' . \strtolower(\substr($key, 8));
                     $headers[$name] = $value;
 
                     continue;
@@ -3633,8 +3636,7 @@ namespace Tqdev\PhpCrudApi\Cache {
     class NoCache implements Cache
     {
         public function __construct()
-        {
-        }
+        { }
 
         public function set(string $key, string $value, int $ttl = 0): bool
         {
@@ -4302,7 +4304,8 @@ namespace Tqdev\PhpCrudApi\Column {
                     return false;
                 }
             }
-            if ($newColumn->getType() != $column->getType() ||
+            if (
+                $newColumn->getType() != $column->getType() ||
                 $newColumn->getLength() != $column->getLength() ||
                 $newColumn->getPrecision() != $column->getPrecision() ||
                 $newColumn->getScale() != $column->getScale()
@@ -4389,7 +4392,6 @@ namespace Tqdev\PhpCrudApi\Column {
             }
             return true;
         }
-
     }
 }
 
@@ -4488,7 +4490,6 @@ namespace Tqdev\PhpCrudApi\Column {
             unset($this->tables[$tableName]);
             return $this->database->removeTable($tableName);
         }
-
     }
 }
 
@@ -4516,7 +4517,6 @@ namespace Tqdev\PhpCrudApi\Controller {
         {
             return $this->responder->success($this->cache->clear());
         }
-
     }
 }
 
@@ -4743,7 +4743,6 @@ namespace Tqdev\PhpCrudApi\Controller {
                 return $this->responder->success($response);
             }
         }
-
     }
 }
 
@@ -4769,7 +4768,6 @@ namespace Tqdev\PhpCrudApi\Controller {
         {
             return ResponseFactory::fromObject(ResponseFactory::OK, $result);
         }
-
     }
 }
 
@@ -4797,7 +4795,6 @@ namespace Tqdev\PhpCrudApi\Controller {
         {
             return $this->responder->success($this->openApi->get());
         }
-
     }
 }
 
@@ -4978,7 +4975,6 @@ namespace Tqdev\PhpCrudApi\Controller {
                 return $this->responder->success($this->service->increment($table, $id, $record, $params));
             }
         }
-
     }
 }
 
@@ -4992,7 +4988,6 @@ namespace Tqdev\PhpCrudApi\Controller {
         public function error(int $error, string $argument, $details = null): ResponseInterface;
 
         public function success($result): ResponseInterface;
-
     }
 }
 
@@ -5044,7 +5039,6 @@ namespace Tqdev\PhpCrudApi\Database {
                         return "encode($value::bytea, 'base64') as $value";
                     case 'sqlsrv':
                         return "CASE WHEN $value IS NULL THEN NULL ELSE (SELECT CAST($value as varbinary(max)) FOR XML PATH(''), BINARY BASE64) END as $value";
-
                 }
             }
             if ($column->isGeometry()) {
@@ -5058,7 +5052,6 @@ namespace Tqdev\PhpCrudApi\Database {
             }
             return $value;
         }
-
     }
 }
 
@@ -5085,9 +5078,12 @@ namespace Tqdev\PhpCrudApi\Database {
                 return '';
             }
             switch ($this->driver) {
-                case 'mysql':return " LIMIT $offset, $limit";
-                case 'pgsql':return " LIMIT $limit OFFSET $offset";
-                case 'sqlsrv':return " OFFSET $offset ROWS FETCH NEXT $limit ROWS ONLY";
+                case 'mysql':
+                    return " LIMIT $offset, $limit";
+                case 'pgsql':
+                    return " LIMIT $limit OFFSET $offset";
+                case 'sqlsrv':
+                    return " OFFSET $offset ROWS FETCH NEXT $limit ROWS ONLY";
             }
         }
 
@@ -5137,9 +5133,12 @@ namespace Tqdev\PhpCrudApi\Database {
             $valuesSql = '(' . implode(',', $values) . ')';
             $outputColumn = $this->quoteColumnName($table->getPk());
             switch ($this->driver) {
-                case 'mysql':return "$columnsSql VALUES $valuesSql";
-                case 'pgsql':return "$columnsSql VALUES $valuesSql RETURNING $outputColumn";
-                case 'sqlsrv':return "$columnsSql OUTPUT INSERTED.$outputColumn VALUES $valuesSql";
+                case 'mysql':
+                    return "$columnsSql VALUES $valuesSql";
+                case 'pgsql':
+                    return "$columnsSql VALUES $valuesSql RETURNING $outputColumn";
+                case 'sqlsrv':
+                    return "$columnsSql OUTPUT INSERTED.$outputColumn VALUES $valuesSql";
             }
         }
 
@@ -5169,7 +5168,6 @@ namespace Tqdev\PhpCrudApi\Database {
             }
             return implode(',', $results);
         }
-
     }
 }
 
@@ -5320,17 +5318,28 @@ namespace Tqdev\PhpCrudApi\Database {
         private function getSpatialFunctionName(string $operator): string
         {
             switch ($operator) {
-                case 'co':return 'ST_Contains';
-                case 'cr':return 'ST_Crosses';
-                case 'di':return 'ST_Disjoint';
-                case 'eq':return 'ST_Equals';
-                case 'in':return 'ST_Intersects';
-                case 'ov':return 'ST_Overlaps';
-                case 'to':return 'ST_Touches';
-                case 'wi':return 'ST_Within';
-                case 'ic':return 'ST_IsClosed';
-                case 'is':return 'ST_IsSimple';
-                case 'iv':return 'ST_IsValid';
+                case 'co':
+                    return 'ST_Contains';
+                case 'cr':
+                    return 'ST_Crosses';
+                case 'di':
+                    return 'ST_Disjoint';
+                case 'eq':
+                    return 'ST_Equals';
+                case 'in':
+                    return 'ST_Intersects';
+                case 'ov':
+                    return 'ST_Overlaps';
+                case 'to':
+                    return 'ST_Touches';
+                case 'wi':
+                    return 'ST_Within';
+                case 'ic':
+                    return 'ST_IsClosed';
+                case 'is':
+                    return 'ST_IsSimple';
+                case 'iv':
+                    return 'ST_IsValid';
             }
         }
 
@@ -5487,25 +5496,30 @@ namespace Tqdev\PhpCrudApi\Database {
         private function getDsn(string $address, int $port, string $database): string
         {
             switch ($this->driver) {
-                case 'mysql':return "$this->driver:host=$address;port=$port;dbname=$database;charset=utf8mb4";
-                case 'pgsql':return "$this->driver:host=$address port=$port dbname=$database options='--client_encoding=UTF8'";
-                case 'sqlsrv':return "$this->driver:Server=$address,$port;Database=$database";
+                case 'mysql':
+                    return "$this->driver:host=$address;port=$port;dbname=$database;charset=utf8mb4";
+                case 'pgsql':
+                    return "$this->driver:host=$address port=$port dbname=$database options='--client_encoding=UTF8'";
+                case 'sqlsrv':
+                    return "$this->driver:Server=$address,$port;Database=$database";
             }
         }
 
         private function getCommands(): array
         {
             switch ($this->driver) {
-                case 'mysql':return [
+                case 'mysql':
+                    return [
                         'SET SESSION sql_warnings=1;',
                         'SET NAMES utf8mb4;',
                         'SET SESSION sql_mode = "ANSI,TRADITIONAL";',
                     ];
-                case 'pgsql':return [
+                case 'pgsql':
+                    return [
                         "SET NAMES 'UTF8';",
                     ];
-                case 'sqlsrv':return [
-                    ];
+                case 'sqlsrv':
+                    return [];
             }
         }
 
@@ -5516,16 +5530,19 @@ namespace Tqdev\PhpCrudApi\Database {
                 \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
             );
             switch ($this->driver) {
-                case 'mysql':return $options + [
+                case 'mysql':
+                    return $options + [
                         \PDO::ATTR_EMULATE_PREPARES => false,
                         \PDO::MYSQL_ATTR_FOUND_ROWS => true,
                         \PDO::ATTR_PERSISTENT => true,
                     ];
-                case 'pgsql':return $options + [
+                case 'pgsql':
+                    return $options + [
                         \PDO::ATTR_EMULATE_PREPARES => false,
                         \PDO::ATTR_PERSISTENT => true,
                     ];
-                case 'sqlsrv':return $options + [
+                case 'sqlsrv':
+                    return $options + [
                         \PDO::SQLSRV_ATTR_DIRECT_QUERY => false,
                         \PDO::SQLSRV_ATTR_FETCHES_NUMERIC_TYPE => true,
                     ];
@@ -6172,45 +6189,60 @@ namespace Tqdev\PhpCrudApi\Database {
         public function getIgnoredTables(): array
         {
             switch ($this->driver) {
-                case 'mysql':return [];
-                case 'pgsql':return ['spatial_ref_sys', 'raster_columns', 'raster_overviews', 'geography_columns', 'geometry_columns'];
-                case 'sqlsrv':return [];
+                case 'mysql':
+                    return [];
+                case 'pgsql':
+                    return ['spatial_ref_sys', 'raster_columns', 'raster_overviews', 'geography_columns', 'geometry_columns'];
+                case 'sqlsrv':
+                    return [];
             }
         }
 
         private function getTablesSQL(): string
         {
             switch ($this->driver) {
-                case 'mysql':return 'SELECT "TABLE_NAME", "TABLE_TYPE" FROM "INFORMATION_SCHEMA"."TABLES" WHERE "TABLE_TYPE" IN (\'BASE TABLE\' , \'VIEW\') AND "TABLE_SCHEMA" = ? ORDER BY BINARY "TABLE_NAME"';
-                case 'pgsql':return 'SELECT c.relname as "TABLE_NAME", c.relkind as "TABLE_TYPE" FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind IN (\'r\', \'v\') AND n.nspname <> \'pg_catalog\' AND n.nspname <> \'information_schema\' AND n.nspname !~ \'^pg_toast\' AND pg_catalog.pg_table_is_visible(c.oid) AND \'\' <> ? ORDER BY "TABLE_NAME";';
-                case 'sqlsrv':return 'SELECT o.name as "TABLE_NAME", o.xtype as "TABLE_TYPE" FROM sysobjects o WHERE o.xtype IN (\'U\', \'V\') ORDER BY "TABLE_NAME"';
+                case 'mysql':
+                    return 'SELECT "TABLE_NAME", "TABLE_TYPE" FROM "INFORMATION_SCHEMA"."TABLES" WHERE "TABLE_TYPE" IN (\'BASE TABLE\' , \'VIEW\') AND "TABLE_SCHEMA" = ? ORDER BY BINARY "TABLE_NAME"';
+                case 'pgsql':
+                    return 'SELECT c.relname as "TABLE_NAME", c.relkind as "TABLE_TYPE" FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind IN (\'r\', \'v\') AND n.nspname <> \'pg_catalog\' AND n.nspname <> \'information_schema\' AND n.nspname !~ \'^pg_toast\' AND pg_catalog.pg_table_is_visible(c.oid) AND \'\' <> ? ORDER BY "TABLE_NAME";';
+                case 'sqlsrv':
+                    return 'SELECT o.name as "TABLE_NAME", o.xtype as "TABLE_TYPE" FROM sysobjects o WHERE o.xtype IN (\'U\', \'V\') ORDER BY "TABLE_NAME"';
             }
         }
 
         private function getTableColumnsSQL(): string
         {
             switch ($this->driver) {
-                case 'mysql':return 'SELECT "COLUMN_NAME", "IS_NULLABLE", "DATA_TYPE", "CHARACTER_MAXIMUM_LENGTH", "NUMERIC_PRECISION", "NUMERIC_SCALE" FROM "INFORMATION_SCHEMA"."COLUMNS" WHERE "TABLE_NAME" = ? AND "TABLE_SCHEMA" = ?';
-                case 'pgsql':return 'SELECT a.attname AS "COLUMN_NAME", case when a.attnotnull then \'NO\' else \'YES\' end as "IS_NULLABLE", pg_catalog.format_type(a.atttypid, -1) as "DATA_TYPE", case when a.atttypmod < 0 then NULL else a.atttypmod-4 end as "CHARACTER_MAXIMUM_LENGTH", case when a.atttypid != 1700 then NULL else ((a.atttypmod - 4) >> 16) & 65535 end as "NUMERIC_PRECISION", case when a.atttypid != 1700 then NULL else (a.atttypmod - 4) & 65535 end as "NUMERIC_SCALE" FROM pg_attribute a JOIN pg_class pgc ON pgc.oid = a.attrelid WHERE pgc.relname = ? AND \'\' <> ? AND a.attnum > 0 AND NOT a.attisdropped;';
-                case 'sqlsrv':return 'SELECT c.name AS "COLUMN_NAME", c.is_nullable AS "IS_NULLABLE", t.Name AS "DATA_TYPE", (c.max_length/2) AS "CHARACTER_MAXIMUM_LENGTH", c.precision AS "NUMERIC_PRECISION", c.scale AS "NUMERIC_SCALE" FROM sys.columns c INNER JOIN sys.types t ON c.user_type_id = t.user_type_id WHERE c.object_id = OBJECT_ID(?) AND \'\' <> ?';
+                case 'mysql':
+                    return 'SELECT "COLUMN_NAME", "IS_NULLABLE", "DATA_TYPE", "CHARACTER_MAXIMUM_LENGTH", "NUMERIC_PRECISION", "NUMERIC_SCALE" FROM "INFORMATION_SCHEMA"."COLUMNS" WHERE "TABLE_NAME" = ? AND "TABLE_SCHEMA" = ?';
+                case 'pgsql':
+                    return 'SELECT a.attname AS "COLUMN_NAME", case when a.attnotnull then \'NO\' else \'YES\' end as "IS_NULLABLE", pg_catalog.format_type(a.atttypid, -1) as "DATA_TYPE", case when a.atttypmod < 0 then NULL else a.atttypmod-4 end as "CHARACTER_MAXIMUM_LENGTH", case when a.atttypid != 1700 then NULL else ((a.atttypmod - 4) >> 16) & 65535 end as "NUMERIC_PRECISION", case when a.atttypid != 1700 then NULL else (a.atttypmod - 4) & 65535 end as "NUMERIC_SCALE" FROM pg_attribute a JOIN pg_class pgc ON pgc.oid = a.attrelid WHERE pgc.relname = ? AND \'\' <> ? AND a.attnum > 0 AND NOT a.attisdropped;';
+                case 'sqlsrv':
+                    return 'SELECT c.name AS "COLUMN_NAME", c.is_nullable AS "IS_NULLABLE", t.Name AS "DATA_TYPE", (c.max_length/2) AS "CHARACTER_MAXIMUM_LENGTH", c.precision AS "NUMERIC_PRECISION", c.scale AS "NUMERIC_SCALE" FROM sys.columns c INNER JOIN sys.types t ON c.user_type_id = t.user_type_id WHERE c.object_id = OBJECT_ID(?) AND \'\' <> ?';
             }
         }
 
         private function getTablePrimaryKeysSQL(): string
         {
             switch ($this->driver) {
-                case 'mysql':return 'SELECT "COLUMN_NAME" FROM "INFORMATION_SCHEMA"."KEY_COLUMN_USAGE" WHERE "CONSTRAINT_NAME" = \'PRIMARY\' AND "TABLE_NAME" = ? AND "TABLE_SCHEMA" = ?';
-                case 'pgsql':return 'SELECT a.attname AS "COLUMN_NAME" FROM pg_attribute a JOIN pg_constraint c ON (c.conrelid, c.conkey[1]) = (a.attrelid, a.attnum) JOIN pg_class pgc ON pgc.oid = a.attrelid WHERE pgc.relname = ? AND \'\' <> ? AND c.contype = \'p\'';
-                case 'sqlsrv':return 'SELECT c.NAME as "COLUMN_NAME" FROM sys.key_constraints kc inner join sys.objects t on t.object_id = kc.parent_object_id INNER JOIN sys.index_columns ic ON kc.parent_object_id = ic.object_id and kc.unique_index_id = ic.index_id INNER JOIN sys.columns c ON ic.object_id = c.object_id AND ic.column_id = c.column_id WHERE kc.type = \'PK\' and t.object_id = OBJECT_ID(?) and \'\' <> ?';
+                case 'mysql':
+                    return 'SELECT "COLUMN_NAME" FROM "INFORMATION_SCHEMA"."KEY_COLUMN_USAGE" WHERE "CONSTRAINT_NAME" = \'PRIMARY\' AND "TABLE_NAME" = ? AND "TABLE_SCHEMA" = ?';
+                case 'pgsql':
+                    return 'SELECT a.attname AS "COLUMN_NAME" FROM pg_attribute a JOIN pg_constraint c ON (c.conrelid, c.conkey[1]) = (a.attrelid, a.attnum) JOIN pg_class pgc ON pgc.oid = a.attrelid WHERE pgc.relname = ? AND \'\' <> ? AND c.contype = \'p\'';
+                case 'sqlsrv':
+                    return 'SELECT c.NAME as "COLUMN_NAME" FROM sys.key_constraints kc inner join sys.objects t on t.object_id = kc.parent_object_id INNER JOIN sys.index_columns ic ON kc.parent_object_id = ic.object_id and kc.unique_index_id = ic.index_id INNER JOIN sys.columns c ON ic.object_id = c.object_id AND ic.column_id = c.column_id WHERE kc.type = \'PK\' and t.object_id = OBJECT_ID(?) and \'\' <> ?';
             }
         }
 
         private function getTableForeignKeysSQL(): string
         {
             switch ($this->driver) {
-                case 'mysql':return 'SELECT "COLUMN_NAME", "REFERENCED_TABLE_NAME" FROM "INFORMATION_SCHEMA"."KEY_COLUMN_USAGE" WHERE "REFERENCED_TABLE_NAME" IS NOT NULL AND "TABLE_NAME" = ? AND "TABLE_SCHEMA" = ?';
-                case 'pgsql':return 'SELECT a.attname AS "COLUMN_NAME", c.confrelid::regclass::text AS "REFERENCED_TABLE_NAME" FROM pg_attribute a JOIN pg_constraint c ON (c.conrelid, c.conkey[1]) = (a.attrelid, a.attnum) JOIN pg_class pgc ON pgc.oid = a.attrelid WHERE pgc.relname = ? AND \'\' <> ? AND c.contype  = \'f\'';
-                case 'sqlsrv':return 'SELECT COL_NAME(fc.parent_object_id, fc.parent_column_id) AS "COLUMN_NAME", OBJECT_NAME (f.referenced_object_id) AS "REFERENCED_TABLE_NAME" FROM sys.foreign_keys AS f INNER JOIN sys.foreign_key_columns AS fc ON f.OBJECT_ID = fc.constraint_object_id WHERE f.parent_object_id = OBJECT_ID(?) and \'\' <> ?';
+                case 'mysql':
+                    return 'SELECT "COLUMN_NAME", "REFERENCED_TABLE_NAME" FROM "INFORMATION_SCHEMA"."KEY_COLUMN_USAGE" WHERE "REFERENCED_TABLE_NAME" IS NOT NULL AND "TABLE_NAME" = ? AND "TABLE_SCHEMA" = ?';
+                case 'pgsql':
+                    return 'SELECT a.attname AS "COLUMN_NAME", c.confrelid::regclass::text AS "REFERENCED_TABLE_NAME" FROM pg_attribute a JOIN pg_constraint c ON (c.conrelid, c.conkey[1]) = (a.attrelid, a.attnum) JOIN pg_class pgc ON pgc.oid = a.attrelid WHERE pgc.relname = ? AND \'\' <> ? AND c.contype  = \'f\'';
+                case 'sqlsrv':
+                    return 'SELECT COL_NAME(fc.parent_object_id, fc.parent_column_id) AS "COLUMN_NAME", OBJECT_NAME (f.referenced_object_id) AS "REFERENCED_TABLE_NAME" FROM sys.foreign_keys AS f INNER JOIN sys.foreign_key_columns AS fc ON f.OBJECT_ID = fc.constraint_object_id WHERE f.parent_object_id = OBJECT_ID(?) and \'\' <> ?';
             }
         }
 
@@ -6976,7 +7008,6 @@ namespace Tqdev\PhpCrudApi\Middleware\Router {
             }
             return $response;
         }
-
     }
 }
 
@@ -8498,7 +8529,6 @@ namespace Tqdev\PhpCrudApi\OpenApi {
         {
             return $this->builder->build();
         }
-
     }
 }
 
@@ -8640,7 +8670,6 @@ namespace Tqdev\PhpCrudApi\Record\Condition {
             }
             return $condition;
         }
-
     }
 }
 
@@ -8663,7 +8692,6 @@ namespace Tqdev\PhpCrudApi\Record\Condition {
         {
             return $this;
         }
-
     }
 }
 
@@ -8727,8 +8755,7 @@ namespace Tqdev\PhpCrudApi\Record\Condition {
 namespace Tqdev\PhpCrudApi\Record\Condition {
 
     class SpatialCondition extends ColumnCondition
-    {
-    }
+    { }
 }
 
 // file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Record/Document/ErrorDocument.php
@@ -8831,8 +8858,14 @@ namespace Tqdev\PhpCrudApi\Record {
             return isset($params['mandatory']) && in_array($tableName . "." . $columnName, $params['mandatory']);
         }
 
-        private function select(string $tableName, bool $primaryTable, array $params, string $paramName,
-            array $columnNames, bool $include): array{
+        private function select(
+            string $tableName,
+            bool $primaryTable,
+            array $params,
+            string $paramName,
+            array $columnNames,
+            bool $include
+        ): array {
             if (!isset($params[$paramName])) {
                 return $columnNames;
             }
@@ -8882,7 +8915,6 @@ namespace Tqdev\PhpCrudApi\Record {
             }
             return $results;
         }
-
     }
 }
 
@@ -8968,7 +9000,6 @@ namespace Tqdev\PhpCrudApi\Record {
         {
             return $this->status;
         }
-
     }
 }
 
@@ -9026,7 +9057,6 @@ namespace Tqdev\PhpCrudApi\Record {
         {
             return $this->combinePathTreeOfConditions($this->getConditionsAsPathTree($table, $params));
         }
-
     }
 }
 
@@ -9163,7 +9193,6 @@ namespace Tqdev\PhpCrudApi\Record {
             }
             return $pageLimit;
         }
-
     }
 }
 
@@ -9887,18 +9916,24 @@ namespace Tqdev\PhpCrudApi {
         private function getDefaultPort(string $driver): int
         {
             switch ($driver) {
-                case 'mysql':return 3306;
-                case 'pgsql':return 5432;
-                case 'sqlsrv':return 1433;
+                case 'mysql':
+                    return 3306;
+                case 'pgsql':
+                    return 5432;
+                case 'sqlsrv':
+                    return 1433;
             }
         }
 
         private function getDefaultAddress(string $driver): string
         {
             switch ($driver) {
-                case 'mysql':return 'localhost';
-                case 'pgsql':return 'localhost';
-                case 'sqlsrv':return 'localhost';
+                case 'mysql':
+                    return 'localhost';
+                case 'pgsql':
+                    return 'localhost';
+                case 'sqlsrv':
+                    return 'localhost';
             }
         }
 
@@ -10161,7 +10196,6 @@ namespace Tqdev\PhpCrudApi {
             }
             return $allTableNames;
         }
-
     }
 }
 
@@ -10210,7 +10244,6 @@ namespace Tqdev\PhpCrudApi {
             $psr17Factory = new Psr17Factory();
             return $psr17Factory->createResponse($status);
         }
-
     }
 }
 
@@ -10326,7 +10359,6 @@ namespace Tqdev\PhpCrudUi\Client {
             curl_close($ch);
             return json_decode($response, true);
         }
-
     }
 }
 
@@ -10446,7 +10478,6 @@ namespace Tqdev\PhpCrudUi\Column {
                 if (in_array($name, $columns)) {
                     return $name;
                 }
-
             }
             return $columns[0];
         }
@@ -10489,7 +10520,6 @@ namespace Tqdev\PhpCrudUi\Column {
             $primaryKey = $this->getPrimaryKey($table, 'read');
             return $record[$primaryKey];
         }
-
     }
 }
 
@@ -10636,7 +10666,6 @@ namespace Tqdev\PhpCrudUi\Controller {
             $result = $this->service->_list($table, $action, $field, $id, $name, $params);
             return $this->responder->success($result);
         }
-
     }
 }
 
@@ -10683,7 +10712,6 @@ namespace Tqdev\PhpCrudUi\Controller {
             $result->setTemplatePath($this->templatePath);
             return ResponseFactory::fromHtml(ResponseFactory::OK, $result);
         }
-
     }
 }
 
@@ -10705,20 +10733,34 @@ namespace Tqdev\PhpCrudUi\Document {
             $this->masterTemplate = $masterTemplate;
             $this->contentTemplate = $contentTemplate;
             $this->variables = $variables;
-            $this->template = new Template('html',$this->getFunctions());
+            $this->template = new Template('html', $this->getFunctions());
             $this->templatePath = '';
         }
 
         private function getFunctions(): array
         {
             return array(
-                'lt' => function ($a, $b) {return $a < $b;},
-                'gt' => function ($a, $b) {return $a > $b;},
-                'le' => function ($a, $b) {return $a <= $b;},
-                'ge' => function ($a, $b) {return $a >= $b;},
-                'eq' => function ($a, $b) {return $a == $b;},
-                'add' => function ($a, $b) {return $a + $b;},
-                'sub' => function ($a, $b) {return $a - $b;},
+                'lt' => function ($a, $b) {
+                    return $a < $b;
+                },
+                'gt' => function ($a, $b) {
+                    return $a > $b;
+                },
+                'le' => function ($a, $b) {
+                    return $a <= $b;
+                },
+                'ge' => function ($a, $b) {
+                    return $a >= $b;
+                },
+                'eq' => function ($a, $b) {
+                    return $a == $b;
+                },
+                'add' => function ($a, $b) {
+                    return $a + $b;
+                },
+                'sub' => function ($a, $b) {
+                    return $a - $b;
+                },
             );
         }
 
@@ -10729,7 +10771,7 @@ namespace Tqdev\PhpCrudUi\Document {
 
         public function setTemplatePath(string $path)/*: void*/
         {
-            $this->templatePath = rtrim($path,'/');
+            $this->templatePath = rtrim($path, '/');
         }
 
         private function getHtmlFileContents(string $template): string
@@ -10982,7 +11024,7 @@ namespace Tqdev\PhpCrudUi\Record {
             }
 
             $maxPage = ceil($data['results'] / $pageSize);
-            
+
             $variables = array(
                 'table' => $table,
                 'action' => $action,
@@ -11148,7 +11190,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $root;
         }
 
-        private function renderChildren(/*object*/ $node, array $data): string
+        private function renderChildren(/*object*/$node, array $data): string
         {
             $result = '';
             $ifNodes = array();
@@ -11183,7 +11225,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $result;
         }
 
-        private function renderIfNode(/*object*/ $node, array $data): string
+        private function renderIfNode(/*object*/$node, array $data): string
         {
             $parts = $this->explode('|', $node->expression);
             $path = array_shift($parts);
@@ -11201,7 +11243,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $result;
         }
 
-        private function renderElseIfNode(/*object*/ $node, array $ifNodes, array $data): string
+        private function renderElseIfNode(/*object*/$node, array $ifNodes, array $data): string
         {
             if (count($ifNodes) < 1 || $ifNodes[0]->type != 'if') {
                 return $this->escape("{{elseif!!could not find matching `if`}}");
@@ -11228,7 +11270,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $result;
         }
 
-        private function renderElseNode(/*object*/ $node, array $ifNodes, array $data): string
+        private function renderElseNode(/*object*/$node, array $ifNodes, array $data): string
         {
             if (count($ifNodes) < 1 || $ifNodes[0]->type != 'if') {
                 return $this->escape("{{else!!could not find matching `if`}}");
@@ -11244,7 +11286,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $result;
         }
 
-        private function renderForNode(/*object*/ $node, array $data): string
+        private function renderForNode(/*object*/$node, array $data): string
         {
             $parts = $this->explode('|', $node->expression);
             $pathParts = $this->explode(':', array_shift($parts), 3);
@@ -11273,7 +11315,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $result;
         }
 
-        private function renderVarNode(/*object*/ $node, array $data): string
+        private function renderVarNode(/*object*/$node, array $data): string
         {
             $parts = $this->explode('|', $node->expression);
             $path = array_shift($parts);
@@ -11301,7 +11343,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $current;
         }
 
-        private function applyFunctions(/*object*/ $value, array $parts, array $data)/*: object*/ 
+        private function applyFunctions(/*object*/$value, array $parts, array $data)/*: object*/
         {
             foreach ($parts as $part) {
                 $function = $this->explode('(', rtrim($part, ')'), 2);
@@ -11326,7 +11368,6 @@ namespace Tqdev\PhpCrudUi\Template {
             }
             return $value;
         }
-
     }
 }
 

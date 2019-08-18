@@ -1,11 +1,11 @@
 <?php
+
 namespace Tqdev\PhpCrudApi\Record;
 
 use Tqdev\PhpCrudApi\ResponseFactory;
 
 class ErrorCode
 {
-
     private $code;
     private $message;
     private $status;
@@ -80,5 +80,4 @@ class ErrorCode
     {
         return $this->status;
     }
-
 }

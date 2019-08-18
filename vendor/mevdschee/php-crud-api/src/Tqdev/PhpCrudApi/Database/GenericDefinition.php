@@ -1,8 +1,10 @@
 <?php
+
 namespace Tqdev\PhpCrudApi\Database;
 
 use Tqdev\PhpCrudApi\Column\Reflection\ReflectedColumn;
 use Tqdev\PhpCrudApi\Column\Reflection\ReflectedTable;
+use Tqdev\PhpCrudApi\Database\LazyPdo;
 
 class GenericDefinition
 {
@@ -12,7 +14,7 @@ class GenericDefinition
     private $typeConverter;
     private $reflection;
 
-    public function __construct(\PDO $pdo, string $driver, string $database)
+    public function __construct(LazyPdo $pdo, string $driver, string $database)
     {
         $this->pdo = $pdo;
         $this->driver = $driver;
@@ -34,9 +36,9 @@ class GenericDefinition
         $type = $this->typeConverter->fromJdbc($column->getType());
         if ($column->hasPrecision() && $column->hasScale()) {
             $size = '(' . $column->getPrecision() . ',' . $column->getScale() . ')';
-        } else if ($column->hasPrecision()) {
+        } elseif ($column->hasPrecision()) {
             $size = '(' . $column->getPrecision() . ')';
-        } else if ($column->hasLength()) {
+        } elseif ($column->hasLength()) {
             $size = '(' . $column->getLength() . ')';
         } else {
             $size = '';
