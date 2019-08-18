@@ -8,6 +8,7 @@ use Tqdev\PhpCrudApi\Record\Document\ErrorDocument;
 use Tqdev\PhpCrudApi\Record\ErrorCode;
 use Tqdev\PhpCrudApi\ResponseFactory;
 use Tqdev\PhpCrudUi\Document\TemplateDocument;
+use Tqdev\PhpCrudUi\Document\CsvDocument;
 
 class TemplateResponder implements Responder
 {
@@ -40,6 +41,10 @@ class TemplateResponder implements Responder
     {
         $result->addVariables($this->variables);
         $result->setTemplatePath($this->templatePath);
-        return ResponseFactory::fromHtml(ResponseFactory::OK, $result);
+        if ($result instanceof CsvDocument) {
+            return ResponseFactory::fromCsv(ResponseFactory::OK, (string) $result);
+        } else {
+            return ResponseFactory::fromHtml(ResponseFactory::OK, $result);
+        }
     }
 }

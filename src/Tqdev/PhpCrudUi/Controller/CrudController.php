@@ -27,6 +27,8 @@ class CrudController
         $router->register('POST', '/*/delete/*', array($this, 'delete'));
         $router->register('GET', '/*/list', array($this, '_list'));
         $router->register('GET', '/*/list/*/*/*', array($this, '_list'));
+        $router->register('GET', '/*/export', array($this, 'export'));
+        $router->register('GET', '/*/export/*/*/*', array($this, 'export'));
         $this->service = $service;
         $this->responder = $responder;
     }
@@ -140,6 +142,16 @@ class CrudController
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
         $result = $this->service->_list($table, $action, $field, $id, $name, $params);
+        return $this->responder->success($result);
+    }
+
+    public function export(ServerRequestInterface $request): ResponseInterface
+    {
+        $table = RequestUtils::getPathSegment($request, 1);
+        if (!$this->service->hasTable($table, 'list')) {
+            return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
+        }
+        $result = $this->service->export($table, 'list');
         return $this->responder->success($result);
     }
 }

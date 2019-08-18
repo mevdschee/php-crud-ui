@@ -5,6 +5,7 @@ namespace Tqdev\PhpCrudUi\Record;
 use Tqdev\PhpCrudUi\Client\CrudApi;
 use Tqdev\PhpCrudUi\Column\SpecificationService;
 use Tqdev\PhpCrudUi\Document\TemplateDocument;
+use Tqdev\PhpCrudUi\Document\CsvDocument;
 
 class CrudService
 {
@@ -246,5 +247,34 @@ class CrudService
         );
 
         return new TemplateDocument('layouts/default', 'record/list', $variables);
+    }
+
+    public function export(string $table, string $action): CsvDocument
+    {
+        $references = $this->definition->getReferences($table, $action);
+
+        $columns = $this->definition->getColumns($table, $action);
+
+        $args = array();
+        $args['join'] = array_values(array_filter($references));
+        $data = $this->api->listRecords($table, $args);
+
+        foreach ($data['records'] as $i => $record) {
+            foreach ($record as $key => $value) {
+                if ($references[$key]) {
+                    $value = $this->definition->referenceText($references[$key], $record[$key]);
+                    $data['records'][$i][$key] = $value;
+                }
+            }
+        }
+
+        $variables = array(
+            'table' => $table,
+            'action' => $action,
+            'columns' => $columns,
+            'records' => $data['records'],
+        );
+
+        return new CsvDocument($variables);
     }
 }

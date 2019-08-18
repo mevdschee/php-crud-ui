@@ -183,6 +183,7 @@ END_OF_HTML;
 namespace {
 $_HTML['record/list'] = <<<'END_OF_HTML'
 <h2>{{table}}: list</h2>
+<p><a href="{{base}}/{{table}}/export">export</a></p>
 {{if:field}}
     <div class="well well-sm"><div style="float:right;">
     <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/list">Clear filter</a>
@@ -10511,6 +10512,12 @@ namespace Tqdev\PhpCrudApi {
         const UNPROCESSABLE_ENTITY = 422;
         const INTERNAL_SERVER_ERROR = 500;
 
+        public static function fromCsv(int $status, string $csv): ResponseInterface
+        {
+            $response = self::from($status, 'text/csv', $csv);
+            return $response->withHeader('Content-Type', 'text/csv');
+        }
+
         public static function fromHtml(int $status, string $html): ResponseInterface
         {
             return self::from($status, 'text/html', $html);
@@ -10846,6 +10853,8 @@ namespace Tqdev\PhpCrudUi\Controller {
             $router->register('POST', '/*/delete/*', array($this, 'delete'));
             $router->register('GET', '/*/list', array($this, '_list'));
             $router->register('GET', '/*/list/*/*/*', array($this, '_list'));
+            $router->register('GET', '/*/export', array($this, 'export'));
+            $router->register('GET', '/*/export/*/*/*', array($this, 'export'));
             $this->service = $service;
             $this->responder = $responder;
         }
@@ -10961,6 +10970,16 @@ namespace Tqdev\PhpCrudUi\Controller {
             $result = $this->service->_list($table, $action, $field, $id, $name, $params);
             return $this->responder->success($result);
         }
+
+        public function export(ServerRequestInterface $request): ResponseInterface
+        {
+            $table = RequestUtils::getPathSegment($request, 1);
+            if (!$this->service->hasTable($table, 'list')) {
+                return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
+            }
+            $result = $this->service->export($table, 'list');
+            return $this->responder->success($result);
+        }
     }
 }
 
@@ -10973,6 +10992,7 @@ namespace Tqdev\PhpCrudUi\Controller {
     use Tqdev\PhpCrudApi\Record\ErrorCode;
     use Tqdev\PhpCrudApi\ResponseFactory;
     use Tqdev\PhpCrudUi\Document\TemplateDocument;
+    use Tqdev\PhpCrudUi\Document\CsvDocument;
 
     class TemplateResponder implements Responder
     {
@@ -11005,7 +11025,48 @@ namespace Tqdev\PhpCrudUi\Controller {
         {
             $result->addVariables($this->variables);
             $result->setTemplatePath($this->templatePath);
-            return ResponseFactory::fromHtml(ResponseFactory::OK, $result);
+            if ($result instanceof CsvDocument) {
+                return ResponseFactory::fromCsv(ResponseFactory::OK, (string) $result);
+            } else {
+                return ResponseFactory::fromHtml(ResponseFactory::OK, $result);
+            }
+        }
+    }
+}
+
+// file: src/Tqdev/PhpCrudUi/Document/CsvDocument.php
+namespace Tqdev\PhpCrudUi\Document {
+
+    use Tqdev\PhpCrudUi\Template\Template;
+
+    class CsvDocument
+    {
+        private $variables;
+
+        public function __construct(array $variables)
+        {
+            $this->variables = $variables;
+        }
+
+        public function addVariables(array $variables)/*: void*/
+        {
+            $this->variables = array_merge($variables, $this->variables);
+        }
+
+        public function setTemplatePath(string $path)/*: void*/
+        {
+            $this->templatePath = rtrim($path, '/');
+        }
+
+        public function __toString(): string
+        {
+            $f = fopen('php://memory', 'r+');
+            fputcsv($f, $this->variables['columns']);
+            foreach ($this->variables['records'] as $record) {
+                fputcsv($f, $record);
+            }
+            rewind($f);
+            return stream_get_contents($f);
         }
     }
 }
@@ -11096,6 +11157,7 @@ namespace Tqdev\PhpCrudUi\Record {
     use Tqdev\PhpCrudUi\Client\CrudApi;
     use Tqdev\PhpCrudUi\Column\SpecificationService;
     use Tqdev\PhpCrudUi\Document\TemplateDocument;
+    use Tqdev\PhpCrudUi\Document\CsvDocument;
 
     class CrudService
     {
@@ -11337,6 +11399,35 @@ namespace Tqdev\PhpCrudUi\Record {
             );
 
             return new TemplateDocument('layouts/default', 'record/list', $variables);
+        }
+
+        public function export(string $table, string $action): CsvDocument
+        {
+            $references = $this->definition->getReferences($table, $action);
+
+            $columns = $this->definition->getColumns($table, $action);
+
+            $args = array();
+            $args['join'] = array_values(array_filter($references));
+            $data = $this->api->listRecords($table, $args);
+
+            foreach ($data['records'] as $i => $record) {
+                foreach ($record as $key => $value) {
+                    if ($references[$key]) {
+                        $value = $this->definition->referenceText($references[$key], $record[$key]);
+                        $data['records'][$i][$key] = $value;
+                    }
+                }
+            }
+
+            $variables = array(
+                'table' => $table,
+                'action' => $action,
+                'columns' => $columns,
+                'records' => $data['records'],
+            );
+
+            return new CsvDocument($variables);
         }
     }
 }
@@ -11845,7 +11936,7 @@ namespace Tqdev\PhpCrudUi {
     use Tqdev\PhpCrudUi\Ui;
 
     $config = new Config([
-        'url' => 'http://localhost:8000/api.php',
+        'url' => 'http://localhost:8000/src',
         'templatePath' => '../templates',
     ]);
     $request = RequestFactory::fromGlobals();
