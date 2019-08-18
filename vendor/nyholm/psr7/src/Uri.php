@@ -17,11 +17,11 @@ use Psr\Http\Message\UriInterface;
  */
 final class Uri implements UriInterface
 {
-    /*private*/ const SCHEMES = ['http' => 80, 'https' => 443];
+    private const SCHEMES = ['http' => 80, 'https' => 443];
 
-    /*private*/ const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
+    private const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
 
-    /*private*/ const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
+    private const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
 
     /** @var string Uri scheme. */
     private $scheme = '';
@@ -103,7 +103,7 @@ final class Uri implements UriInterface
         return $this->host;
     }
 
-    public function getPort() /*:?int*/
+    public function getPort(): ?int
     {
         return $this->port;
     }
@@ -271,7 +271,7 @@ final class Uri implements UriInterface
         return !isset(self::SCHEMES[$scheme]) || $port !== self::SCHEMES[$scheme];
     }
 
-    private function filterPort($port) /*:?int*/
+    private function filterPort($port): ?int
     {
         if (null === $port) {
             return null;

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * PHP-CRUD-UI v2               License: MIT
  * Maurits van der Schee: maurits@vdschee.nl
@@ -19,7 +18,7 @@ namespace {
 
 // file: templates/error/show.html
 namespace {
-    $_HTML['error/show'] = <<<'END_OF_HTML'
+$_HTML['error/show'] = <<<'END_OF_HTML'
 <h2>Error</h2>
 
 <strong>code:</strong><br/>
@@ -35,7 +34,7 @@ END_OF_HTML;
 
 // file: templates/layouts/default.html
 namespace {
-    $_HTML['layouts/default'] = <<<'END_OF_HTML'
+$_HTML['layouts/default'] = <<<'END_OF_HTML'
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -48,7 +47,7 @@ namespace {
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
-                    <h3><a href="{{base}}">PHP-CRUD-UI</a></h3>
+                    <h3><a href="{{base}}/">PHP-CRUD-UI</a></h3>
                 </div>
             </div>
             <div class="row">
@@ -73,7 +72,7 @@ END_OF_HTML;
 
 // file: templates/layouts/error.html
 namespace {
-    $_HTML['layouts/error'] = <<<'END_OF_HTML'
+$_HTML['layouts/error'] = <<<'END_OF_HTML'
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -111,7 +110,7 @@ END_OF_HTML;
 
 // file: templates/record/create.html
 namespace {
-    $_HTML['record/create'] = <<<'END_OF_HTML'
+$_HTML['record/create'] = <<<'END_OF_HTML'
 <h2>{{table}}: create</h2>
 
 <form method="post">
@@ -138,7 +137,7 @@ END_OF_HTML;
 
 // file: templates/record/created.html
 namespace {
-    $_HTML['record/created'] = <<<'END_OF_HTML'
+$_HTML['record/created'] = <<<'END_OF_HTML'
 <h2>{{table}}: create</h2>
 
 <p>Added with {{primaryKey}} {{id}}</p>
@@ -149,7 +148,7 @@ END_OF_HTML;
 
 // file: templates/record/delete.html
 namespace {
-    $_HTML['record/delete'] = <<<'END_OF_HTML'
+$_HTML['record/delete'] = <<<'END_OF_HTML'
 <h2>{{table}}: delete {{name}}</h2>
 
 <p>The action cannot be undone.</p>
@@ -164,7 +163,7 @@ END_OF_HTML;
 
 // file: templates/record/deleted.html
 namespace {
-    $_HTML['record/deleted'] = <<<'END_OF_HTML'
+$_HTML['record/deleted'] = <<<'END_OF_HTML'
 <h2>{{table}}: delete</h2>
 
 <p>Deleted with {{primaryKey}} {{id}}</p>
@@ -175,14 +174,14 @@ END_OF_HTML;
 
 // file: templates/record/home.html
 namespace {
-    $_HTML['record/home'] = <<<'END_OF_HTML'
+$_HTML['record/home'] = <<<'END_OF_HTML'
 <p>Nothing</p>
 END_OF_HTML;
 }
 
 // file: templates/record/list.html
 namespace {
-    $_HTML['record/list'] = <<<'END_OF_HTML'
+$_HTML['record/list'] = <<<'END_OF_HTML'
 <h2>{{table}}: list</h2>
 {{if:field}}
     <div class="well well-sm"><div style="float:right;">
@@ -248,7 +247,7 @@ END_OF_HTML;
 
 // file: templates/record/read.html
 namespace {
-    $_HTML['record/read'] = <<<'END_OF_HTML'
+$_HTML['record/read'] = <<<'END_OF_HTML'
 <h2>{{table}}: view</h2>
 <table class="table">
 <thead><tr><th>key</th><th></th><th>value</th></tr></thead>
@@ -288,7 +287,7 @@ END_OF_HTML;
 
 // file: templates/record/update.html
 namespace {
-    $_HTML['record/update'] = <<<'END_OF_HTML'
+$_HTML['record/update'] = <<<'END_OF_HTML'
 <h2>{{table}}: create</h2>
 
 <form method="post">
@@ -315,7 +314,7 @@ END_OF_HTML;
 
 // file: templates/record/updated.html
 namespace {
-    $_HTML['record/updated'] = <<<'END_OF_HTML'
+$_HTML['record/updated'] = <<<'END_OF_HTML'
 <h2>{{table}}: update</h2>
 
 <p>Updated with {{primaryKey}} {{id}}</p>
@@ -1358,7 +1357,7 @@ namespace Psr\Http\Message {
          *     the second or subsequent call to the method.
          */
         public function moveTo($targetPath);
-
+        
         /**
          * Retrieve the file size.
          *
@@ -1369,7 +1368,7 @@ namespace Psr\Http\Message {
          * @return int|null The file size in bytes or null if unknown.
          */
         public function getSize();
-
+        
         /**
          * Retrieve the error associated with the uploaded file.
          *
@@ -1385,7 +1384,7 @@ namespace Psr\Http\Message {
          * @return int One of PHP's UPLOAD_ERR_XXX constants.
          */
         public function getError();
-
+        
         /**
          * Retrieve the filename sent by the client.
          *
@@ -1400,7 +1399,7 @@ namespace Psr\Http\Message {
          *     was provided.
          */
         public function getClientFilename();
-
+        
         /**
          * Retrieve the media type sent by the client.
          *
@@ -2511,7 +2510,8 @@ namespace Nyholm\Psr7 {
         ];
 
         private function __construct()
-        { }
+        {
+        }
 
         /**
          * Creates a new PSR-7 stream.
@@ -2905,14 +2905,11 @@ namespace Nyholm\Psr7 {
      */
     final class Uri implements UriInterface
     {
-        /*private*/
-        const SCHEMES = ['http' => 80, 'https' => 443];
+        /*private*/ const SCHEMES = ['http' => 80, 'https' => 443];
 
-        /*private*/
-        const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
+        /*private*/ const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
 
-        /*private*/
-        const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
+        /*private*/ const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
 
         /** @var string Uri scheme. */
         private $scheme = '';
@@ -3317,7 +3314,7 @@ namespace Nyholm\Psr7Server {
                 }
 
                 if ($value && 0 === \strpos($key, 'CONTENT_')) {
-                    $name = 'content-' . \strtolower(\substr($key, 8));
+                    $name = 'content-'.\strtolower(\substr($key, 8));
                     $headers[$name] = $value;
 
                     continue;
@@ -3636,7 +3633,8 @@ namespace Tqdev\PhpCrudApi\Cache {
     class NoCache implements Cache
     {
         public function __construct()
-        { }
+        {
+        }
 
         public function set(string $key, string $value, int $ttl = 0): bool
         {
@@ -3887,7 +3885,7 @@ namespace Tqdev\PhpCrudApi\Column\Reflection {
             return new ReflectedColumn($name, $type, $length, $precision, $scale, $nullable, $pk, $fk);
         }
 
-        public static function fromJson( /* object */$json): ReflectedColumn
+        public static function fromJson(/* object */$json): ReflectedColumn
         {
             $name = $json->name;
             $type = $json->type;
@@ -4041,7 +4039,7 @@ namespace Tqdev\PhpCrudApi\Column\Reflection {
             return new ReflectedDatabase($tableTypes);
         }
 
-        public static function fromJson( /* object */$json): ReflectedDatabase
+        public static function fromJson(/* object */$json): ReflectedDatabase
         {
             $tableTypes = (array) $json->tables;
             return new ReflectedDatabase($tableTypes);
@@ -4151,7 +4149,7 @@ namespace Tqdev\PhpCrudApi\Column\Reflection {
             return new ReflectedTable($name, $type, array_values($columns));
         }
 
-        public static function fromJson( /* object */$json): ReflectedTable
+        public static function fromJson(/* object */$json): ReflectedTable
         {
             $name = $json->name;
             $type = $json->type;
@@ -4304,8 +4302,7 @@ namespace Tqdev\PhpCrudApi\Column {
                     return false;
                 }
             }
-            if (
-                $newColumn->getType() != $column->getType() ||
+            if ($newColumn->getType() != $column->getType() ||
                 $newColumn->getLength() != $column->getLength() ||
                 $newColumn->getPrecision() != $column->getPrecision() ||
                 $newColumn->getScale() != $column->getScale()
@@ -4335,7 +4332,7 @@ namespace Tqdev\PhpCrudApi\Column {
             return true;
         }
 
-        public function addTable( /* object */$definition)
+        public function addTable(/* object */$definition)
         {
             $newTable = ReflectedTable::fromJson($definition);
             if (!$this->db->definition()->addTable($newTable)) {
@@ -4416,33 +4413,43 @@ namespace Tqdev\PhpCrudApi\Column {
             $this->db = $db;
             $this->cache = $cache;
             $this->ttl = $ttl;
-            $this->database = $this->loadDatabase(true);
+            $this->database = null;
             $this->tables = [];
+        }
+
+        private function database(): ReflectedDatabase
+        {
+            if (!$this->database) {
+                $this->database = $this->loadDatabase(true);
+            }
+            return $this->database;
         }
 
         private function loadDatabase(bool $useCache): ReflectedDatabase
         {
-            $data = $useCache ? $this->cache->get('ReflectedDatabase') : '';
+            $key = sprintf('%s-ReflectedDatabase', $this->db->getCacheKey());
+            $data = $useCache ? $this->cache->get($key) : '';
             if ($data != '') {
                 $database = ReflectedDatabase::fromJson(json_decode(gzuncompress($data)));
             } else {
                 $database = ReflectedDatabase::fromReflection($this->db->reflection());
                 $data = gzcompress(json_encode($database, JSON_UNESCAPED_UNICODE));
-                $this->cache->set('ReflectedDatabase', $data, $this->ttl);
+                $this->cache->set($key, $data, $this->ttl);
             }
             return $database;
         }
 
         private function loadTable(string $tableName, bool $useCache): ReflectedTable
         {
-            $data = $useCache ? $this->cache->get("ReflectedTable($tableName)") : '';
+            $key = sprintf('%s-ReflectedTable(%s)', $this->db->getCacheKey(), $tableName);
+            $data = $useCache ? $this->cache->get($key) : '';
             if ($data != '') {
                 $table = ReflectedTable::fromJson(json_decode(gzuncompress($data)));
             } else {
-                $tableType = $this->database->getType($tableName);
+                $tableType = $this->database()->getType($tableName);
                 $table = ReflectedTable::fromReflection($this->db->reflection(), $tableName, $tableType);
                 $data = gzcompress(json_encode($table, JSON_UNESCAPED_UNICODE));
-                $this->cache->set("ReflectedTable($tableName)", $data, $this->ttl);
+                $this->cache->set($key, $data, $this->ttl);
             }
             return $table;
         }
@@ -4459,12 +4466,12 @@ namespace Tqdev\PhpCrudApi\Column {
 
         public function hasTable(string $tableName): bool
         {
-            return $this->database->hasTable($tableName);
+            return $this->database()->hasTable($tableName);
         }
 
         public function getType(string $tableName): string
         {
-            return $this->database->getType($tableName);
+            return $this->database()->getType($tableName);
         }
 
         public function getTable(string $tableName): ReflectedTable
@@ -4477,18 +4484,18 @@ namespace Tqdev\PhpCrudApi\Column {
 
         public function getTableNames(): array
         {
-            return $this->database->getTableNames();
+            return $this->database()->getTableNames();
         }
 
         public function getDatabaseName(): string
         {
-            return $this->database->getName();
+            return $this->database()->getName();
         }
 
         public function removeTable(string $tableName): bool
         {
             unset($this->tables[$tableName]);
-            return $this->database->removeTable($tableName);
+            return $this->database()->removeTable($tableName);
         }
     }
 }
@@ -5007,6 +5014,16 @@ namespace Tqdev\PhpCrudApi\Database {
 
         public function convertColumnValue(ReflectedColumn $column): string
         {
+            if ($column->isBoolean()) {
+                switch ($this->driver) {
+                    case 'mysql':
+                        return "IFNULL(IF(?,TRUE,FALSE),NULL)";
+                    case 'pgsql':
+                        return "?";
+                    case 'sqlsrv':
+                        return "?";
+                }
+            }
             if ($column->isBinary()) {
                 switch ($this->driver) {
                     case 'mysql':
@@ -5078,12 +5095,9 @@ namespace Tqdev\PhpCrudApi\Database {
                 return '';
             }
             switch ($this->driver) {
-                case 'mysql':
-                    return " LIMIT $offset, $limit";
-                case 'pgsql':
-                    return " LIMIT $limit OFFSET $offset";
-                case 'sqlsrv':
-                    return " OFFSET $offset ROWS FETCH NEXT $limit ROWS ONLY";
+                case 'mysql':return " LIMIT $offset, $limit";
+                case 'pgsql':return " LIMIT $limit OFFSET $offset";
+                case 'sqlsrv':return " OFFSET $offset ROWS FETCH NEXT $limit ROWS ONLY";
             }
         }
 
@@ -5133,12 +5147,9 @@ namespace Tqdev\PhpCrudApi\Database {
             $valuesSql = '(' . implode(',', $values) . ')';
             $outputColumn = $this->quoteColumnName($table->getPk());
             switch ($this->driver) {
-                case 'mysql':
-                    return "$columnsSql VALUES $valuesSql";
-                case 'pgsql':
-                    return "$columnsSql VALUES $valuesSql RETURNING $outputColumn";
-                case 'sqlsrv':
-                    return "$columnsSql OUTPUT INSERTED.$outputColumn VALUES $valuesSql";
+                case 'mysql':return "$columnsSql VALUES $valuesSql";
+                case 'pgsql':return "$columnsSql VALUES $valuesSql RETURNING $outputColumn";
+                case 'sqlsrv':return "$columnsSql OUTPUT INSERTED.$outputColumn VALUES $valuesSql";
             }
         }
 
@@ -5318,28 +5329,17 @@ namespace Tqdev\PhpCrudApi\Database {
         private function getSpatialFunctionName(string $operator): string
         {
             switch ($operator) {
-                case 'co':
-                    return 'ST_Contains';
-                case 'cr':
-                    return 'ST_Crosses';
-                case 'di':
-                    return 'ST_Disjoint';
-                case 'eq':
-                    return 'ST_Equals';
-                case 'in':
-                    return 'ST_Intersects';
-                case 'ov':
-                    return 'ST_Overlaps';
-                case 'to':
-                    return 'ST_Touches';
-                case 'wi':
-                    return 'ST_Within';
-                case 'ic':
-                    return 'ST_IsClosed';
-                case 'is':
-                    return 'ST_IsSimple';
-                case 'iv':
-                    return 'ST_IsValid';
+                case 'co':return 'ST_Contains';
+                case 'cr':return 'ST_Crosses';
+                case 'di':return 'ST_Disjoint';
+                case 'eq':return 'ST_Equals';
+                case 'in':return 'ST_Intersects';
+                case 'ov':return 'ST_Overlaps';
+                case 'to':return 'ST_Touches';
+                case 'wi':return 'ST_Within';
+                case 'ic':return 'ST_IsClosed';
+                case 'is':return 'ST_IsSimple';
+                case 'iv':return 'ST_IsValid';
             }
         }
 
@@ -5443,6 +5443,8 @@ namespace Tqdev\PhpCrudApi\Database {
         private function convertInputValue($conversion, $value)
         {
             switch ($conversion) {
+                case 'boolean':
+                    return $value ? 1 : 0;
                 case 'base64url_to_base64':
                     return str_pad(strtr($value, '-_', '+/'), ceil(strlen($value) / 4) * 4, '=', STR_PAD_RIGHT);
             }
@@ -5451,6 +5453,9 @@ namespace Tqdev\PhpCrudApi\Database {
 
         private function getInputValueConversion(ReflectedColumn $column): string
         {
+            if ($column->isBoolean()) {
+                return 'boolean';
+            }
             if ($column->isBinary()) {
                 return 'base64url_to_base64';
             }
@@ -5485,7 +5490,11 @@ namespace Tqdev\PhpCrudApi\Database {
     class GenericDB
     {
         private $driver;
+        private $address;
+        private $port;
         private $database;
+        private $username;
+        private $password;
         private $pdo;
         private $reflection;
         private $definition;
@@ -5493,15 +5502,15 @@ namespace Tqdev\PhpCrudApi\Database {
         private $columns;
         private $converter;
 
-        private function getDsn(string $address, int $port, string $database): string
+        private function getDsn(): string
         {
             switch ($this->driver) {
                 case 'mysql':
-                    return "$this->driver:host=$address;port=$port;dbname=$database;charset=utf8mb4";
+                    return "$this->driver:host=$this->address;port=$this->port;dbname=$this->database;charset=utf8mb4";
                 case 'pgsql':
-                    return "$this->driver:host=$address port=$port dbname=$database options='--client_encoding=UTF8'";
+                    return "$this->driver:host=$this->address port=$this->port dbname=$this->database options='--client_encoding=UTF8'";
                 case 'sqlsrv':
-                    return "$this->driver:Server=$address,$port;Database=$database";
+                    return "$this->driver:Server=$this->address,$this->port;Database=$this->database";
             }
         }
 
@@ -5549,25 +5558,61 @@ namespace Tqdev\PhpCrudApi\Database {
             }
         }
 
+        private function initPdo(): bool
+        {
+            if ($this->pdo) {
+                $result = $this->pdo->reconstruct($this->getDsn(), $this->username, $this->password, $this->getOptions());
+            } else {
+                $this->pdo = new LazyPdo($this->getDsn(), $this->username, $this->password, $this->getOptions());
+                $result = true;
+            }
+            $commands = $this->getCommands();
+            foreach ($commands as $command) {
+                $this->pdo->addInitCommand($command);
+            }
+            $this->reflection = new GenericReflection($this->pdo, $this->driver, $this->database);
+            $this->definition = new GenericDefinition($this->pdo, $this->driver, $this->database);
+            $this->conditions = new ConditionsBuilder($this->driver);
+            $this->columns = new ColumnsBuilder($this->driver);
+            $this->converter = new DataConverter($this->driver);
+            return $result;
+        }
+
         public function __construct(string $driver, string $address, int $port, string $database, string $username, string $password)
         {
             $this->driver = $driver;
+            $this->address = $address;
+            $this->port = $port;
             $this->database = $database;
-            $dsn = $this->getDsn($address, $port, $database);
-            $options = $this->getOptions();
-            $this->pdo = new \PDO($dsn, $username, $password, $options);
-            $commands = $this->getCommands();
-            foreach ($commands as $command) {
-                $this->pdo->query($command);
-            }
-            $this->reflection = new GenericReflection($this->pdo, $driver, $database);
-            $this->definition = new GenericDefinition($this->pdo, $driver, $database);
-            $this->conditions = new ConditionsBuilder($driver);
-            $this->columns = new ColumnsBuilder($driver);
-            $this->converter = new DataConverter($driver);
+            $this->username = $username;
+            $this->password = $password;
+            $this->initPdo();
         }
 
-        public function pdo(): \PDO
+        public function reconstruct(string $driver, string $address, int $port, string $database, string $username, string $password): bool
+        {
+            if ($driver) {
+                $this->driver = $driver;
+            }
+            if ($address) {
+                $this->address = $address;
+            }
+            if ($port) {
+                $this->port = $port;
+            }
+            if ($database) {
+                $this->database = $database;
+            }
+            if ($username) {
+                $this->username = $username;
+            }
+            if ($password) {
+                $this->password = $password;
+            }
+            return $this->initPdo();
+        }
+
+        public function pdo(): LazyPdo
         {
             return $this->pdo;
         }
@@ -5741,6 +5786,17 @@ namespace Tqdev\PhpCrudApi\Database {
             $stmt->execute($parameters);
             return $stmt;
         }
+
+        public function getCacheKey(): string
+        {
+            return md5(json_encode([
+                $this->driver,
+                $this->address,
+                $this->port,
+                $this->database,
+                $this->username
+            ]));
+        }
     }
 }
 
@@ -5749,6 +5805,7 @@ namespace Tqdev\PhpCrudApi\Database {
 
     use Tqdev\PhpCrudApi\Column\Reflection\ReflectedColumn;
     use Tqdev\PhpCrudApi\Column\Reflection\ReflectedTable;
+    use Tqdev\PhpCrudApi\Database\LazyPdo;
 
     class GenericDefinition
     {
@@ -5758,7 +5815,7 @@ namespace Tqdev\PhpCrudApi\Database {
         private $typeConverter;
         private $reflection;
 
-        public function __construct(\PDO $pdo, string $driver, string $database)
+        public function __construct(LazyPdo $pdo, string $driver, string $database)
         {
             $this->pdo = $pdo;
             $this->driver = $driver;
@@ -5780,9 +5837,9 @@ namespace Tqdev\PhpCrudApi\Database {
             $type = $this->typeConverter->fromJdbc($column->getType());
             if ($column->hasPrecision() && $column->hasScale()) {
                 $size = '(' . $column->getPrecision() . ',' . $column->getScale() . ')';
-            } else if ($column->hasPrecision()) {
+            } elseif ($column->hasPrecision()) {
                 $size = '(' . $column->getPrecision() . ')';
-            } else if ($column->hasLength()) {
+            } elseif ($column->hasLength()) {
                 $size = '(' . $column->getLength() . ')';
             } else {
                 $size = '';
@@ -6171,6 +6228,8 @@ namespace Tqdev\PhpCrudApi\Database {
 // file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Database/GenericReflection.php
 namespace Tqdev\PhpCrudApi\Database {
 
+    use Tqdev\PhpCrudApi\Database\LazyPdo;
+
     class GenericReflection
     {
         private $pdo;
@@ -6178,7 +6237,7 @@ namespace Tqdev\PhpCrudApi\Database {
         private $database;
         private $typeConverter;
 
-        public function __construct(\PDO $pdo, string $driver, string $database)
+        public function __construct(LazyPdo $pdo, string $driver, string $database)
         {
             $this->pdo = $pdo;
             $this->driver = $driver;
@@ -6214,7 +6273,7 @@ namespace Tqdev\PhpCrudApi\Database {
         {
             switch ($this->driver) {
                 case 'mysql':
-                    return 'SELECT "COLUMN_NAME", "IS_NULLABLE", "DATA_TYPE", "CHARACTER_MAXIMUM_LENGTH", "NUMERIC_PRECISION", "NUMERIC_SCALE" FROM "INFORMATION_SCHEMA"."COLUMNS" WHERE "TABLE_NAME" = ? AND "TABLE_SCHEMA" = ?';
+                    return 'SELECT "COLUMN_NAME", "IS_NULLABLE", "DATA_TYPE", if ("DATA_TYPE"=\'tinyint\' OR "DATA_TYPE"=\'bit\',SUBSTRING_INDEX(SUBSTRING_INDEX("COLUMN_TYPE",\'(\',-1),\')\',1),"CHARACTER_MAXIMUM_LENGTH") as "CHARACTER_MAXIMUM_LENGTH", "NUMERIC_PRECISION", "NUMERIC_SCALE" FROM "INFORMATION_SCHEMA"."COLUMNS" WHERE "TABLE_NAME" = ? AND "TABLE_SCHEMA" = ?';
                 case 'pgsql':
                     return 'SELECT a.attname AS "COLUMN_NAME", case when a.attnotnull then \'NO\' else \'YES\' end as "IS_NULLABLE", pg_catalog.format_type(a.atttypid, -1) as "DATA_TYPE", case when a.atttypmod < 0 then NULL else a.atttypmod-4 end as "CHARACTER_MAXIMUM_LENGTH", case when a.atttypid != 1700 then NULL else ((a.atttypmod - 4) >> 16) & 65535 end as "NUMERIC_PRECISION", case when a.atttypid != 1700 then NULL else (a.atttypmod - 4) & 65535 end as "NUMERIC_SCALE" FROM pg_attribute a JOIN pg_class pgc ON pgc.oid = a.attrelid WHERE pgc.relname = ? AND \'\' <> ? AND a.attnum > 0 AND NOT a.attisdropped;';
                 case 'sqlsrv':
@@ -6283,6 +6342,21 @@ namespace Tqdev\PhpCrudApi\Database {
                     $result['IS_NULLABLE'] = false;
                 }
             }
+            if ($this->driver == 'mysql') {
+                foreach ($results as &$result) {
+                    // mysql does not properly reflect display width of types
+                    preg_match('|([a-z]+)(\(([0-9]+)(,([0-9]+))?\))?|', $result['DATA_TYPE'], $matches);
+                    $result['DATA_TYPE'] = $matches[1];
+                    if (!$result['CHARACTER_MAXIMUM_LENGTH']) {
+                        if (isset($matches[3])) {
+                            $result['NUMERIC_PRECISION'] = $matches[3];
+                        }
+                        if (isset($matches[5])) {
+                            $result['NUMERIC_SCALE'] = $matches[5];
+                        }
+                    }
+                }
+            }
             return $results;
         }
 
@@ -6323,6 +6397,131 @@ namespace Tqdev\PhpCrudApi\Database {
     }
 }
 
+// file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Database/LazyPdo.php
+namespace Tqdev\PhpCrudApi\Database {
+
+    class LazyPdo extends \PDO
+    {
+        private $dsn;
+        private $user;
+        private $password;
+        private $options;
+        private $commands;
+
+        private $pdo = null;
+
+        public function __construct(string $dsn, /*?string*/ $user = null, /*?string*/ $password = null, array $options = array())
+        {
+            $this->dsn = $dsn;
+            $this->user = $user;
+            $this->password = $password;
+            $this->options = $options;
+            $this->commands = array();
+            // explicitly NOT calling super::__construct
+        }
+
+        public function addInitCommand(string $command)/*: void*/
+        {
+            $this->commands[] = $command;
+        }
+
+        private function pdo()
+        {
+            if (!$this->pdo) {
+                $this->pdo = new \PDO($this->dsn, $this->user, $this->password, $this->options);
+                foreach ($this->commands as $command) {
+                    $this->pdo->query($command);
+                }
+            }
+            return $this->pdo;
+        }
+
+        public function reconstruct(string $dsn, /*?string*/ $user = null, /*?string*/ $password = null, array $options = array()): bool
+        {
+            $this->dsn = $dsn;
+            $this->user = $user;
+            $this->password = $password;
+            $this->options = $options;
+            $this->commands = array();
+            if ($this->pdo) {
+                $this->pdo = null;
+                return true;
+            }
+            return false;
+        }
+
+        public function inTransaction(): bool
+        {
+            // Do not call parent method if there is no pdo object
+            return $this->pdo && parent::inTransaction();
+        }
+
+        public function setAttribute($attribute, $value): bool
+        {
+            if ($this->pdo) {
+                return $this->pdo()->setAttribute($attribute, $value);
+            }
+            $this->options[$attribute] = $value;
+            return true;
+        }
+
+        public function getAttribute($attribute): mixed
+        {
+            return $this->pdo()->getAttribute($attribute);
+        }
+
+        public function beginTransaction(): bool
+        {
+            return $this->pdo()->beginTransaction();
+        }
+
+        public function commit(): bool
+        {
+            return $this->pdo()->commit();
+        }
+
+        public function rollBack(): bool
+        {
+            return $this->pdo()->rollBack();
+        }
+
+        public function errorCode(): mixed
+        {
+            return $this->pdo()->errorCode();
+        }
+
+        public function errorInfo(): array
+        {
+            return $this->pdo()->errorInfo();
+        }
+
+        public function exec($query): int
+        {
+            return $this->pdo()->exec($query);
+        }
+
+        public function prepare($statement, $options = array())
+        {
+            return $this->pdo()->prepare($statement, $options);
+        }
+
+        public function quote($string, $parameter_type = null): string
+        {
+            return $this->pdo()->quote($string, $parameter_type);
+        }
+
+        public function lastInsertId(/* ?string */$name = null): string
+        {
+            return $this->pdo()->lastInsertId($name);
+        }
+
+        public function query(string $statement): \PDOStatement
+        {
+            return call_user_func_array(array($this->pdo(), 'query'), func_get_args());
+        }
+    }
+}
+
 // file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Database/TypeConverter.php
 namespace Tqdev\PhpCrudApi\Database {
 
@@ -6338,7 +6537,7 @@ namespace Tqdev\PhpCrudApi\Database {
         private $fromJdbc = [
             'mysql' => [
                 'clob' => 'longtext',
-                'boolean' => 'bit',
+                'boolean' => 'tinyint',
                 'blob' => 'longblob',
                 'timestamp' => 'datetime',
             ],
@@ -6371,7 +6570,8 @@ namespace Tqdev\PhpCrudApi\Database {
                 'timestamp_with_timezone' => 'timestamp',
             ],
             'mysql' => [
-                'bit' => 'boolean',
+                'tinyint(1)' => 'boolean',
+                'bit(1)' => 'boolean',
                 'tinyblob' => 'blob',
                 'mediumblob' => 'blob',
                 'longblob' => 'blob',
@@ -6664,7 +6864,7 @@ namespace Tqdev\PhpCrudApi\GeoJson {
             return [$lon, $lat];
         }
 
-        private function convertRecordToFeature( /*object*/$record, string $primaryKeyColumnName, string $geometryColumnName)
+        private function convertRecordToFeature(/*object*/$record, string $primaryKeyColumnName, string $geometryColumnName)
         {
             $id = null;
             if ($primaryKeyColumnName) {
@@ -6815,7 +7015,7 @@ namespace Tqdev\PhpCrudApi\Middleware\Communication {
 
     class VariableStore
     {
-        static $values = array();
+        public static $values = array();
 
         public static function get(string $key)
         {
@@ -6877,7 +7077,7 @@ namespace Tqdev\PhpCrudApi\Middleware\Router {
 
         public function __construct(string $basePath, Responder $responder, Cache $cache, int $ttl, bool $debug)
         {
-            $this->basePath = $this->detectBasePath($basePath);
+            $this->basePath = rtrim($this->detectBasePath($basePath), '/');
             $this->responder = $responder;
             $this->cache = $cache;
             $this->ttl = $ttl;
@@ -6962,9 +7162,8 @@ namespace Tqdev\PhpCrudApi\Middleware\Router {
         private function removeBasePath(ServerRequestInterface $request): ServerRequestInterface
         {
             $path = $request->getUri()->getPath();
-            $basePath = rtrim($this->basePath, '/');
-            if (substr($path, 0, strlen($basePath)) == $basePath) {
-                $path = substr($path, strlen($basePath));
+            if (substr($path, 0, strlen($this->basePath)) == $this->basePath) {
+                $path = substr($path, strlen($this->basePath));
                 $request = $request->withUri($request->getUri()->withPath($path));
             }
             return $request;
@@ -7518,8 +7717,8 @@ namespace Tqdev\PhpCrudApi\Middleware {
     use Psr\Http\Message\ResponseInterface;
     use Psr\Http\Message\ServerRequestInterface;
     use Psr\Http\Server\RequestHandlerInterface;
-    use Tqdev\PhpCrudApi\Column\ReflectionService;
     use Tqdev\PhpCrudApi\Column\Reflection\ReflectedTable;
+    use Tqdev\PhpCrudApi\Column\ReflectionService;
     use Tqdev\PhpCrudApi\Controller\Responder;
     use Tqdev\PhpCrudApi\Middleware\Base\Middleware;
     use Tqdev\PhpCrudApi\Middleware\Router\Router;
@@ -7685,11 +7884,7 @@ namespace Tqdev\PhpCrudApi\Middleware {
             switch ($algorithm[0]) {
                 case 'H':
                     $hash = hash_hmac($hmac, $data, $secret, true);
-                    if (function_exists('hash_equals')) {
-                        $equals = hash_equals($signature, $hash);
-                    } else {
-                        $equals = $signature == $hash;
-                    }
+                    $equals = hash_equals($hash, $signature);
                     if (!$equals) {
                         return array();
                     }
@@ -7942,14 +8137,108 @@ namespace Tqdev\PhpCrudApi\Middleware {
     }
 }
 
-// file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Middleware/SanitationMiddleware.php
+// file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Middleware/ReconnectMiddleware.php
 namespace Tqdev\PhpCrudApi\Middleware {
 
     use Psr\Http\Message\ResponseInterface;
     use Psr\Http\Message\ServerRequestInterface;
     use Psr\Http\Server\RequestHandlerInterface;
     use Tqdev\PhpCrudApi\Column\ReflectionService;
+    use Tqdev\PhpCrudApi\Controller\Responder;
+    use Tqdev\PhpCrudApi\Database\GenericDB;
+    use Tqdev\PhpCrudApi\Middleware\Base\Middleware;
+    use Tqdev\PhpCrudApi\Middleware\Router\Router;
+
+    class ReconnectMiddleware extends Middleware
+    {
+        private $reflection;
+        private $db;
+
+        public function __construct(Router $router, Responder $responder, array $properties, ReflectionService $reflection, GenericDB $db)
+        {
+            parent::__construct($router, $responder, $properties);
+            $this->reflection = $reflection;
+            $this->db = $db;
+        }
+
+        private function getDriver(): string
+        {
+            $driverHandler = $this->getProperty('driverHandler', '');
+            if ($driverHandler) {
+                return call_user_func($driverHandler);
+            }
+            return '';
+        }
+
+        private function getAddress(): string
+        {
+            $addressHandler = $this->getProperty('addressHandler', '');
+            if ($addressHandler) {
+                return call_user_func($addressHandler);
+            }
+            return '';
+        }
+
+        private function getPort(): int
+        {
+            $portHandler = $this->getProperty('portHandler', '');
+            if ($portHandler) {
+                return call_user_func($portHandler);
+            }
+            return 0;
+        }
+
+        private function getDatabase(): string
+        {
+            $databaseHandler = $this->getProperty('databaseHandler', '');
+            if ($databaseHandler) {
+                return call_user_func($databaseHandler);
+            }
+            return '';
+        }
+
+        private function getUsername(): string
+        {
+            $usernameHandler = $this->getProperty('usernameHandler', '');
+            if ($usernameHandler) {
+                return call_user_func($usernameHandler);
+            }
+            return '';
+        }
+
+        private function getPassword(): string
+        {
+            $passwordHandler = $this->getProperty('passwordHandler', '');
+            if ($passwordHandler) {
+                return call_user_func($passwordHandler);
+            }
+            return '';
+        }
+
+        public function process(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
+        {
+            $driver = $this->getDriver();
+            $address = $this->getAddress();
+            $port = $this->getPort();
+            $database = $this->getDatabase();
+            $username = $this->getUsername();
+            $password = $this->getPassword();
+            if ($driver || $address || $port || $database || $username || $password) {
+                $this->db->reconstruct($driver, $address, $port, $database, $username, $password);
+            }
+            return $next->handle($request);
+        }
+    }
+}
+
+// file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Middleware/SanitationMiddleware.php
+namespace Tqdev\PhpCrudApi\Middleware {
+
+    use Psr\Http\Message\ResponseInterface;
+    use Psr\Http\Message\ServerRequestInterface;
+    use Psr\Http\Server\RequestHandlerInterface;
     use Tqdev\PhpCrudApi\Column\Reflection\ReflectedTable;
+    use Tqdev\PhpCrudApi\Column\ReflectionService;
     use Tqdev\PhpCrudApi\Controller\Responder;
     use Tqdev\PhpCrudApi\Middleware\Base\Middleware;
     use Tqdev\PhpCrudApi\Middleware\Router\Router;
@@ -8012,8 +8301,8 @@ namespace Tqdev\PhpCrudApi\Middleware {
     use Psr\Http\Message\ResponseInterface;
     use Psr\Http\Message\ServerRequestInterface;
     use Psr\Http\Server\RequestHandlerInterface;
-    use Tqdev\PhpCrudApi\Column\ReflectionService;
     use Tqdev\PhpCrudApi\Column\Reflection\ReflectedTable;
+    use Tqdev\PhpCrudApi\Column\ReflectionService;
     use Tqdev\PhpCrudApi\Controller\Responder;
     use Tqdev\PhpCrudApi\Middleware\Base\Middleware;
     use Tqdev\PhpCrudApi\Middleware\Router\Router;
@@ -8755,7 +9044,8 @@ namespace Tqdev\PhpCrudApi\Record\Condition {
 namespace Tqdev\PhpCrudApi\Record\Condition {
 
     class SpatialCondition extends ColumnCondition
-    { }
+    {
+    }
 }
 
 // file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Record/Document/ErrorDocument.php
@@ -8807,7 +9097,6 @@ namespace Tqdev\PhpCrudApi\Record\Document {
 
     class ListDocument implements \JsonSerializable
     {
-
         private $records;
 
         private $results;
@@ -8852,7 +9141,6 @@ namespace Tqdev\PhpCrudApi\Record {
 
     class ColumnIncluder
     {
-
         private function isMandatory(string $tableName, string $columnName, array $params): bool
         {
             return isset($params['mandatory']) && in_array($tableName . "." . $columnName, $params['mandatory']);
@@ -8925,7 +9213,6 @@ namespace Tqdev\PhpCrudApi\Record {
 
     class ErrorCode
     {
-
         private $code;
         private $message;
         private $status;
@@ -9014,7 +9301,6 @@ namespace Tqdev\PhpCrudApi\Record {
 
     class FilterInfo
     {
-
         private function addConditionFromFilterPath(PathTree $conditions, array $path, ReflectedTable $table, array $params)
         {
             $key = 'filter' . implode('', $path);
@@ -9083,7 +9369,6 @@ namespace Tqdev\PhpCrudApi\Record {
 
     class OrderingInfo
     {
-
         public function getColumnOrdering(ReflectedTable $table, array $params): array
         {
             $fields = array();
@@ -9130,7 +9415,6 @@ namespace Tqdev\PhpCrudApi\Record {
 
     class PaginationInfo
     {
-
         public $DEFAULT_PAGE_SIZE = 20;
 
         public function hasPage(array $params): bool
@@ -9205,7 +9489,7 @@ namespace Tqdev\PhpCrudApi\Record {
 
         private $tree;
 
-        public function __construct( /* object */&$tree = null)
+        public function __construct(/* object */&$tree = null)
         {
             if (!$tree) {
                 $tree = $this->newTree();
@@ -9256,7 +9540,7 @@ namespace Tqdev\PhpCrudApi\Record {
             foreach ($path as $key) {
                 if (isset($tree->branches->$key)) {
                     $tree = &$tree->branches->$key;
-                } else if (isset($tree->branches->$star)) {
+                } elseif (isset($tree->branches->$star)) {
                     $tree = &$tree->branches->$star;
                 } else {
                     return [];
@@ -9265,7 +9549,7 @@ namespace Tqdev\PhpCrudApi\Record {
             return $tree->values;
         }
 
-        public static function fromJson( /* object */$tree): PathTree
+        public static function fromJson(/* object */$tree): PathTree
         {
             return new PathTree($tree);
         }
@@ -9404,8 +9688,8 @@ namespace Tqdev\PhpCrudApi\Record {
 // file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Record/RelationJoiner.php
 namespace Tqdev\PhpCrudApi\Record {
 
-    use Tqdev\PhpCrudApi\Column\ReflectionService;
     use Tqdev\PhpCrudApi\Column\Reflection\ReflectedTable;
+    use Tqdev\PhpCrudApi\Column\ReflectionService;
     use Tqdev\PhpCrudApi\Database\GenericDB;
     use Tqdev\PhpCrudApi\Middleware\Communication\VariableStore;
     use Tqdev\PhpCrudApi\Record\Condition\ColumnCondition;
@@ -9413,7 +9697,6 @@ namespace Tqdev\PhpCrudApi\Record {
 
     class RelationJoiner
     {
-
         private $reflection;
         private $ordering;
         private $columns;
@@ -9495,9 +9778,7 @@ namespace Tqdev\PhpCrudApi\Record {
 
         private function addJoinsForTables(ReflectedTable $t1, PathTree $joins, array &$records, array $params, GenericDB $db)
         {
-
             foreach ($joins->getKeys() as $t2Name) {
-
                 $t2 = $this->reflection->getTable($t2Name);
 
                 $belongsTo = count($t1->getFksTo($t2->getName())) > 0;
@@ -9724,8 +10005,10 @@ namespace Tqdev\PhpCrudApi {
     use Tqdev\PhpCrudApi\Middleware\IpAddressMiddleware;
     use Tqdev\PhpCrudApi\Middleware\JoinLimitsMiddleware;
     use Tqdev\PhpCrudApi\Middleware\JwtAuthMiddleware;
+    use Tqdev\PhpCrudApi\Middleware\ReconnectMiddleware;
     use Tqdev\PhpCrudApi\Middleware\MultiTenancyMiddleware;
     use Tqdev\PhpCrudApi\Middleware\PageLimitsMiddleware;
+    use Tqdev\PhpCrudApi\Middleware\ReconnectMiddleware;
     use Tqdev\PhpCrudApi\Middleware\Router\SimpleRouter;
     use Tqdev\PhpCrudApi\Middleware\SanitationMiddleware;
     use Tqdev\PhpCrudApi\Middleware\ValidationMiddleware;
@@ -9751,7 +10034,7 @@ namespace Tqdev\PhpCrudApi {
                 $config->getUsername(),
                 $config->getPassword()
             );
-            $prefix = sprintf('phpcrudapi-%s-%s-%s-', $config->getDriver(), $config->getDatabase(), substr(md5(__FILE__), 0, 8));
+            $prefix = sprintf('phpcrudapi-%s-', substr(md5(__FILE__), 0, 8));
             $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
             $reflection = new ReflectionService($db, $cache, $config->getCacheTime());
             $responder = new JsonResponder();
@@ -9772,6 +10055,9 @@ namespace Tqdev\PhpCrudApi {
                         break;
                     case 'dbAuth':
                         new DbAuthMiddleware($router, $responder, $properties, $reflection, $db);
+                        break;
+                    case 'reconnect':
+                        new ReconnectMiddleware($router, $responder, $properties, $reflection, $db);
                         break;
                     case 'validation':
                         new ValidationMiddleware($router, $responder, $properties, $reflection);
@@ -9855,14 +10141,30 @@ namespace Tqdev\PhpCrudApi {
 
         private function addParsedBody(ServerRequestInterface $request): ServerRequestInterface
         {
-            $body = $request->getBody();
-            if ($body->isReadable() && $body->isSeekable()) {
-                $contents = $body->getContents();
-                $body->rewind();
-                if ($contents) {
-                    $parsedBody = $this->parseBody($contents);
-                    $request = $request->withParsedBody($parsedBody);
+            $parsedBody = $request->getParsedBody();
+            if ($parsedBody) {
+                $request = $this->applySlim3Hack($request);
+            } else {
+                $body = $request->getBody();
+                if ($body->isReadable() && $body->isSeekable()) {
+                    $contents = $body->getContents();
+                    $body->rewind();
+                    if ($contents) {
+                        $parsedBody = $this->parseBody($contents);
+                        $request = $request->withParsedBody($parsedBody);
+                    }
                 }
+            }
+            return $request;
+        }
+
+        private function applySlim3Hack(ServerRequestInterface $request): ServerRequestInterface
+        {
+            if (get_class($request) == 'Slim\Http\Request') {
+                $parsedBody = $request->getParsedBody();
+                $contents = json_encode($parsedBody);
+                $parsedBody = $this->parseBody($contents);
+                $request = $request->withParsedBody($parsedBody);
             }
             return $request;
         }
@@ -9916,24 +10218,18 @@ namespace Tqdev\PhpCrudApi {
         private function getDefaultPort(string $driver): int
         {
             switch ($driver) {
-                case 'mysql':
-                    return 3306;
-                case 'pgsql':
-                    return 5432;
-                case 'sqlsrv':
-                    return 1433;
+                case 'mysql':return 3306;
+                case 'pgsql':return 5432;
+                case 'sqlsrv':return 1433;
             }
         }
 
         private function getDefaultAddress(string $driver): string
         {
             switch ($driver) {
-                case 'mysql':
-                    return 'localhost';
-                case 'pgsql':
-                    return 'localhost';
-                case 'sqlsrv':
-                    return 'localhost';
+                case 'mysql':return 'localhost';
+                case 'pgsql':return 'localhost';
+                case 'sqlsrv':return 'localhost';
             }
         }
 
@@ -10059,8 +10355,8 @@ namespace Tqdev\PhpCrudApi {
 // file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/RequestFactory.php
 namespace Tqdev\PhpCrudApi {
 
-    use Nyholm\Psr7Server\ServerRequestCreator;
     use Nyholm\Psr7\Factory\Psr17Factory;
+    use Nyholm\Psr7Server\ServerRequestCreator;
     use Psr\Http\Message\ServerRequestInterface;
 
     class RequestFactory

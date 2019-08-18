@@ -16,7 +16,7 @@ final class Response implements ResponseInterface
     use MessageTrait;
 
     /** @var array Map of standard HTTP status code/reason phrases */
-    /*private*/ const PHRASES = [
+    private const PHRASES = [
         100 => 'Continue', 101 => 'Switching Protocols', 102 => 'Processing',
         200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content', 207 => 'Multi-status', 208 => 'Already Reported',
         300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 306 => 'Switch Proxy', 307 => 'Temporary Redirect',
