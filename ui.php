@@ -11023,12 +11023,14 @@ namespace Tqdev\PhpCrudUi\Controller {
 
         public function success($result): ResponseInterface
         {
-            $result->addVariables($this->variables);
-            $result->setTemplatePath($this->templatePath);
             if ($result instanceof CsvDocument) {
                 return ResponseFactory::fromCsv(ResponseFactory::OK, (string) $result);
+            } elseif ($result instanceof TemplateDocument) {
+                $result->addVariables($this->variables);
+                $result->setTemplatePath($this->templatePath);
+                return ResponseFactory::fromHtml(ResponseFactory::OK, (string) $result);
             } else {
-                return ResponseFactory::fromHtml(ResponseFactory::OK, $result);
+                throw new \Exception('Document type not supported: ' . get_class($result));
             }
         }
     }
