@@ -12,7 +12,7 @@ use Tqdev\PhpCrudApi\ResponseUtils;
 use Tqdev\PhpCrudUi\Client\CrudApi;
 use Tqdev\PhpCrudUi\Column\SpecificationService;
 use Tqdev\PhpCrudUi\Controller\CrudController;
-use Tqdev\PhpCrudUi\Controller\TemplateResponder;
+use Tqdev\PhpCrudUi\Controller\MultiResponder;
 use Tqdev\PhpCrudUi\Record\CrudService;
 
 class Ui implements RequestHandlerInterface
@@ -27,7 +27,7 @@ class Ui implements RequestHandlerInterface
         $prefix = sprintf('phpcrudui-%s-%s-', substr(md5($config->getUrl()), 0, 12), substr(md5(__FILE__), 0, 12));
         $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
         $definition = new SpecificationService($api, $cache, $config->getCacheTime());
-        $responder = new TemplateResponder($config->getTemplatePath());
+        $responder = new MultiResponder($config->getTemplatePath());
         $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime(), $config->getDebug());
         $responder->setVariable('base', $router->getBasePath());
         $responder->setVariable('menu', $definition->getMenu());

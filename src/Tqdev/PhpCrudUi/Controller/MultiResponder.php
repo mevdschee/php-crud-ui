@@ -10,15 +10,15 @@ use Tqdev\PhpCrudApi\ResponseFactory;
 use Tqdev\PhpCrudUi\Document\TemplateDocument;
 use Tqdev\PhpCrudUi\Document\CsvDocument;
 
-class TemplateResponder implements Responder
+class MultiResponder implements Responder
 {
     private $variables;
     private $templatePath;
 
-    public function __construct(string $path)
+    public function __construct(string $templatePath)
     {
         $this->variables = array();
-        $this->templatePath = $path;
+        $this->templatePath = $templatePath;
     }
 
     public function setVariable(string $name, $value)

@@ -10983,7 +10983,7 @@ namespace Tqdev\PhpCrudUi\Controller {
     }
 }
 
-// file: src/Tqdev/PhpCrudUi/Controller/TemplateResponder.php
+// file: src/Tqdev/PhpCrudUi/Controller/MultiResponder.php
 namespace Tqdev\PhpCrudUi\Controller {
 
     use Psr\Http\Message\ResponseInterface;
@@ -10994,15 +10994,15 @@ namespace Tqdev\PhpCrudUi\Controller {
     use Tqdev\PhpCrudUi\Document\TemplateDocument;
     use Tqdev\PhpCrudUi\Document\CsvDocument;
 
-    class TemplateResponder implements Responder
+    class MultiResponder implements Responder
     {
         private $variables;
         private $templatePath;
 
-        public function __construct(string $path)
+        public function __construct(string $templatePath)
         {
             $this->variables = array();
-            $this->templatePath = $path;
+            $this->templatePath = $templatePath;
         }
 
         public function setVariable(string $name, $value)
@@ -11864,7 +11864,7 @@ namespace Tqdev\PhpCrudUi {
     use Tqdev\PhpCrudUi\Client\CrudApi;
     use Tqdev\PhpCrudUi\Column\SpecificationService;
     use Tqdev\PhpCrudUi\Controller\CrudController;
-    use Tqdev\PhpCrudUi\Controller\TemplateResponder;
+    use Tqdev\PhpCrudUi\Controller\MultiResponder;
     use Tqdev\PhpCrudUi\Record\CrudService;
 
     class Ui implements RequestHandlerInterface
@@ -11879,7 +11879,7 @@ namespace Tqdev\PhpCrudUi {
             $prefix = sprintf('phpcrudui-%s-%s-', substr(md5($config->getUrl()), 0, 12), substr(md5(__FILE__), 0, 12));
             $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
             $definition = new SpecificationService($api, $cache, $config->getCacheTime());
-            $responder = new TemplateResponder($config->getTemplatePath());
+            $responder = new MultiResponder($config->getTemplatePath());
             $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime(), $config->getDebug());
             $responder->setVariable('base', $router->getBasePath());
             $responder->setVariable('menu', $definition->getMenu());
