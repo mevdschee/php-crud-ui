@@ -11050,16 +11050,6 @@ namespace Tqdev\PhpCrudUi\Document {
             $this->variables = $variables;
         }
 
-        public function addVariables(array $variables)/*: void*/
-        {
-            $this->variables = array_merge($variables, $this->variables);
-        }
-
-        public function setTemplatePath(string $path)/*: void*/
-        {
-            $this->templatePath = rtrim($path, '/');
-        }
-
         public function __toString(): string
         {
             $f = fopen('php://memory', 'r+');
