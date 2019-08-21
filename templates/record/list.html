@@ -1,5 +1,5 @@
 <h2>{{table}}: list</h2>
-<p><a href="{{base}}/{{table}}/export">export</a></p>
+<p><a href="{{base}}/{{table}}/export">export</a> / <a href="{{base}}/{{table}}/columns/list">structure</a></p>
 {{if:field}}
     <div class="well well-sm"><div style="float:right;">
     <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/list">Clear filter</a>
@@ -43,7 +43,7 @@
     </div>
 {{endif}}
 {{if:primaryKey}}
-    <a href="{{base}}/{{table}}/create" class="btn btn-primary">Add</a>
+    <p><a href="{{base}}/{{table}}/create" class="btn btn-primary">Add</a></p>
 {{endif}}
 <br/>
 <br/>

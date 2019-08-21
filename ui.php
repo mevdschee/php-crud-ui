@@ -10825,7 +10825,60 @@ namespace Tqdev\PhpCrudUi\Column {
     }
 }
 
-// file: src/Tqdev/PhpCrudUi/Controller/CrudController.php
+// file: src/Tqdev/PhpCrudUi/Controller/MultiResponder.php
+namespace Tqdev\PhpCrudUi\Controller {
+
+    use Psr\Http\Message\ResponseInterface;
+    use Tqdev\PhpCrudApi\Controller\Responder;
+    use Tqdev\PhpCrudApi\Record\Document\ErrorDocument;
+    use Tqdev\PhpCrudApi\Record\ErrorCode;
+    use Tqdev\PhpCrudApi\ResponseFactory;
+    use Tqdev\PhpCrudUi\Document\TemplateDocument;
+    use Tqdev\PhpCrudUi\Document\CsvDocument;
+
+    class MultiResponder implements Responder
+    {
+        private $variables;
+        private $templatePath;
+
+        public function __construct(string $templatePath)
+        {
+            $this->variables = array();
+            $this->templatePath = $templatePath;
+        }
+
+        public function setVariable(string $name, $value)
+        {
+            $this->variables[$name] = $value;
+        }
+
+        public function error(int $error, string $argument, $details = null): ResponseInterface
+        {
+            $errorCode = new ErrorCode($error);
+            $status = $errorCode->getStatus();
+            $document = new ErrorDocument($errorCode, $argument, $details);
+            $result = new TemplateDocument('layouts/error', 'error/show', $document->serialize());
+            $result->addVariables($this->variables);
+            $result->setTemplatePath($this->templatePath);
+            return ResponseFactory::fromHtml($status, (string) $result);
+        }
+
+        public function success($result): ResponseInterface
+        {
+            if ($result instanceof CsvDocument) {
+                return ResponseFactory::fromCsv(ResponseFactory::OK, (string) $result);
+            } elseif ($result instanceof TemplateDocument) {
+                $result->addVariables($this->variables);
+                $result->setTemplatePath($this->templatePath);
+                return ResponseFactory::fromHtml(ResponseFactory::OK, (string) $result);
+            } else {
+                throw new \Exception('Document type not supported: ' . get_class($result));
+            }
+        }
+    }
+}
+
+// file: src/Tqdev/PhpCrudUi/Controller/RecordController.php
 namespace Tqdev\PhpCrudUi\Controller {
 
     use Psr\Http\Message\ResponseInterface;
@@ -10834,14 +10887,14 @@ namespace Tqdev\PhpCrudUi\Controller {
     use Tqdev\PhpCrudApi\Middleware\Router\Router;
     use Tqdev\PhpCrudApi\Record\ErrorCode;
     use Tqdev\PhpCrudApi\RequestUtils;
-    use Tqdev\PhpCrudUi\Record\CrudService;
+    use Tqdev\PhpCrudUi\Record\RecordService;
 
-    class CrudController
+    class RecordController
     {
         private $service;
         private $responder;
 
-        public function __construct(Router $router, Responder $responder, CrudService $service)
+        public function __construct(Router $router, Responder $responder, RecordService $service)
         {
             $router->register('GET', '/', array($this, 'home'));
             $router->register('GET', '/*/create', array($this, 'createForm'));
@@ -10983,59 +11036,6 @@ namespace Tqdev\PhpCrudUi\Controller {
     }
 }
 
-// file: src/Tqdev/PhpCrudUi/Controller/MultiResponder.php
-namespace Tqdev\PhpCrudUi\Controller {
-
-    use Psr\Http\Message\ResponseInterface;
-    use Tqdev\PhpCrudApi\Controller\Responder;
-    use Tqdev\PhpCrudApi\Record\Document\ErrorDocument;
-    use Tqdev\PhpCrudApi\Record\ErrorCode;
-    use Tqdev\PhpCrudApi\ResponseFactory;
-    use Tqdev\PhpCrudUi\Document\TemplateDocument;
-    use Tqdev\PhpCrudUi\Document\CsvDocument;
-
-    class MultiResponder implements Responder
-    {
-        private $variables;
-        private $templatePath;
-
-        public function __construct(string $templatePath)
-        {
-            $this->variables = array();
-            $this->templatePath = $templatePath;
-        }
-
-        public function setVariable(string $name, $value)
-        {
-            $this->variables[$name] = $value;
-        }
-
-        public function error(int $error, string $argument, $details = null): ResponseInterface
-        {
-            $errorCode = new ErrorCode($error);
-            $status = $errorCode->getStatus();
-            $document = new ErrorDocument($errorCode, $argument, $details);
-            $result = new TemplateDocument('layouts/error', 'error/show', $document->serialize());
-            $result->addVariables($this->variables);
-            $result->setTemplatePath($this->templatePath);
-            return ResponseFactory::fromHtml($status, (string) $result);
-        }
-
-        public function success($result): ResponseInterface
-        {
-            if ($result instanceof CsvDocument) {
-                return ResponseFactory::fromCsv(ResponseFactory::OK, (string) $result);
-            } elseif ($result instanceof TemplateDocument) {
-                $result->addVariables($this->variables);
-                $result->setTemplatePath($this->templatePath);
-                return ResponseFactory::fromHtml(ResponseFactory::OK, (string) $result);
-            } else {
-                throw new \Exception('Document type not supported: ' . get_class($result));
-            }
-        }
-    }
-}
-
 // file: src/Tqdev/PhpCrudUi/Document/CsvDocument.php
 namespace Tqdev\PhpCrudUi\Document {
 
@@ -11143,7 +11143,7 @@ namespace Tqdev\PhpCrudUi\Document {
     }
 }
 
-// file: src/Tqdev/PhpCrudUi/Record/CrudService.php
+// file: src/Tqdev/PhpCrudUi/Record/RecordService.php
 namespace Tqdev\PhpCrudUi\Record {
 
     use Tqdev\PhpCrudUi\Client\CrudApi;
@@ -11151,7 +11151,7 @@ namespace Tqdev\PhpCrudUi\Record {
     use Tqdev\PhpCrudUi\Document\TemplateDocument;
     use Tqdev\PhpCrudUi\Document\CsvDocument;
 
-    class CrudService
+    class RecordService
     {
         private $api;
         private $definition;
@@ -11855,9 +11855,9 @@ namespace Tqdev\PhpCrudUi {
     use Tqdev\PhpCrudApi\ResponseUtils;
     use Tqdev\PhpCrudUi\Client\CrudApi;
     use Tqdev\PhpCrudUi\Column\SpecificationService;
-    use Tqdev\PhpCrudUi\Controller\CrudController;
+    use Tqdev\PhpCrudUi\Controller\RecordController;
     use Tqdev\PhpCrudUi\Controller\MultiResponder;
-    use Tqdev\PhpCrudUi\Record\CrudService;
+    use Tqdev\PhpCrudUi\Record\RecordService;
 
     class Ui implements RequestHandlerInterface
     {
@@ -11879,8 +11879,8 @@ namespace Tqdev\PhpCrudUi {
             foreach ($config->getControllers() as $controller) {
                 switch ($controller) {
                     case 'records':
-                        $records = new CrudService($api, $definition);
-                        new CrudController($router, $responder, $records);
+                        $records = new RecordService($api, $definition);
+                        new RecordController($router, $responder, $records);
                         break;
                 }
             }

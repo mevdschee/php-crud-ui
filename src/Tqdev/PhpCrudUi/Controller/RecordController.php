@@ -8,14 +8,14 @@ use Tqdev\PhpCrudApi\Controller\Responder;
 use Tqdev\PhpCrudApi\Middleware\Router\Router;
 use Tqdev\PhpCrudApi\Record\ErrorCode;
 use Tqdev\PhpCrudApi\RequestUtils;
-use Tqdev\PhpCrudUi\Record\CrudService;
+use Tqdev\PhpCrudUi\Record\RecordService;
 
-class CrudController
+class RecordController
 {
     private $service;
     private $responder;
 
-    public function __construct(Router $router, Responder $responder, CrudService $service)
+    public function __construct(Router $router, Responder $responder, RecordService $service)
     {
         $router->register('GET', '/', array($this, 'home'));
         $router->register('GET', '/*/create', array($this, 'createForm'));
@@ -28,7 +28,6 @@ class CrudController
         $router->register('GET', '/*/list', array($this, '_list'));
         $router->register('GET', '/*/list/*/*/*', array($this, '_list'));
         $router->register('GET', '/*/export', array($this, 'export'));
-        $router->register('GET', '/*/export/*/*/*', array($this, 'export'));
         $this->service = $service;
         $this->responder = $responder;
     }

@@ -7,7 +7,7 @@ use Tqdev\PhpCrudUi\Column\SpecificationService;
 use Tqdev\PhpCrudUi\Document\TemplateDocument;
 use Tqdev\PhpCrudUi\Document\CsvDocument;
 
-class CrudService
+class ColumnService
 {
     private $api;
     private $definition;
@@ -21,6 +21,27 @@ class CrudService
     public function hasTable(string $table, string $action): bool
     {
         return $this->definition->hasTable($table, $action);
+    }
+
+    private function getColumnFields(): array
+    {
+        return ['name', 'type', 'length', 'nullable', 'pk', 'fk'];
+    }
+
+    private function fillSparse(array &$array, array $keys)
+    {
+        foreach ($keys as $key) {
+            if (!key_exists($key, $array)) {
+                $array[$key] = null;
+            }
+        }
+    }
+
+    private function fillAllSparse(array &$array, array $keys)
+    {
+        foreach (array_keys($array) as $i) {
+            $this->fillSparse($array[$i], $keys);
+        }
     }
 
     private function getDropDownValues(string $relatedTable): array
@@ -39,11 +60,6 @@ class CrudService
             }
         }
         return $values;
-    }
-
-    public function home(): TemplateDocument
-    {
-        return new TemplateDocument('layouts/default', 'record/home', array());
     }
 
     public function createForm(string $table, string $action): TemplateDocument
@@ -65,67 +81,48 @@ class CrudService
             'primaryKey' => $primaryKey,
         );
 
-        return new TemplateDocument('layouts/default', 'record/create', $variables);
+        return new TemplateDocument('layouts/default', 'column/create', $variables);
     }
 
     public function create(string $table, string $action, /* object */ $record): TemplateDocument
     {
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
-        $id = $this->api->createRecord($table, $record);
+        $name = $this->api->createRecord($table, $record);
 
         $variables = array(
             'table' => $table,
             'action' => $action,
-            'id' => $id,
+            'id' => $name,
             'primaryKey' => $primaryKey,
         );
 
-        return new TemplateDocument('layouts/default', 'record/created', $variables);
+        return new TemplateDocument('layouts/default', 'column/created', $variables);
     }
 
-    public function read(string $table, string $action, string $id, array $params): TemplateDocument
+    public function read(string $table, string $action, string $name): TemplateDocument
     {
-        $references = $this->definition->getReferences($table, $action);
-        $referenced = $this->definition->getReferenced($table, $action);
+        $columnFields = $this->getColumnFields();
 
-        $args = array();
-        $args['join'] = array_values(array_filter($references));
-        $record = $this->api->readRecord($table, $id, $args);
-
-        $name = $this->definition->referenceText($table, $record);
-
-        foreach ($record as $key => $value) {
-            $relatedTable = false;
-            $relatedId = false;
-            $text = $value;
-            if ($references[$key]) {
-                $relatedTable = $references[$key];
-                $relatedId = $this->definition->referenceId($relatedTable, $value);
-                $text = $this->definition->referenceText($relatedTable, $value);
-            }
-            $record[$key] = array('text' => $text, 'table' => $relatedTable, 'id' => $relatedId);
-        }
+        $record = $this->api->readColumn($table, $name, array());
+        $this->fillSparse($record, $columnFields);
 
         $variables = array(
             'table' => $table,
             'action' => $action,
-            'id' => $id,
             'name' => $name,
-            'references' => $references,
-            'referenced' => $referenced,
             'record' => $record,
         );
 
-        return new TemplateDocument('layouts/default', 'record/read', $variables);
+        return new TemplateDocument('layouts/default', 'column/read', $variables);
     }
 
-    public function updateForm(string $table, string $action, string $id): TemplateDocument
+    public function updateForm(string $table, string $action, string $name): TemplateDocument
     {
         $references = $this->definition->getReferences($table, $action);
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
-        $record = $this->api->readRecord($table, $id, []);
+        $record = $this->api->readRecord($table, $name, []);
 
         foreach ($record as $key => $value) {
             $values = $this->getDropDownValues($references[$key]);
@@ -135,118 +132,82 @@ class CrudService
         $variables = array(
             'table' => $table,
             'action' => $action,
-            'id' => $id,
+            'id' => $name,
             'primaryKey' => $primaryKey,
             'record' => $record,
         );
 
-        return new TemplateDocument('layouts/default', 'record/update', $variables);
+        return new TemplateDocument('layouts/default', 'column/update', $variables);
     }
 
-    public function update(string $table, string $action, string $id, /* object */ $record): TemplateDocument
+    public function update(string $table, string $action, string $name, /* object */ $record): TemplateDocument
     {
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
-        $affected = $this->api->updateRecord($table, $id, $record);
+        $affected = $this->api->updateRecord($table, $name, $record);
 
         $variables = array(
             'table' => $table,
             'action' => $action,
-            'id' => $id,
+            'id' => $name,
             'primaryKey' => $primaryKey,
             'affected' => $affected,
         );
 
-        return new TemplateDocument('layouts/default', 'record/updated', $variables);
+        return new TemplateDocument('layouts/default', 'column/updated', $variables);
     }
 
-    public function deleteForm(string $table, string $action, string $id): TemplateDocument
+    public function deleteForm(string $table, string $action, string $name): TemplateDocument
     {
         $primaryKey = $this->definition->getPrimaryKey($table, 'read');
 
-        $record = $this->api->readRecord($table, $id, []);
+        $record = $this->api->readRecord($table, $name, []);
 
         $name = $this->definition->referenceText($table, $record);
 
         $variables = array(
             'table' => $table,
             'action' => $action,
-            'id' => $id,
+            'id' => $name,
             'primaryKey' => $primaryKey,
             'name' => $name,
         );
 
-        return new TemplateDocument('layouts/default', 'record/delete', $variables);
+        return new TemplateDocument('layouts/default', 'column/delete', $variables);
     }
 
-    public function delete(string $table, string $action, string $id): TemplateDocument
+    public function delete(string $table, string $action, string $name): TemplateDocument
     {
         $primaryKey = $this->definition->getPrimaryKey($table, 'read');
 
-        $affected = $this->api->deleteRecord($table, $id);
+        $affected = $this->api->deleteRecord($table, $name);
 
         $variables = array(
             'table' => $table,
             'action' => $action,
-            'id' => $id,
+            'id' => $name,
             'primaryKey' => $primaryKey,
             'affected' => $affected,
         );
 
-        return new TemplateDocument('layouts/default', 'record/deleted', $variables);
+        return new TemplateDocument('layouts/default', 'column/deleted', $variables);
     }
 
-    public function _list(string $table, string $action, string $field, string $id, string $name, array $params): TemplateDocument
+    public function _list(string $table, string $action): TemplateDocument
     {
-        $references = $this->definition->getReferences($table, $action);
-        $referenced = $this->definition->getReferenced($table, $action);
-        $primaryKey = $this->definition->getPrimaryKey($table, $action);
+        $columnFields = $this->getColumnFields();
 
-        $columns = $this->definition->getColumns($table, $action);
-
-        $pageParams = isset($params['page']) ? $params['page'][0] : '1,5';
-        list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
-
-        $args = array();
-        if ($field) {
-            $args['filter'] = $field . ',eq,' . $id;
-        }
-        $args['join'] = array_values(array_filter($references));
-        $args['page'] = "$pageNumber,$pageSize";
-        $data = $this->api->listRecords($table, $args);
-
-        foreach ($data['records'] as $i => $record) {
-            foreach ($record as $key => $value) {
-                if ($references[$key]) {
-                    $value = $this->definition->referenceText($references[$key], $record[$key]);
-                    $data['records'][$i][$key] = $value;
-                }
-            }
-        }
-
-        if (!isset($data['results'])) {
-            $data['results'] = count($data['records']);
-        }
-
-        $maxPage = ceil($data['results'] / $pageSize);
+        $data = $this->api->listColumns($table, array());
+        $this->fillAllSparse($data['columns'], $columnFields);
 
         $variables = array(
             'table' => $table,
             'action' => $action,
-            'field' => $field,
-            'id' => $id,
-            'name' => $name,
-            'references' => $references,
-            'referenced' => $referenced,
-            'primaryKey' => $primaryKey,
-            'columns' => $columns,
-            'records' => $data['records'],
-            'maxPage' => $maxPage,
-            'pageNumber' => $pageNumber,
-            'pageSize' => $pageSize,
+            'columns' => $columnFields,
+            'records' => $data['columns'],
         );
 
-        return new TemplateDocument('layouts/default', 'record/list', $variables);
+        return new TemplateDocument('layouts/default', 'column/list', $variables);
     }
 
     public function export(string $table, string $action): CsvDocument

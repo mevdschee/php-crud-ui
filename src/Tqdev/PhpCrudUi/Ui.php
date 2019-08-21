@@ -11,9 +11,11 @@ use Tqdev\PhpCrudApi\Record\ErrorCode;
 use Tqdev\PhpCrudApi\ResponseUtils;
 use Tqdev\PhpCrudUi\Client\CrudApi;
 use Tqdev\PhpCrudUi\Column\SpecificationService;
-use Tqdev\PhpCrudUi\Controller\CrudController;
+use Tqdev\PhpCrudUi\Controller\RecordController;
 use Tqdev\PhpCrudUi\Controller\MultiResponder;
-use Tqdev\PhpCrudUi\Record\CrudService;
+use Tqdev\PhpCrudUi\Record\RecordService;
+use Tqdev\PhpCrudUi\Controller\ColumnController;
+use Tqdev\PhpCrudUi\Record\ColumnService;
 
 class Ui implements RequestHandlerInterface
 {
@@ -35,8 +37,12 @@ class Ui implements RequestHandlerInterface
         foreach ($config->getControllers() as $controller) {
             switch ($controller) {
                 case 'records':
-                    $records = new CrudService($api, $definition);
-                    new CrudController($router, $responder, $records);
+                    $records = new RecordService($api, $definition);
+                    new RecordController($router, $responder, $records);
+                    break;
+                case 'columns':
+                    $columns = new ColumnService($api, $definition);
+                    new ColumnController($router, $responder, $columns);
                     break;
             }
         }

@@ -45,6 +45,15 @@ class TemplateDocument
             'sub' => function ($a, $b) {
                 return $a - $b;
             },
+            'prop' => function ($a, $b) {
+                return $a[$b];
+            },
+            'bool' => function ($a, $b, $c) {
+                return $a ? $b : $c;
+            },
+            'or' => function ($a, $b) {
+                return $a ?: $b;
+            },
         );
     }
 

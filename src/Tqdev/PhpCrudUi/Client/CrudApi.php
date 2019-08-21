@@ -16,29 +16,39 @@ class CrudApi
         return $this->call('GET', '/openapi');
     }
 
+    public function listColumns(string $table, array $args)
+    {
+        return $this->call('GET', '/columns/' . rawurlencode($table), $args);
+    }
+
+    public function readColumn(string $table, string $column, array $args)
+    {
+        return $this->call('GET', '/columns/' . rawurlencode($table) . '/' . rawurlencode($column), $args);
+    }
+
     public function listRecords(string $table, array $args)
     {
-        return $this->call('GET', '/records/' . urlencode($table), $args);
+        return $this->call('GET', '/records/' . rawurlencode($table), $args);
     }
 
     public function readRecord(string $table, string $id, array $args)
     {
-        return $this->call('GET', '/records/' . urlencode($table) . '/' . urlencode($id), $args);
+        return $this->call('GET', '/records/' . rawurlencode($table) . '/' . rawurlencode($id), $args);
     }
 
     public function createRecord(string $table, $record)
     {
-        return $this->call('POST', '/records/' . urlencode($table), [], $record);
+        return $this->call('POST', '/records/' . rawurlencode($table), [], $record);
     }
 
     public function deleteRecord(string $table, string $id)
     {
-        return $this->call('DELETE', '/records/' . urlencode($table) . '/' . urlencode($id));
+        return $this->call('DELETE', '/records/' . rawurlencode($table) . '/' . rawurlencode($id));
     }
 
     public function updateRecord(string $table, string $id, $record)
     {
-        return $this->call('PUT', '/records/' . urlencode($table) . '/' . urlencode($id), [], $record);
+        return $this->call('PUT', '/records/' . rawurlencode($table) . '/' . rawurlencode($id), [], $record);
     }
 
     private function call(string $method, string $path, array $args = [], $data = false)
