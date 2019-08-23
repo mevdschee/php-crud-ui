@@ -25,7 +25,7 @@ class ColumnService
 
     private function getColumnFields(): array
     {
-        return ['name', 'type', 'length', 'nullable', 'pk', 'fk'];
+        return ['name', 'type', 'length', 'precision', 'scale', 'nullable', 'pk', 'fk'];
     }
 
     private function fillSparse(array &$array, array $keys)

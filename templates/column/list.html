@@ -7,6 +7,8 @@
     <th></th>
     <th>type</th>
     <th>length</th>
+    <th>precision</th>
+    <th>scale</th>
     <th>nullable</th>
     <th>pk</th>
     <th>fk</th>
@@ -19,6 +21,8 @@
         </td>
         <td>{{record.type}}</td>
         <td>{{record.length|or("-")}}</td>
+        <td>{{record.precision|or("-")}}</td>
+        <td>{{record.scale|or("-")}}</td>
         <td>{{record.nullable|bool("yes","-")}}</td>
         <td>{{record.pk|bool("yes","-")}}</td>
         <td>{{record.fk|or("-")}}</td>
