@@ -14,8 +14,6 @@ use Tqdev\PhpCrudUi\Column\SpecificationService;
 use Tqdev\PhpCrudUi\Controller\RecordController;
 use Tqdev\PhpCrudUi\Controller\MultiResponder;
 use Tqdev\PhpCrudUi\Record\RecordService;
-use Tqdev\PhpCrudUi\Controller\ColumnController;
-use Tqdev\PhpCrudUi\Record\ColumnService;
 
 class Ui implements RequestHandlerInterface
 {
@@ -39,10 +37,6 @@ class Ui implements RequestHandlerInterface
                 case 'records':
                     $records = new RecordService($api, $definition);
                     new RecordController($router, $responder, $records);
-                    break;
-                case 'columns':
-                    $columns = new ColumnService($api, $definition);
-                    new ColumnController($router, $responder, $columns);
                     break;
             }
         }

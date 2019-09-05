@@ -16,16 +16,6 @@ class CrudApi
         return $this->call('GET', '/openapi');
     }
 
-    public function listColumns(string $table, array $args)
-    {
-        return $this->call('GET', '/columns/' . rawurlencode($table), $args);
-    }
-
-    public function readColumn(string $table, string $column, array $args)
-    {
-        return $this->call('GET', '/columns/' . rawurlencode($table) . '/' . rawurlencode($column), $args);
-    }
-
     public function listRecords(string $table, array $args)
     {
         return $this->call('GET', '/records/' . rawurlencode($table), $args);
