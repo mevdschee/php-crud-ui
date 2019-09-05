@@ -29,6 +29,6 @@ You can compile all files into a single "`ui.php`" file using:
 
 You can access the non-compiled code at the URL:
 
-    http://localhost:8080/src/records/posts/1
+    http://localhost:8080/src/posts/list
 
 The non-compiled code resides in the "`src`" and "`vendor`" directories. The "`vendor`" directory contains the dependencies.
