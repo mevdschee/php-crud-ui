@@ -10,7 +10,11 @@ use Tqdev\PhpCrudUi\Ui;
 require '../vendor/autoload.php';
 
 $config = new Config([
-    'url' => 'http://localhost:8000/api.php',
+    'api' => [
+        'username' => 'php-crud-api',
+        'password' => 'php-crud-api',
+        'database' => 'php-crud-api',
+    ],
     'templatePath' => '../templates',
 ]);
 $request = RequestFactory::fromGlobals();

@@ -6,6 +6,7 @@ class Config
 {
     private $values = [
         'url' => '',
+        'api' => [],
         'definition' => '',
         'controllers' => 'records',
         'cacheType' => 'TempFile',
@@ -35,6 +36,11 @@ class Config
     public function getUrl(): String
     {
         return $this->values['url'];
+    }
+
+    public function getApi(): array
+    {
+        return $this->values['api'];
     }
 
     public function getDefinition(): String

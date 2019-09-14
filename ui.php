@@ -16,249 +16,6 @@ namespace {
     $_HTML = array();
 }
 
-// file: templates/column/create.html
-namespace {
-$_HTML['column/create'] = <<<'END_OF_HTML'
-<h2>{{table}}: create</h2>
-
-<form method="post">
-    {{for:column:columns}}
-        <div class="form-group">
-            <label for="{{column.name}}">{{column.name}}</label>
-            {{if:column.values}}
-                <select id="{{column.name}}" name="{{column.name}}" class="form-control">
-                    <option value=""></option>
-                    {{for:label:value:column.values}}
-                        <option value="{{value}}">{{label}}</option>
-                    {{endfor}}
-                </select>
-            {{else}}
-                <input class="form-control" id="{{column.name}}" name="{{column.name}}" value=""{{if:column.name|eq(primaryKey)}} disabled{{endif}}/>
-            {{endif}}
-        </div>
-    {{endfor}}
-    <button type="submit" class="btn btn-primary">Save</button>
-</form>
-
-END_OF_HTML;
-}
-
-// file: templates/column/created.html
-namespace {
-$_HTML['column/created'] = <<<'END_OF_HTML'
-<h2>{{table}}: create</h2>
-
-<p>Added with {{primaryKey}} {{id}}</p>
-
-<p><a href="{{base}}/{{table}}/list" class="btn btn-primary">Ok</a></p>
-END_OF_HTML;
-}
-
-// file: templates/column/delete.html
-namespace {
-$_HTML['column/delete'] = <<<'END_OF_HTML'
-<h2>{{table}}: delete {{name}}</h2>
-
-<p>The action cannot be undone.</p>
-
-<form method="post">
-    <input type="hidden" name="{{primaryKey}}" value="{{id}}"/>
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a href="{{base}}/{{table}}/read/{{id}}" class="btn btn-default">Cancel</a>
-</form>
-END_OF_HTML;
-}
-
-// file: templates/column/deleted.html
-namespace {
-$_HTML['column/deleted'] = <<<'END_OF_HTML'
-<h2>{{table}}: delete</h2>
-
-<p>Deleted with {{primaryKey}} {{id}}</p>
-
-<p><a href="{{base}}/{{table}}/list" class="btn btn-primary">Ok</a></p>
-END_OF_HTML;
-}
-
-// file: templates/column/home.html
-namespace {
-$_HTML['column/home'] = <<<'END_OF_HTML'
-<p>Nothing</p>
-END_OF_HTML;
-}
-
-// file: templates/column/list.html
-namespace {
-$_HTML['column/list'] = <<<'END_OF_HTML'
-<h2>{{table}}: list</h2>
-<p><a href="{{base}}/{{table}}/list">records</a></p>
-
-<table class="table">
-<thead><tr>
-    <th>name</th>
-    <th></th>
-    <th>type</th>
-    <th>length</th>
-    <th>precision</th>
-    <th>scale</th>
-    <th>nullable</th>
-    <th>pk</th>
-    <th>fk</th>
-</tr></thead><tbody>
-{{for:record:records}}
-    <tr>
-        <td>{{record.name}}</td>
-        <td style="border-right: 2px solid #ddd; width: 40px;">
-            <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/columns/read/{{record.name}}">+</a>
-        </td>
-        <td>{{record.type}}</td>
-        <td>{{record.length|or("-")}}</td>
-        <td>{{record.precision|or("-")}}</td>
-        <td>{{record.scale|or("-")}}</td>
-        <td>{{record.nullable|bool("yes","-")}}</td>
-        <td>{{record.pk|bool("yes","-")}}</td>
-        <td>{{record.fk|or("-")}}</td>
-    </tr>
-{{endfor}}
-</tbody></table>
-
-<p><a href="{{base}}/{{table}}/create" class="btn btn-primary">Add</a></p>
-
-END_OF_HTML;
-}
-
-// file: templates/column/read.html
-namespace {
-$_HTML['column/read'] = <<<'END_OF_HTML'
-<h2>{{table}}: view</h2>
-<table class="table">
-<thead><tr><th>key</th><th></th><th>value</th></tr></thead>
-<tbody>
-    <tr>
-        <td>
-            name
-        </td><td style="border-right: 2px solid #ddd; width: 40px;">
-            &nbsp;
-        </td><td>
-            {{record.name}}
-        </td>
-    </tr>
-    <tr>
-        <td>
-            type
-        </td><td style="border-right: 2px solid #ddd; width: 40px;">
-            &nbsp;
-        </td><td>
-            {{record.type}}
-        </td>
-    </tr>
-    <tr>
-        <td>
-            length
-        </td><td style="border-right: 2px solid #ddd; width: 40px;">
-            &nbsp;
-        </td><td>
-            {{record.length|or("-")}}
-        </td>
-    </tr>
-    <tr>
-        <td>
-            precision
-        </td><td style="border-right: 2px solid #ddd; width: 40px;">
-            &nbsp;
-        </td><td>
-            {{record.precision|or("-")}}
-        </td>
-    </tr>
-    <tr>
-        <td>
-            scale
-        </td><td style="border-right: 2px solid #ddd; width: 40px;">
-            &nbsp;
-        </td><td>
-            {{record.scale|or("-")}}
-        </td>
-    </tr>
-    <tr>
-        <td>
-            nullable
-        </td><td style="border-right: 2px solid #ddd; width: 40px;">
-            &nbsp;
-        </td><td>
-            {{record.nullable|bool("yes","-")}}
-        </td>
-    </tr>
-    <tr>
-        <td>
-            pk
-        </td><td style="border-right: 2px solid #ddd; width: 40px;">
-            &nbsp;
-        </td><td>
-            {{record.pk|bool("yes","-")}}
-        </td>
-    </tr>
-    <tr>
-        <td>
-            fk
-        </td><td style="border-right: 2px solid #ddd; width: 40px;">
-            {{if:record.fk}}
-                <a class="btn btn-default btn-xs" href="{{base}}/{{record.fk}}/columns/list"> + </a>
-            {{else}}
-                &nbsp;
-            {{endif}}
-        </td><td>
-            {{record.fk}}
-        </td>
-    </tr>
-{{endfor}}
-</tbody></table>
-
-<p>
-    <a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
-    <a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
-</p>
-
-END_OF_HTML;
-}
-
-// file: templates/column/update.html
-namespace {
-$_HTML['column/update'] = <<<'END_OF_HTML'
-<h2>{{table}}: create</h2>
-
-<form method="post">
-    {{for:value:key:record}}
-        <div class="form-group">
-            <label for="{{key}}">{{key}}</label>
-            {{if:value.values}}
-                <select id="{{key}}" name="{{key}}" class="form-control">
-                    <option value=""></option>
-                    {{for:v:k:value.values}}
-                        <option value="{{k}}"{{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
-                    {{endfor}}
-                </select>
-            {{else}}
-                <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-            {{endif}}
-        </div>
-    {{endfor}}
-    <button type="submit" class="btn btn-primary">Save</button>
-</form>
-
-END_OF_HTML;
-}
-
-// file: templates/column/updated.html
-namespace {
-$_HTML['column/updated'] = <<<'END_OF_HTML'
-<h2>{{table}}: update</h2>
-
-<p>Updated with {{primaryKey}} {{id}}</p>
-
-<p><a href="{{base}}/{{table}}/read/{{id}}" class="btn btn-primary">Ok</a></p>
-END_OF_HTML;
-}
-
 // file: templates/error/show.html
 namespace {
 $_HTML['error/show'] = <<<'END_OF_HTML'
@@ -426,7 +183,7 @@ END_OF_HTML;
 namespace {
 $_HTML['record/list'] = <<<'END_OF_HTML'
 <h2>{{table}}: list</h2>
-<p><a href="{{base}}/{{table}}/export">export</a> / <a href="{{base}}/{{table}}/columns/list">structure</a></p>
+<p><a href="{{base}}/{{table}}/export">export</a></p>
 {{if:field}}
     <div class="well well-sm"><div style="float:right;">
     <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/list">Clear filter</a>
@@ -10845,10 +10602,63 @@ namespace Tqdev\PhpCrudApi {
     }
 }
 
+// file: src/Tqdev/PhpCrudUi/Client/ApiCaller.php
+namespace Tqdev\PhpCrudUi\Client {
+
+    interface ApiCaller
+    {
+        function call(string $method, string $path, array $args = [], $data = false);
+    }
+}
+
 // file: src/Tqdev/PhpCrudUi/Client/CrudApi.php
 namespace Tqdev\PhpCrudUi\Client {
 
     class CrudApi
+    {
+        private $caller;
+
+        public function __construct(ApiCaller $caller)
+        {
+            $this->caller = $caller;
+        }
+
+        public function getOpenApi()
+        {
+            return $this->caller->call('GET', '/openapi');
+        }
+
+        public function listRecords(string $table, array $args)
+        {
+            return $this->caller->call('GET', '/records/' . rawurlencode($table), $args);
+        }
+
+        public function readRecord(string $table, string $id, array $args)
+        {
+            return $this->caller->call('GET', '/records/' . rawurlencode($table) . '/' . rawurlencode($id), $args);
+        }
+
+        public function createRecord(string $table, $record)
+        {
+            return $this->caller->call('POST', '/records/' . rawurlencode($table), [], $record);
+        }
+
+        public function deleteRecord(string $table, string $id)
+        {
+            return $this->caller->call('DELETE', '/records/' . rawurlencode($table) . '/' . rawurlencode($id));
+        }
+
+        public function updateRecord(string $table, string $id, $record)
+        {
+            return $this->caller->call('PUT', '/records/' . rawurlencode($table) . '/' . rawurlencode($id), [], $record);
+        }
+    }
+}
+
+// file: src/Tqdev/PhpCrudUi/Client/CurlCaller.php
+namespace Tqdev\PhpCrudUi\Client {
+
+    class CurlCaller implements ApiCaller
     {
         private $url;
 
@@ -10857,47 +10667,7 @@ namespace Tqdev\PhpCrudUi\Client {
             $this->url = $url;
         }
 
-        public function getOpenApi()
-        {
-            return $this->call('GET', '/openapi');
-        }
-
-        public function listColumns(string $table, array $args)
-        {
-            return $this->call('GET', '/columns/' . rawurlencode($table), $args);
-        }
-
-        public function readColumn(string $table, string $column, array $args)
-        {
-            return $this->call('GET', '/columns/' . rawurlencode($table) . '/' . rawurlencode($column), $args);
-        }
-
-        public function listRecords(string $table, array $args)
-        {
-            return $this->call('GET', '/records/' . rawurlencode($table), $args);
-        }
-
-        public function readRecord(string $table, string $id, array $args)
-        {
-            return $this->call('GET', '/records/' . rawurlencode($table) . '/' . rawurlencode($id), $args);
-        }
-
-        public function createRecord(string $table, $record)
-        {
-            return $this->call('POST', '/records/' . rawurlencode($table), [], $record);
-        }
-
-        public function deleteRecord(string $table, string $id)
-        {
-            return $this->call('DELETE', '/records/' . rawurlencode($table) . '/' . rawurlencode($id));
-        }
-
-        public function updateRecord(string $table, string $id, $record)
-        {
-            return $this->call('PUT', '/records/' . rawurlencode($table) . '/' . rawurlencode($id), [], $record);
-        }
-
-        private function call(string $method, string $path, array $args = [], $data = false)
+        public function call(string $method, string $path, array $args = [], $data = false)
         {
             $query = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
             $ch = curl_init();
@@ -10915,6 +10685,38 @@ namespace Tqdev\PhpCrudUi\Client {
             $response = curl_exec($ch);
             curl_close($ch);
             return json_decode($response, true);
+        }
+    }
+}
+
+// file: src/Tqdev/PhpCrudUi/Client/LocalCaller.php
+namespace Tqdev\PhpCrudUi\Client {
+
+    use Tqdev\PhpCrudApi\Api;
+    use Tqdev\PhpCrudApi\Config;
+    use Tqdev\PhpCrudApi\RequestFactory;
+
+    class LocalCaller implements ApiCaller
+    {
+        private $config;
+
+        public function __construct(array $config)
+        {
+            $this->config = $config;
+        }
+
+        public function call(string $method, string $path, array $args = [], $data = false)
+        {
+            $query = rtrim('?' . preg_replace('|%5B[0-9]+%5D|', '', http_build_query($args)), '?');
+            $config = new Config($this->config);
+            $body = '';
+            if ($data !== false) {
+                $body = json_encode($data);
+            }
+            $request = RequestFactory::fromString(trim("$method $path$query\n\n$body"));
+            $api = new Api($config);
+            $response = $api->handle($request);
+            return json_decode($response->getBody(), true);
         }
     }
 }
@@ -11076,150 +10878,6 @@ namespace Tqdev\PhpCrudUi\Column {
             $properties = $this->getProperties($table, 'read');
             $primaryKey = $this->getPrimaryKey($table, 'read');
             return $record[$primaryKey];
-        }
-    }
-}
-
-// file: src/Tqdev/PhpCrudUi/Controller/ColumnController.php
-namespace Tqdev\PhpCrudUi\Controller {
-
-    use Psr\Http\Message\ResponseInterface;
-    use Psr\Http\Message\ServerRequestInterface;
-    use Tqdev\PhpCrudApi\Controller\Responder;
-    use Tqdev\PhpCrudApi\Middleware\Router\Router;
-    use Tqdev\PhpCrudApi\Record\ErrorCode;
-    use Tqdev\PhpCrudApi\RequestUtils;
-    use Tqdev\PhpCrudUi\Record\ColumnService;
-
-    class ColumnController
-    {
-        private $service;
-        private $responder;
-
-        public function __construct(Router $router, Responder $responder, ColumnService $service)
-        {
-            $router->register('GET', '/*/columns/create', array($this, 'createForm'));
-            $router->register('POST', '/*/columns/create', array($this, 'create'));
-            $router->register('GET', '/*/columns/read/*', array($this, 'read'));
-            $router->register('GET', '/*/columns/update/*', array($this, 'updateForm'));
-            $router->register('POST', '/*/columns/update/*', array($this, 'update'));
-            $router->register('GET', '/*/columns/delete/*', array($this, 'deleteForm'));
-            $router->register('POST', '/*/columns/delete/*', array($this, 'delete'));
-            $router->register('GET', '/*/columns/list', array($this, '_list'));
-            $router->register('GET', '/*/columns/export', array($this, 'export'));
-            $this->service = $service;
-            $this->responder = $responder;
-        }
-
-        public function createForm(ServerRequestInterface $request): ResponseInterface
-        {
-            $table = RequestUtils::getPathSegment($request, 1);
-            $action = RequestUtils::getPathSegment($request, 3);
-            if (!$this->service->hasTable($table, $action)) {
-                return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
-            }
-            $result = $this->service->createForm($table, $action);
-            return $this->responder->success($result);
-        }
-
-        public function create(ServerRequestInterface $request): ResponseInterface
-        {
-            $table = RequestUtils::getPathSegment($request, 1);
-            $action = RequestUtils::getPathSegment($request, 3);
-            if (!$this->service->hasTable($table, $action)) {
-                return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
-            }
-            $record = $request->getParsedBody();
-            if ($record === null) {
-                return $this->responder->error(ErrorCode::HTTP_MESSAGE_NOT_READABLE, '');
-            }
-            $result = $this->service->create($table, $action, $record);
-            return $this->responder->success($result);
-        }
-
-        public function read(ServerRequestInterface $request): ResponseInterface
-        {
-            $table = RequestUtils::getPathSegment($request, 1);
-            $action = RequestUtils::getPathSegment($request, 3);
-            $name = RequestUtils::getPathSegment($request, 4);
-            if (!$this->service->hasTable($table, $action)) {
-                return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
-            }
-            $result = $this->service->read($table, $action, $name);
-            return $this->responder->success($result);
-        }
-
-        public function updateForm(ServerRequestInterface $request): ResponseInterface
-        {
-            $table = RequestUtils::getPathSegment($request, 1);
-            $action = RequestUtils::getPathSegment($request, 3);
-            $name = RequestUtils::getPathSegment($request, 4);
-            if (!$this->service->hasTable($table, $action)) {
-                return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
-            }
-            $result = $this->service->updateForm($table, $action, $name);
-            return $this->responder->success($result);
-        }
-
-        public function update(ServerRequestInterface $request): ResponseInterface
-        {
-            $table = RequestUtils::getPathSegment($request, 1);
-            $action = RequestUtils::getPathSegment($request, 3);
-            $name = RequestUtils::getPathSegment($request, 4);
-            if (!$this->service->hasTable($table, $action)) {
-                return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
-            }
-            $record = $request->getParsedBody();
-            if ($record === null) {
-                return $this->responder->error(ErrorCode::HTTP_MESSAGE_NOT_READABLE, '');
-            }
-            $result = $this->service->update($table, $action, $name, $record);
-            return $this->responder->success($result);
-        }
-
-        public function deleteForm(ServerRequestInterface $request): ResponseInterface
-        {
-            $table = RequestUtils::getPathSegment($request, 1);
-            $action = RequestUtils::getPathSegment($request, 3);
-            $name = RequestUtils::getPathSegment($request, 4);
-            if (!$this->service->hasTable($table, 'read')) {
-                return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
-            }
-            $result = $this->service->deleteForm($table, $action, $name);
-            return $this->responder->success($result);
-        }
-
-        public function delete(ServerRequestInterface $request): ResponseInterface
-        {
-            $table = RequestUtils::getPathSegment($request, 1);
-            $action = RequestUtils::getPathSegment($request, 3);
-            $name = RequestUtils::getPathSegment($request, 4);
-            if (!$this->service->hasTable($table, 'read')) {
-                return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
-            }
-            $result = $this->service->delete($table, $action, $name);
-            return $this->responder->success($result);
-        }
-
-        public function _list(ServerRequestInterface $request): ResponseInterface
-        {
-            $table = RequestUtils::getPathSegment($request, 1);
-            $action = RequestUtils::getPathSegment($request, 3);
-            if (!$this->service->hasTable($table, $action)) {
-                return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
-            }
-            $result = $this->service->_list($table, $action);
-            return $this->responder->success($result);
-        }
-
-        public function export(ServerRequestInterface $request): ResponseInterface
-        {
-            $table = RequestUtils::getPathSegment($request, 1);
-            if (!$this->service->hasTable($table, 'list')) {
-                return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
-            }
-            $result = $this->service->export($table, 'list');
-            return $this->responder->success($result);
         }
     }
 }
@@ -11546,248 +11204,6 @@ namespace Tqdev\PhpCrudUi\Document {
             $data['content'] = $this->template->render($content, $data);
             $master = $this->getHtmlFileContents($this->masterTemplate);
             return (string) $this->template->render($master, $data);
-        }
-    }
-}
-
-// file: src/Tqdev/PhpCrudUi/Record/ColumnService.php
-namespace Tqdev\PhpCrudUi\Record {
-
-    use Tqdev\PhpCrudUi\Client\CrudApi;
-    use Tqdev\PhpCrudUi\Column\SpecificationService;
-    use Tqdev\PhpCrudUi\Document\TemplateDocument;
-    use Tqdev\PhpCrudUi\Document\CsvDocument;
-
-    class ColumnService
-    {
-        private $api;
-        private $definition;
-
-        public function __construct(CrudApi $api, SpecificationService $definition)
-        {
-            $this->api = $api;
-            $this->definition = $definition;
-        }
-
-        public function hasTable(string $table, string $action): bool
-        {
-            return $this->definition->hasTable($table, $action);
-        }
-
-        private function getColumnFields(): array
-        {
-            return ['name', 'type', 'length', 'precision', 'scale', 'nullable', 'pk', 'fk'];
-        }
-
-        private function fillSparse(array &$array, array $keys)
-        {
-            foreach ($keys as $key) {
-                if (!key_exists($key, $array)) {
-                    $array[$key] = null;
-                }
-            }
-        }
-
-        private function fillAllSparse(array &$array, array $keys)
-        {
-            foreach (array_keys($array) as $i) {
-                $this->fillSparse($array[$i], $keys);
-            }
-        }
-
-        private function getDropDownValues(string $relatedTable): array
-        {
-            $values = array();
-            if ($relatedTable) {
-                $pair = $this->definition->getColumnPair($relatedTable);
-                $args = array('include' => implode(',', $pair));
-                $data = $this->api->listRecords($relatedTable, $args);
-                foreach ($data['records'] as $record) {
-                    if (count($pair) > 1) {
-                        $values[$record[$pair[0]]] = $record[$pair[1]];
-                    } else {
-                        $values[$record[$pair[0]]] = $record[$pair[0]];
-                    }
-                }
-            }
-            return $values;
-        }
-
-        public function createForm(string $table, string $action): TemplateDocument
-        {
-            $references = $this->definition->getReferences($table, $action);
-            $primaryKey = $this->definition->getPrimaryKey($table, $action);
-
-            $columns = $this->definition->getColumns($table, $action);
-
-            foreach ($columns as $i => $column) {
-                $values = $this->getDropDownValues($references[$column]);
-                $columns[$i] = array('name' => $column, 'values' => $values);
-            }
-
-            $variables = array(
-                'table' => $table,
-                'action' => $action,
-                'columns' => $columns,
-                'primaryKey' => $primaryKey,
-            );
-
-            return new TemplateDocument('layouts/default', 'column/create', $variables);
-        }
-
-        public function create(string $table, string $action, /* object */ $record): TemplateDocument
-        {
-            $primaryKey = $this->definition->getPrimaryKey($table, $action);
-
-            $name = $this->api->createRecord($table, $record);
-
-            $variables = array(
-                'table' => $table,
-                'action' => $action,
-                'id' => $name,
-                'primaryKey' => $primaryKey,
-            );
-
-            return new TemplateDocument('layouts/default', 'column/created', $variables);
-        }
-
-        public function read(string $table, string $action, string $name): TemplateDocument
-        {
-            $columnFields = $this->getColumnFields();
-
-            $record = $this->api->readColumn($table, $name, array());
-            $this->fillSparse($record, $columnFields);
-
-            $variables = array(
-                'table' => $table,
-                'action' => $action,
-                'name' => $name,
-                'record' => $record,
-            );
-
-            return new TemplateDocument('layouts/default', 'column/read', $variables);
-        }
-
-        public function updateForm(string $table, string $action, string $name): TemplateDocument
-        {
-            $references = $this->definition->getReferences($table, $action);
-            $primaryKey = $this->definition->getPrimaryKey($table, $action);
-
-            $record = $this->api->readRecord($table, $name, []);
-
-            foreach ($record as $key => $value) {
-                $values = $this->getDropDownValues($references[$key]);
-                $record[$key] = array('value' => $value, 'values' => $values);
-            }
-
-            $variables = array(
-                'table' => $table,
-                'action' => $action,
-                'id' => $name,
-                'primaryKey' => $primaryKey,
-                'record' => $record,
-            );
-
-            return new TemplateDocument('layouts/default', 'column/update', $variables);
-        }
-
-        public function update(string $table, string $action, string $name, /* object */ $record): TemplateDocument
-        {
-            $primaryKey = $this->definition->getPrimaryKey($table, $action);
-
-            $affected = $this->api->updateRecord($table, $name, $record);
-
-            $variables = array(
-                'table' => $table,
-                'action' => $action,
-                'id' => $name,
-                'primaryKey' => $primaryKey,
-                'affected' => $affected,
-            );
-
-            return new TemplateDocument('layouts/default', 'column/updated', $variables);
-        }
-
-        public function deleteForm(string $table, string $action, string $name): TemplateDocument
-        {
-            $primaryKey = $this->definition->getPrimaryKey($table, 'read');
-
-            $record = $this->api->readRecord($table, $name, []);
-
-            $name = $this->definition->referenceText($table, $record);
-
-            $variables = array(
-                'table' => $table,
-                'action' => $action,
-                'id' => $name,
-                'primaryKey' => $primaryKey,
-                'name' => $name,
-            );
-
-            return new TemplateDocument('layouts/default', 'column/delete', $variables);
-        }
-
-        public function delete(string $table, string $action, string $name): TemplateDocument
-        {
-            $primaryKey = $this->definition->getPrimaryKey($table, 'read');
-
-            $affected = $this->api->deleteRecord($table, $name);
-
-            $variables = array(
-                'table' => $table,
-                'action' => $action,
-                'id' => $name,
-                'primaryKey' => $primaryKey,
-                'affected' => $affected,
-            );
-
-            return new TemplateDocument('layouts/default', 'column/deleted', $variables);
-        }
-
-        public function _list(string $table, string $action): TemplateDocument
-        {
-            $columnFields = $this->getColumnFields();
-
-            $data = $this->api->listColumns($table, array());
-            $this->fillAllSparse($data['columns'], $columnFields);
-
-            $variables = array(
-                'table' => $table,
-                'action' => $action,
-                'columns' => $columnFields,
-                'records' => $data['columns'],
-            );
-
-            return new TemplateDocument('layouts/default', 'column/list', $variables);
-        }
-
-        public function export(string $table, string $action): CsvDocument
-        {
-            $references = $this->definition->getReferences($table, $action);
-
-            $columns = $this->definition->getColumns($table, $action);
-
-            $args = array();
-            $args['join'] = array_values(array_filter($references));
-            $data = $this->api->listRecords($table, $args);
-
-            foreach ($data['records'] as $i => $record) {
-                foreach ($record as $key => $value) {
-                    if ($references[$key]) {
-                        $value = $this->definition->referenceText($references[$key], $record[$key]);
-                        $data['records'][$i][$key] = $value;
-                    }
-                }
-            }
-
-            $variables = array(
-                'table' => $table,
-                'action' => $action,
-                'columns' => $columns,
-                'records' => $data['records'],
-            );
-
-            return new CsvDocument($variables);
         }
     }
 }
@@ -12424,8 +11840,9 @@ namespace Tqdev\PhpCrudUi {
     {
         private $values = [
             'url' => '',
+            'api' => [],
             'definition' => '',
-            'controllers' => 'records,columns',
+            'controllers' => 'records',
             'cacheType' => 'TempFile',
             'cachePath' => '',
             'cacheTime' => 10,
@@ -12453,6 +11870,11 @@ namespace Tqdev\PhpCrudUi {
         public function getUrl(): String
         {
             return $this->values['url'];
+        }
+
+        public function getApi(): array
+        {
+            return $this->values['api'];
         }
 
         public function getDefinition(): String
@@ -12507,8 +11929,8 @@ namespace Tqdev\PhpCrudUi {
     use Tqdev\PhpCrudUi\Controller\RecordController;
     use Tqdev\PhpCrudUi\Controller\MultiResponder;
     use Tqdev\PhpCrudUi\Record\RecordService;
-    use Tqdev\PhpCrudUi\Controller\ColumnController;
-    use Tqdev\PhpCrudUi\Record\ColumnService;
+    use Tqdev\PhpCrudUi\Client\LocalCaller;
+    use Tqdev\PhpCrudUi\Client\CurlCaller;
 
     class Ui implements RequestHandlerInterface
     {
@@ -12518,7 +11940,11 @@ namespace Tqdev\PhpCrudUi {
 
         public function __construct(Config $config)
         {
-            $api = new CrudApi($config->getUrl());
+            $caller = new LocalCaller($config->getApi());
+            if ($config->getUrl()) {
+                $caller = new CurlCaller($config->getUrl());
+            }
+            $api = new CrudApi($caller);
             $prefix = sprintf('phpcrudui-%s-%s-', substr(md5($config->getUrl()), 0, 12), substr(md5(__FILE__), 0, 12));
             $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
             $definition = new SpecificationService($api, $cache, $config->getCacheTime());
@@ -12532,10 +11958,6 @@ namespace Tqdev\PhpCrudUi {
                     case 'records':
                         $records = new RecordService($api, $definition);
                         new RecordController($router, $responder, $records);
-                        break;
-                    case 'columns':
-                        $columns = new ColumnService($api, $definition);
-                        new ColumnController($router, $responder, $columns);
                         break;
                 }
             }
@@ -12583,7 +12005,11 @@ namespace Tqdev\PhpCrudUi {
     use Tqdev\PhpCrudUi\Ui;
 
     $config = new Config([
-        'url' => 'http://localhost:8000/src',
+        'api' => [
+            'username' => 'php-crud-api',
+            'password' => 'php-crud-api',
+            'database' => 'php-crud-api',
+        ],
         'templatePath' => '../templates',
     ]);
     $request = RequestFactory::fromGlobals();

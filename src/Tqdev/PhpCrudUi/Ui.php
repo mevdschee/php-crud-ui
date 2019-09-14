@@ -14,6 +14,8 @@ use Tqdev\PhpCrudUi\Column\SpecificationService;
 use Tqdev\PhpCrudUi\Controller\RecordController;
 use Tqdev\PhpCrudUi\Controller\MultiResponder;
 use Tqdev\PhpCrudUi\Record\RecordService;
+use Tqdev\PhpCrudUi\Client\LocalCaller;
+use Tqdev\PhpCrudUi\Client\CurlCaller;
 
 class Ui implements RequestHandlerInterface
 {
@@ -23,7 +25,11 @@ class Ui implements RequestHandlerInterface
 
     public function __construct(Config $config)
     {
-        $api = new CrudApi($config->getUrl());
+        $caller = new LocalCaller($config->getApi());
+        if ($config->getUrl()) {
+            $caller = new CurlCaller($config->getUrl());
+        }
+        $api = new CrudApi($caller);
         $prefix = sprintf('phpcrudui-%s-%s-', substr(md5($config->getUrl()), 0, 12), substr(md5(__FILE__), 0, 12));
         $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
         $definition = new SpecificationService($api, $cache, $config->getCacheTime());
