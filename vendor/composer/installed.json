@@ -1,17 +1,17 @@
 [
     {
         "name": "mevdschee/php-crud-api",
-        "version": "v2.4.4",
-        "version_normalized": "2.4.4.0",
+        "version": "v2.5.2",
+        "version_normalized": "2.5.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/mevdschee/php-crud-api.git",
-            "reference": "60523f0864c4be58ef4910c68ca83b3328ac1479"
+            "reference": "39defcfc31d1e65a6a1e2839ec36e9beab71765f"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/mevdschee/php-crud-api/zipball/60523f0864c4be58ef4910c68ca83b3328ac1479",
-            "reference": "60523f0864c4be58ef4910c68ca83b3328ac1479",
+            "url": "https://api.github.com/repos/mevdschee/php-crud-api/zipball/39defcfc31d1e65a6a1e2839ec36e9beab71765f",
+            "reference": "39defcfc31d1e65a6a1e2839ec36e9beab71765f",
             "shasum": ""
         },
         "require": {
@@ -31,7 +31,7 @@
             "ext-memcached": "*",
             "ext-redis": "*"
         },
-        "time": "2019-08-18T23:43:52+00:00",
+        "time": "2019-09-13T10:33:38+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -75,17 +75,17 @@
     },
     {
         "name": "nyholm/psr7",
-        "version": "1.1.0",
-        "version_normalized": "1.1.0.0",
+        "version": "1.2.1",
+        "version_normalized": "1.2.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Nyholm/psr7.git",
-            "reference": "701fe7ea8c12c07b985b156d589134d328160cf7"
+            "reference": "55ff6b76573f5b242554c9775792bd59fb52e11c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Nyholm/psr7/zipball/701fe7ea8c12c07b985b156d589134d328160cf7",
-            "reference": "701fe7ea8c12c07b985b156d589134d328160cf7",
+            "url": "https://api.github.com/repos/Nyholm/psr7/zipball/55ff6b76573f5b242554c9775792bd59fb52e11c",
+            "reference": "55ff6b76573f5b242554c9775792bd59fb52e11c",
             "shasum": ""
         },
         "require": {
@@ -103,7 +103,7 @@
             "php-http/psr7-integration-tests": "dev-master",
             "phpunit/phpunit": "^7.5"
         },
-        "time": "2019-02-16T17:20:43+00:00",
+        "time": "2019-09-05T13:24:16+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {

@@ -32,13 +32,55 @@ class ReflectedColumn implements \JsonSerializable
         $this->sanitize();
     }
 
+    private static function parseColumnType(string $columnType, int &$length, int &$precision, int &$scale) /*: void*/
+    {
+        if (!$columnType) {
+            return;
+        }
+        $pos = strpos($columnType, '(');
+        if ($pos) {
+            $dataSize = rtrim(substr($columnType, $pos + 1), ')');
+            if ($length) {
+                $length = (int) $dataSize;
+            } else {
+                $pos = strpos($dataSize, ',');
+                if ($pos) {
+                    $precision = (int) substr($dataSize, 0, $pos);
+                    $scale = (int) substr($dataSize, $pos + 1);
+                } else {
+                    $precision = (int) $dataSize;
+                    $scale = 0;
+                }
+            }
+        }
+    }
+
+    private static function getDataSize(int $length, int $precision, int $scale): string
+    {
+        $dataSize = '';
+        if ($length) {
+            $dataSize = $length;
+        } elseif ($precision) {
+            if ($scale) {
+                $dataSize = $precision . ',' . $scale;
+            } else {
+                $dataSize = $precision;
+            }
+        }
+        return $dataSize;
+    }
+
     public static function fromReflection(GenericReflection $reflection, array $columnResult): ReflectedColumn
     {
         $name = $columnResult['COLUMN_NAME'];
+        $dataType = $columnResult['DATA_TYPE'];
         $length = (int) $columnResult['CHARACTER_MAXIMUM_LENGTH'];
-        $type = $reflection->toJdbcType($columnResult['DATA_TYPE'], $length);
         $precision = (int) $columnResult['NUMERIC_PRECISION'];
         $scale = (int) $columnResult['NUMERIC_SCALE'];
+        $columnType = $columnResult['COLUMN_TYPE'];
+        self::parseColumnType($columnType, $length, $precision, $scale);
+        $dataSize = self::getDataSize($length, $precision, $scale);
+        $type = $reflection->toJdbcType($dataType, $dataSize);
         $nullable = in_array(strtoupper($columnResult['IS_NULLABLE']), ['TRUE', 'YES', 'T', 'Y', '1']);
         $pk = false;
         $fk = '';
@@ -49,11 +91,11 @@ class ReflectedColumn implements \JsonSerializable
     {
         $name = $json->name;
         $type = $json->type;
-        $length = isset($json->length) ? $json->length : 0;
-        $precision = isset($json->precision) ? $json->precision : 0;
-        $scale = isset($json->scale) ? $json->scale : 0;
-        $nullable = isset($json->nullable) ? $json->nullable : false;
-        $pk = isset($json->pk) ? $json->pk : false;
+        $length = isset($json->length) ? (int) $json->length : 0;
+        $precision = isset($json->precision) ? (int) $json->precision : 0;
+        $scale = isset($json->scale) ? (int) $json->scale : 0;
+        $nullable = isset($json->nullable) ? (bool) $json->nullable : false;
+        $pk = isset($json->pk) ? (bool) $json->pk : false;
         $fk = isset($json->fk) ? $json->fk : '';
         return new ReflectedColumn($name, $type, $length, $precision, $scale, $nullable, $pk, $fk);
     }

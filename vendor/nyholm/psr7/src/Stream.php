@@ -32,7 +32,7 @@ final class Stream implements StreamInterface
     private $size;
 
     /** @var array Hash of readable and writable stream types */
-    private const READ_WRITE_HASH = [
+    /*private*/ const READ_WRITE_HASH = [
         'read' => [
             'r' => true, 'w+' => true, 'r+' => true, 'x+' => true, 'c+' => true,
             'rb' => true, 'w+b' => true, 'r+b' => true, 'x+b' => true,
@@ -76,7 +76,7 @@ final class Stream implements StreamInterface
             $new = new self();
             $new->stream = $body;
             $meta = \stream_get_meta_data($new->stream);
-            $new->seekable = $meta['seekable'];
+            $new->seekable = $meta['seekable'] && 0 === \fseek($new->stream, 0, \SEEK_CUR);
             $new->readable = isset(self::READ_WRITE_HASH['read'][$meta['mode']]);
             $new->writable = isset(self::READ_WRITE_HASH['write'][$meta['mode']]);
             $new->uri = $new->getMetadata('uri');
@@ -108,7 +108,7 @@ final class Stream implements StreamInterface
         }
     }
 
-    public function close(): void
+    public function close() /*:void*/
     {
         if (isset($this->stream)) {
             if (\is_resource($this->stream)) {
@@ -132,7 +132,7 @@ final class Stream implements StreamInterface
         return $result;
     }
 
-    public function getSize(): ?int
+    public function getSize() /*:?int*/
     {
         if (null !== $this->size) {
             return $this->size;
@@ -176,7 +176,7 @@ final class Stream implements StreamInterface
         return $this->seekable;
     }
 
-    public function seek($offset, $whence = \SEEK_SET): void
+    public function seek($offset, $whence = \SEEK_SET) /*:void*/
     {
         if (!$this->seekable) {
             throw new \RuntimeException('Stream is not seekable');
@@ -187,7 +187,7 @@ final class Stream implements StreamInterface
         }
     }
 
-    public function rewind(): void
+    public function rewind() /*:void*/
     {
         $this->seek(0);
     }

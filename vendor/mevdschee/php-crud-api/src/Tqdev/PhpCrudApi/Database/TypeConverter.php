@@ -43,6 +43,7 @@ class TypeConverter
             'smallint' => 'integer',
             'real' => 'float',
             'numeric' => 'decimal',
+            'nclob' => 'clob',
             'time_with_timezone' => 'time',
             'timestamp_with_timezone' => 'timestamp',
         ],
@@ -63,6 +64,7 @@ class TypeConverter
             'datetime' => 'timestamp',
             'year' => 'integer',
             'enum' => 'varchar',
+            'set' => 'varchar',
             'json' => 'clob',
         ],
         'pgsql' => [
@@ -102,7 +104,7 @@ class TypeConverter
         ],
         // source: https://docs.microsoft.com/en-us/sql/connect/jdbc/using-basic-data-types?view=sql-server-2017
         'sqlsrv' => [
-            'varbinary(0)' => 'blob',
+            'varbinary()' => 'blob',
             'bit' => 'boolean',
             'datetime' => 'timestamp',
             'datetime2' => 'timestamp',
@@ -134,7 +136,7 @@ class TypeConverter
         //'datalink' => true,
         'date' => true,
         'decimal' => true,
-        'distinct' => true,
+        //'distinct' => true,
         'double' => true,
         'float' => true,
         'integer' => true,
@@ -166,7 +168,7 @@ class TypeConverter
         'geometry' => true,
     ];
 
-    public function toJdbc(string $type, int $size): string
+    public function toJdbc(string $type, string $size): string
     {
         $jdbcType = strtolower($type);
         if (isset($this->toJdbc[$this->driver]["$jdbcType($size)"])) {

@@ -14,7 +14,7 @@ use Psr\Http\Message\{StreamInterface, UploadedFileInterface};
 final class UploadedFile implements UploadedFileInterface
 {
     /** @var array */
-    private const ERRORS = [
+    /*private*/ const ERRORS = [
         \UPLOAD_ERR_OK => 1,
         \UPLOAD_ERR_INI_SIZE => 1,
         \UPLOAD_ERR_FORM_SIZE => 1,
@@ -93,7 +93,7 @@ final class UploadedFile implements UploadedFileInterface
     /**
      * @throws \RuntimeException if is moved or not ok
      */
-    private function validateActive(): void
+    private function validateActive() /*:void*/
     {
         if (\UPLOAD_ERR_OK !== $this->error) {
             throw new \RuntimeException('Cannot retrieve stream due to upload error');
@@ -117,7 +117,7 @@ final class UploadedFile implements UploadedFileInterface
         return Stream::create($resource);
     }
 
-    public function moveTo($targetPath): void
+    public function moveTo($targetPath) /*:void*/
     {
         $this->validateActive();
 
@@ -159,12 +159,12 @@ final class UploadedFile implements UploadedFileInterface
         return $this->error;
     }
 
-    public function getClientFilename(): ?string
+    public function getClientFilename() /*:?string*/
     {
         return $this->clientFilename;
     }
 
-    public function getClientMediaType(): ?string
+    public function getClientMediaType() /*:?string*/
     {
         return $this->clientMediaType;
     }
