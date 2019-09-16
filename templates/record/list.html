@@ -1,4 +1,5 @@
-<h2>{{table}}: list</h2>
+<p>home / {{table}}</p>
+<h2>{{table}}</h2>
 <p><a href="{{base}}/{{table}}/export">export</a></p>
 {{if:field}}
     <div class="well well-sm"><div style="float:right;">
@@ -7,22 +8,18 @@
 {{endif}}
 <table class="table">
 <thead><tr>
+    <th>&nbsp;</th>
 {{for:column:columns}}
     <th>{{column}}</th>
-    {{if:column|eq(primaryKey)}}
-        <th></th>
-    {{endif}}
 {{endfor}}
 </tr></thead><tbody>
 {{for:record:records}}
     <tr>
+        <td><a href="{{base}}/{{table}}/read/{{record|prop(primaryKey)}}">view</a></td>
     {{for:value:key:record}}
-        <td>{{value}}</td>
-        {{if:key|eq(primaryKey)}}
-            <td style="border-right: 2px solid #ddd; width: 40px;">
-                <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/read/{{value}}">+</a>
-            </td>
-        {{endif}}
+        <td>
+            {{value}}
+        </td>
     {{endfor}}
     </tr>
 {{endfor}}

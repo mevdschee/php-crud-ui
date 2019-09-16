@@ -1,18 +1,17 @@
+<p>home / {{table}} / </p>
 <h2>{{table}}: view</h2>
 <table class="table">
-<thead><tr><th>key</th><th></th><th>value</th></tr></thead>
+<thead><tr><th>key</th><th>value</th></tr></thead>
 <tbody>
 {{for:value:key:record}}
     <tr>
         <td>{{key}}</td>
-        <td style="border-right: 2px solid #ddd; width: 40px;">
-            {{if:value.table}}
-                <a class="btn btn-default btn-xs" href="{{base}}/{{value.table}}/read/{{value.id}}"> + </a>
-            {{else}}
-                &nbsp;
-            {{endif}}
         </td><td>
-            {{value.text}}
+            {{if:value.table}}
+                <a href="{{base}}/{{value.table}}/read/{{value.id}}">{{value.text}}</a>
+            {{else}}
+                {{value.text}}
+            {{endif}}
         </td>
     </tr>
 {{endfor}}
