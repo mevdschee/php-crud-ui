@@ -217,13 +217,15 @@ class RecordService
 
         foreach ($data['records'] as $i => $record) {
             foreach ($record as $key => $value) {
+                if (!isset($references[$key])) {
+                    unset($data['records'][$i][$key]);
+                    continue;
+                }
                 $relatedTable = false;
                 $relatedName = false;
                 $relatedValue = $value;
                 $text = $value;
-                if (!isset($references[$key])) {
-                    unset($data['records'][$i][$key]);
-                } elseif ($references[$key]) {
+                if ($references[$key]) {
                     $relatedTable = $references[$key];
                     $relatedName = $this->definition->getPrimaryKey($relatedTable, $action);
                     $relatedValue = $this->definition->referenceId($relatedTable, $value);
