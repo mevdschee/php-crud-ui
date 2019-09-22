@@ -97,7 +97,7 @@ class RecordService
 
         foreach ($record as $key => $value) {
             $relatedTable = false;
-            $relatedId = false;
+            $relatedValue = false;
             $text = $value;
             if (isset($references[$key]) && $references[$key]) {
                 $relatedTable = $references[$key];
