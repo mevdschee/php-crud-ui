@@ -1,9 +1,14 @@
-<h2>{{table}}: delete {{name}}</h2>
+<ul class="breadcrumb">
+    <li><a href="{{base}}/editor/">home</a></li>
+    <li><a href="{{base}}/editor/column/{{table}}/list">{{table}}</a></li>
+</ul>
+
+<h2>delete record</h2>
 
 <p>The action cannot be undone.</p>
 
 <form method="post">
     <input type="hidden" name="{{primaryKey}}" value="{{id}}"/>
     <button type="submit" class="btn btn-danger">Delete</button>
-    <a href="{{base}}/{{table}}/read/{{id}}" class="btn btn-default">Cancel</a>
+    <a href="{{base}}/editor/{{table}}/update/{{id}}" class="btn btn-default">Cancel</a>
 </form>

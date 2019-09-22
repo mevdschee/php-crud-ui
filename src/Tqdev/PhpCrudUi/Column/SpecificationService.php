@@ -110,7 +110,7 @@ class SpecificationService
     private function getDisplayColumn($columns)
     {
         // TODO: make configurable
-        $names = array('name', 'title', 'description', 'username');
+        $names = array('name', 'title', 'description', 'username', 'email', 'address');
         foreach ($names as $name) {
             if (in_array($name, $columns)) {
                 return $name;
@@ -153,7 +153,6 @@ class SpecificationService
 
     public function referenceId(string $table, /* object */ $record)
     {
-        $properties = $this->getProperties($table, 'read');
         $primaryKey = $this->getPrimaryKey($table, 'read');
         return $record[$primaryKey];
     }

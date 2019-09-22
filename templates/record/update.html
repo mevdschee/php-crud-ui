@@ -1,4 +1,9 @@
-<h2>{{table}}: create</h2>
+<ul class="breadcrumb">
+    <li><a href="{{base}}/editor/">home</a></li>
+    <li><a href="{{base}}/editor/{{table}}/list">{{table}}</a></li>
+</ul>
+
+<h2>update record</h2>
 
 <form method="post">
     {{for:value:key:record}}
@@ -17,4 +22,5 @@
         </div>
     {{endfor}}
     <button type="submit" class="btn btn-primary">Save</button>
+    <a class="btn btn-danger" href="{{base}}/editor/{{table}}/delete/{{id}}">Delete</a>
 </form>

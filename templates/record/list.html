@@ -1,28 +1,32 @@
-<h2>{{table}}: list</h2>
-<p><a href="{{base}}/{{table}}/export">export</a></p>
+<ul class="breadcrumb">
+    <li><a href="{{base}}/editor/">home</a></li>
+    <li><a href="{{base}}/editor/{{table}}/list">{{table}}</a></li>
+</ul>
+
+<h2>list records</h2>
+
+<p><a href="{{base}}/editor/{{table}}/export">export</a></p>
 {{if:field}}
     <div class="well well-sm"><div style="float:right;">
-    <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/list">Clear filter</a>
+    <a class="btn btn-default btn-xs" href="{{base}}/editor/{{table}}/list">Clear filter</a>
     </div>Filtered by: {{field}} = {{name}}</div>
 {{endif}}
 <table class="table">
 <thead><tr>
+{{if:primaryKey}}
+    <th></th>
+{{endif}}
 {{for:column:columns}}
     <th>{{column}}</th>
-    {{if:column|eq(primaryKey)}}
-        <th></th>
-    {{endif}}
 {{endfor}}
 </tr></thead><tbody>
 {{for:record:records}}
     <tr>
+    {{if:primaryKey}}
+        <td><a href="{{base}}/editor/{{table}}/update/{{record|prop(primaryKey)}}">edit</a></td>
+    {{endif}}
     {{for:value:key:record}}
         <td>{{value}}</td>
-        {{if:key|eq(primaryKey)}}
-            <td style="border-right: 2px solid #ddd; width: 40px;">
-                <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/read/{{value}}">+</a>
-            </td>
-        {{endif}}
     {{endfor}}
     </tr>
 {{endfor}}
@@ -43,7 +47,7 @@
     </div>
 {{endif}}
 {{if:primaryKey}}
-    <p><a href="{{base}}/{{table}}/create" class="btn btn-primary">Add</a></p>
+    <p><a href="{{base}}/editor/{{table}}/create" class="btn btn-primary">Add</a></p>
 {{endif}}
 <br/>
 <br/>
@@ -51,10 +55,10 @@
 <ul>
 {{for:relation:field:references}}
     {{if:relation}}
-        <li><a href="{{base}}/{{relation}}/list">{{relation}}</a></li>
+        <li><a href="{{base}}/editor/{{relation}}/list">{{relation}}</a></li>
     {{endif}}
 {{endfor}}
 {{for:relation:referenced}}
-    <li><a href="{{base}}/{{relation.0}}/list">{{relation.0}}</a></li>
+    <li><a href="{{base}}/editor/{{relation.0}}/list">{{relation.0}}</a></li>
 {{endfor}}
 </ul>

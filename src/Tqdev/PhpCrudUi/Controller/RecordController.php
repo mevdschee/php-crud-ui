@@ -17,31 +17,24 @@ class RecordController
 
     public function __construct(Router $router, Responder $responder, RecordService $service)
     {
-        $router->register('GET', '/', array($this, 'home'));
-        $router->register('GET', '/*/create', array($this, 'createForm'));
-        $router->register('POST', '/*/create', array($this, 'create'));
-        $router->register('GET', '/*/read/*', array($this, 'read'));
-        $router->register('GET', '/*/update/*', array($this, 'updateForm'));
-        $router->register('POST', '/*/update/*', array($this, 'update'));
-        $router->register('GET', '/*/delete/*', array($this, 'deleteForm'));
-        $router->register('POST', '/*/delete/*', array($this, 'delete'));
-        $router->register('GET', '/*/list', array($this, '_list'));
-        $router->register('GET', '/*/list/*/*/*', array($this, '_list'));
-        $router->register('GET', '/*/export', array($this, 'export'));
+        $router->register('GET', '/editor/*/create', array($this, 'createForm'));
+        $router->register('POST', '/editor/*/create', array($this, 'create'));
+        $router->register('GET', '/editor/*/read/*', array($this, 'read'));
+        $router->register('GET', '/editor/*/update/*', array($this, 'updateForm'));
+        $router->register('POST', '/editor/*/update/*', array($this, 'update'));
+        $router->register('GET', '/editor/*/delete/*', array($this, 'deleteForm'));
+        $router->register('POST', '/editor/*/delete/*', array($this, 'delete'));
+        $router->register('GET', '/editor/*/list', array($this, '_list'));
+        $router->register('GET', '/editor/*/list/*/*/*', array($this, '_list'));
+        $router->register('GET', '/editor/*/export', array($this, 'export'));
         $this->service = $service;
         $this->responder = $responder;
     }
 
-    public function home(ServerRequestInterface $request): ResponseInterface
-    {
-        $result = $this->service->home();
-        return $this->responder->success($result);
-    }
-
     public function createForm(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 1);
-        $action = RequestUtils::getPathSegment($request, 2);
+        $table = RequestUtils::getPathSegment($request, 2);
+        $action = RequestUtils::getPathSegment($request, 3);
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
@@ -51,8 +44,8 @@ class RecordController
 
     public function create(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 1);
-        $action = RequestUtils::getPathSegment($request, 2);
+        $table = RequestUtils::getPathSegment($request, 2);
+        $action = RequestUtils::getPathSegment($request, 3);
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
@@ -66,9 +59,9 @@ class RecordController
 
     public function read(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 1);
-        $action = RequestUtils::getPathSegment($request, 2);
-        $id = RequestUtils::getPathSegment($request, 3);
+        $table = RequestUtils::getPathSegment($request, 2);
+        $action = RequestUtils::getPathSegment($request, 3);
+        $id = RequestUtils::getPathSegment($request, 4);
         $params = RequestUtils::getParams($request);
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
@@ -79,9 +72,9 @@ class RecordController
 
     public function updateForm(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 1);
-        $action = RequestUtils::getPathSegment($request, 2);
-        $id = RequestUtils::getPathSegment($request, 3);
+        $table = RequestUtils::getPathSegment($request, 2);
+        $action = RequestUtils::getPathSegment($request, 3);
+        $id = RequestUtils::getPathSegment($request, 4);
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
@@ -91,9 +84,9 @@ class RecordController
 
     public function update(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 1);
-        $action = RequestUtils::getPathSegment($request, 2);
-        $id = RequestUtils::getPathSegment($request, 3);
+        $table = RequestUtils::getPathSegment($request, 2);
+        $action = RequestUtils::getPathSegment($request, 3);
+        $id = RequestUtils::getPathSegment($request, 4);
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
@@ -107,9 +100,9 @@ class RecordController
 
     public function deleteForm(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 1);
-        $action = RequestUtils::getPathSegment($request, 2);
-        $id = RequestUtils::getPathSegment($request, 3);
+        $table = RequestUtils::getPathSegment($request, 2);
+        $action = RequestUtils::getPathSegment($request, 3);
+        $id = RequestUtils::getPathSegment($request, 4);
         if (!$this->service->hasTable($table, 'read')) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
@@ -119,9 +112,9 @@ class RecordController
 
     public function delete(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 1);
-        $action = RequestUtils::getPathSegment($request, 2);
-        $id = RequestUtils::getPathSegment($request, 3);
+        $table = RequestUtils::getPathSegment($request, 2);
+        $action = RequestUtils::getPathSegment($request, 3);
+        $id = RequestUtils::getPathSegment($request, 4);
         if (!$this->service->hasTable($table, 'read')) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
@@ -131,11 +124,11 @@ class RecordController
 
     public function _list(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 1);
-        $action = RequestUtils::getPathSegment($request, 2);
-        $field = RequestUtils::getPathSegment($request, 3);
-        $id = RequestUtils::getPathSegment($request, 4);
-        $name = RequestUtils::getPathSegment($request, 5);
+        $table = RequestUtils::getPathSegment($request, 2);
+        $action = RequestUtils::getPathSegment($request, 3);
+        $field = RequestUtils::getPathSegment($request, 4);
+        $id = RequestUtils::getPathSegment($request, 5);
+        $name = RequestUtils::getPathSegment($request, 6);
         $params = RequestUtils::getParams($request);
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
@@ -146,7 +139,7 @@ class RecordController
 
     public function export(ServerRequestInterface $request): ResponseInterface
     {
-        $table = RequestUtils::getPathSegment($request, 1);
+        $table = RequestUtils::getPathSegment($request, 2);
         if (!$this->service->hasTable($table, 'list')) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }

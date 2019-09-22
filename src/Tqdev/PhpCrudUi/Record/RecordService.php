@@ -217,7 +217,9 @@ class RecordService
 
         foreach ($data['records'] as $i => $record) {
             foreach ($record as $key => $value) {
-                if ($references[$key]) {
+                if (!isset($references[$key])) {
+                    unset($data['records'][$i][$key]);
+                } elseif ($references[$key]) {
                     $value = $this->definition->referenceText($references[$key], $record[$key]);
                     $data['records'][$i][$key] = $value;
                 }

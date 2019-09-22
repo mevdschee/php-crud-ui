@@ -47,7 +47,7 @@ $_HTML['layouts/default'] = <<<'END_OF_HTML'
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
-                    <h3><a href="{{base}}/">PHP-CRUD-UI</a></h3>
+                    <h3><a href="{{base}}/editor/">PHP-CRUD-UI</a></h3>
                 </div>
             </div>
             <div class="row">
@@ -55,7 +55,7 @@ $_HTML['layouts/default'] = <<<'END_OF_HTML'
                     <ul class="nav nav-pills nav-stacked">
                         {{for:item:menu}}
                             <li{{if:item|eq(table)}} class="active"{{endif}}>
-                                <a href="{{base}}/{{item}}/list">{{item}}</a>
+                                <a href="{{base}}/editor/{{item}}/list">{{item}}</a>
                             </li>
                         {{endfor}}
                     </ul>
@@ -85,7 +85,7 @@ $_HTML['layouts/error'] = <<<'END_OF_HTML'
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
-                    <h3><a href="{{base}}/">PHP-CRUD-UI</a></h3>
+                    <h3><a href="{{base}}/editor/">PHP-CRUD-UI</a></h3>
                 </div>
             </div>
             <div class="row">
@@ -93,7 +93,7 @@ $_HTML['layouts/error'] = <<<'END_OF_HTML'
                     <ul class="nav nav-pills nav-stacked">
                         {{for:item:menu}}
                             <li{{if:item|eq(table)}} class="active"{{endif}}>
-                                <a href="{{base}}/{{item}}/list">{{item}}</a>
+                                <a href="{{base}}/editor/{{item}}/list">{{item}}</a>
                             </li>
                         {{endfor}}
                     </ul>
@@ -142,7 +142,7 @@ $_HTML['record/created'] = <<<'END_OF_HTML'
 
 <p>Added with {{primaryKey}} {{id}}</p>
 
-<p><a href="{{base}}/{{table}}/list" class="btn btn-primary">Ok</a></p>
+<p><a href="{{base}}/editor/{{table}}/list" class="btn btn-primary">Ok</a></p>
 END_OF_HTML;
 }
 
@@ -156,7 +156,7 @@ $_HTML['record/delete'] = <<<'END_OF_HTML'
 <form method="post">
     <input type="hidden" name="{{primaryKey}}" value="{{id}}"/>
     <button type="submit" class="btn btn-danger">Delete</button>
-    <a href="{{base}}/{{table}}/read/{{id}}" class="btn btn-default">Cancel</a>
+    <a href="{{base}}/editor/{{table}}/read/{{id}}" class="btn btn-default">Cancel</a>
 </form>
 END_OF_HTML;
 }
@@ -168,7 +168,7 @@ $_HTML['record/deleted'] = <<<'END_OF_HTML'
 
 <p>Deleted with {{primaryKey}} {{id}}</p>
 
-<p><a href="{{base}}/{{table}}/list" class="btn btn-primary">Ok</a></p>
+<p><a href="{{base}}/editor/{{table}}/list" class="btn btn-primary">Ok</a></p>
 END_OF_HTML;
 }
 
@@ -183,10 +183,10 @@ END_OF_HTML;
 namespace {
 $_HTML['record/list'] = <<<'END_OF_HTML'
 <h2>{{table}}: list</h2>
-<p><a href="{{base}}/{{table}}/export">export</a></p>
+<p><a href="{{base}}/editor/{{table}}/export">export</a></p>
 {{if:field}}
     <div class="well well-sm"><div style="float:right;">
-    <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/list">Clear filter</a>
+    <a class="btn btn-default btn-xs" href="{{base}}/editor/{{table}}/list">Clear filter</a>
     </div>Filtered by: {{field}} = {{name}}</div>
 {{endif}}
 <table class="table">
@@ -204,7 +204,7 @@ $_HTML['record/list'] = <<<'END_OF_HTML'
         <td>{{value}}</td>
         {{if:key|eq(primaryKey)}}
             <td style="border-right: 2px solid #ddd; width: 40px;">
-                <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/read/{{value}}">+</a>
+                <a class="btn btn-default btn-xs" href="{{base}}/editor/{{table}}/read/{{value}}">+</a>
             </td>
         {{endif}}
     {{endfor}}
@@ -227,7 +227,7 @@ $_HTML['record/list'] = <<<'END_OF_HTML'
     </div>
 {{endif}}
 {{if:primaryKey}}
-    <p><a href="{{base}}/{{table}}/create" class="btn btn-primary">Add</a></p>
+    <p><a href="{{base}}/editor/{{table}}/create" class="btn btn-primary">Add</a></p>
 {{endif}}
 <br/>
 <br/>
@@ -235,11 +235,11 @@ $_HTML['record/list'] = <<<'END_OF_HTML'
 <ul>
 {{for:relation:field:references}}
     {{if:relation}}
-        <li><a href="{{base}}/{{relation}}/list">{{relation}}</a></li>
+        <li><a href="{{base}}/editor/{{relation}}/list">{{relation}}</a></li>
     {{endif}}
 {{endfor}}
 {{for:relation:referenced}}
-    <li><a href="{{base}}/{{relation.0}}/list">{{relation.0}}</a></li>
+    <li><a href="{{base}}/editor/{{relation.0}}/list">{{relation.0}}</a></li>
 {{endfor}}
 </ul>
 
@@ -258,7 +258,7 @@ $_HTML['record/read'] = <<<'END_OF_HTML'
         <td>{{key}}</td>
         <td style="border-right: 2px solid #ddd; width: 40px;">
             {{if:value.table}}
-                <a class="btn btn-default btn-xs" href="{{base}}/{{value.table}}/read/{{value.id}}"> + </a>
+                <a class="btn btn-default btn-xs" href="{{base}}/editor/{{value.table}}/read/{{value.id}}"> + </a>
             {{else}}
                 &nbsp;
             {{endif}}
@@ -270,19 +270,19 @@ $_HTML['record/read'] = <<<'END_OF_HTML'
 </tbody></table>
 
 <p>
-    <a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
-    <a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
+    <a class="btn btn-primary" href="{{base}}/editor/{{table}}/update/{{id}}">Edit</a>
+    <a class="btn btn-danger" href="{{base}}/editor/{{table}}/delete/{{id}}">Delete</a>
 </p>
 
 <h4>Related</h4>
 <ul>
 {{for:relation:field:references}}
     {{if:relation}}
-        <li><a href="{{base}}/{{relation}}/list">{{relation}}</a></li>
+        <li><a href="{{base}}/editor/{{relation}}/list">{{relation}}</a></li>
     {{endif}}
 {{endfor}}
 {{for:relation:referenced}}
-    <li><a href="{{base}}/{{relation.0}}/list/{{relation.1}}/{{id}}/{{name}}">{{relation.0}} (filtered)</a></li>
+    <li><a href="{{base}}/editor/{{relation.0}}/list/{{relation.1}}/{{id}}/{{name}}">{{relation.0}} (filtered)</a></li>
 {{endfor}}
 
 END_OF_HTML;
@@ -322,7 +322,7 @@ $_HTML['record/updated'] = <<<'END_OF_HTML'
 
 <p>Updated with {{primaryKey}} {{id}}</p>
 
-<p><a href="{{base}}/{{table}}/read/{{id}}" class="btn btn-primary">Ok</a></p>
+<p><a href="{{base}}/editor/{{table}}/read/{{id}}" class="btn btn-primary">Ok</a></p>
 END_OF_HTML;
 }
 

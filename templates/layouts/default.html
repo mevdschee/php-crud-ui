@@ -8,17 +8,19 @@
     </head>
     <body>
         <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <h3><a href="{{base}}/">PHP-CRUD-UI</a></h3>
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="{{base}}/editor/">PHP-CRUD-UI</a>
+                    </div>
                 </div>
-            </div>
+            </nav>
             <div class="row">
                 <div class="col-md-3">
                     <ul class="nav nav-pills nav-stacked">
                         {{for:item:menu}}
                             <li{{if:item|eq(table)}} class="active"{{endif}}>
-                                <a href="{{base}}/{{item}}/list">{{item}}</a>
+                                <a href="{{base}}/editor/{{item}}/list">{{item}}</a>
                             </li>
                         {{endfor}}
                     </ul>

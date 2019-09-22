@@ -7,7 +7,7 @@
         <td>{{key}}</td>
         <td style="border-right: 2px solid #ddd; width: 40px;">
             {{if:value.table}}
-                <a class="btn btn-default btn-xs" href="{{base}}/{{value.table}}/read/{{value.id}}"> + </a>
+                <a class="btn btn-default btn-xs" href="{{base}}/editor/{{value.table}}/read/{{value.id}}"> + </a>
             {{else}}
                 &nbsp;
             {{endif}}
@@ -19,17 +19,17 @@
 </tbody></table>
 
 <p>
-    <a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
-    <a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
+    <a class="btn btn-primary" href="{{base}}/editor/{{table}}/update/{{id}}">Edit</a>
+    <a class="btn btn-danger" href="{{base}}/editor/{{table}}/delete/{{id}}">Delete</a>
 </p>
 
 <h4>Related</h4>
 <ul>
 {{for:relation:field:references}}
     {{if:relation}}
-        <li><a href="{{base}}/{{relation}}/list">{{relation}}</a></li>
+        <li><a href="{{base}}/editor/{{relation}}/list">{{relation}}</a></li>
     {{endif}}
 {{endfor}}
 {{for:relation:referenced}}
-    <li><a href="{{base}}/{{relation.0}}/list/{{relation.1}}/{{id}}/{{name}}">{{relation.0}} (filtered)</a></li>
+    <li><a href="{{base}}/editor/{{relation.0}}/list/{{relation.1}}/{{id}}/{{name}}">{{relation.0}} (filtered)</a></li>
 {{endfor}}
