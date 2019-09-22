@@ -26,7 +26,11 @@
         <td><a href="{{base}}/editor/{{table}}/update/{{record|prop(primaryKey)}}">edit</a></td>
     {{endif}}
     {{for:value:key:record}}
-        <td>{{value}}</td>
+        {{if:references|prop(key)}}
+            <td><a href="{{base}}/editor/{{references|prop(key)}}/list/{{todo}}">{{value}}</a></td>
+        {{else}}
+            <td>{{value}}</td>
+        {{endif}}
     {{endfor}}
     </tr>
 {{endfor}}
