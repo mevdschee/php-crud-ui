@@ -31,7 +31,7 @@
     {{endfor}}
     {{for:field:name:record}}
         {{if:field.table}}
-            <td><a href="{{base}}/editor/{{field.table}}/update/{{field.value}}">{{field.text}}</a></td>
+            <td><a href="{{base}}/editor/{{field.table}}/list/{{field.name}}/{{field.value}}/{{field.text}}">{{field.text}}</a></td>
         {{else}}
             <td>{{field.text}}</td>
         {{endif}}
