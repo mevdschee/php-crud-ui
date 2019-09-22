@@ -25,13 +25,13 @@
     {{for:field:name:record}}
         {{if:primaryKey}}
             {{if:name|eq(primaryKey)}}
-                <td><a href="{{base}}/editor/{{table}}/update/{{field.value}}">edit</a></td>
+                <td><a href="{{base}}/editor/{{table}}/read/{{field.value}}">view</a></td>
             {{endif}}
         {{endif}}
     {{endfor}}
     {{for:field:name:record}}
         {{if:field.table}}
-            <td><a href="{{base}}/editor/{{field.table}}/list/{{field.name}}/{{field.value}}/{{field.text}}">{{field.text}}</a></td>
+            <td><a href="{{base}}/editor/{{field.table}}/read/{{field.value}}">{{field.text}}</a></td>
         {{else}}
             <td>{{field.text}}</td>
         {{endif}}

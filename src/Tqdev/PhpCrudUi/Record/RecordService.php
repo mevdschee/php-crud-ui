@@ -101,10 +101,10 @@ class RecordService
             $text = $value;
             if (isset($references[$key]) && $references[$key]) {
                 $relatedTable = $references[$key];
-                $relatedId = $this->definition->referenceId($relatedTable, $value);
+                $relatedValue = $this->definition->referenceId($relatedTable, $value);
                 $text = $this->definition->referenceText($relatedTable, $value);
             }
-            $record[$key] = array('text' => $text, 'table' => $relatedTable, 'id' => $relatedId);
+            $record[$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue);
         }
 
         $variables = array(
@@ -222,16 +222,14 @@ class RecordService
                     continue;
                 }
                 $relatedTable = false;
-                $relatedName = false;
                 $relatedValue = $value;
                 $text = $value;
                 if ($references[$key]) {
                     $relatedTable = $references[$key];
-                    $relatedName = $this->definition->getPrimaryKey($relatedTable, $action);
                     $relatedValue = $this->definition->referenceId($relatedTable, $value);
                     $text = $this->definition->referenceText($relatedTable, $value);
                 }
-                $data['records'][$i][$key] = array('text' => $text, 'table' => $relatedTable, 'name' => $relatedName, 'value' => $relatedValue);
+                $data['records'][$i][$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue);
             }
         }
 
