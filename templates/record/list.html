@@ -22,14 +22,18 @@
 </tr></thead><tbody>
 {{for:record:records}}
     <tr>
-    {{if:primaryKey}}
-        <td><a href="{{base}}/editor/{{table}}/update/{{record|prop(primaryKey)}}">edit</a></td>
-    {{endif}}
-    {{for:value:key:record}}
-        {{if:references|prop(key)}}
-            <td><a href="{{base}}/editor/{{references|prop(key)}}/list/{{todo}}">{{value}}</a></td>
+    {{for:field:name:record}}
+        {{if:primaryKey}}
+            {{if:name|eq(primaryKey)}}
+                <td><a href="{{base}}/editor/{{table}}/update/{{field.value}}">edit</a></td>
+            {{endif}}
+        {{endif}}
+    {{endfor}}
+    {{for:field:name:record}}
+        {{if:field.table}}
+            <td><a href="{{base}}/editor/{{field.table}}/update/{{field.value}}">{{field.text}}</a></td>
         {{else}}
-            <td>{{value}}</td>
+            <td>{{field.text}}</td>
         {{endif}}
     {{endfor}}
     </tr>

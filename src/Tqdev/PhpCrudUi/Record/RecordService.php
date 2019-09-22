@@ -99,7 +99,7 @@ class RecordService
             $relatedTable = false;
             $relatedId = false;
             $text = $value;
-            if ($references[$key]) {
+            if (isset($references[$key]) && $references[$key]) {
                 $relatedTable = $references[$key];
                 $relatedId = $this->definition->referenceId($relatedTable, $value);
                 $text = $this->definition->referenceText($relatedTable, $value);
@@ -217,12 +217,19 @@ class RecordService
 
         foreach ($data['records'] as $i => $record) {
             foreach ($record as $key => $value) {
+                $relatedTable = false;
+                $relatedName = false;
+                $relatedValue = $value;
+                $text = $value;
                 if (!isset($references[$key])) {
                     unset($data['records'][$i][$key]);
                 } elseif ($references[$key]) {
-                    $value = $this->definition->referenceText($references[$key], $record[$key]);
-                    $data['records'][$i][$key] = $value;
+                    $relatedTable = $references[$key];
+                    $relatedName = $this->definition->getPrimaryKey($relatedTable, $action);
+                    $relatedValue = $this->definition->referenceId($relatedTable, $value);
+                    $text = $this->definition->referenceText($relatedTable, $value);
                 }
+                $data['records'][$i][$key] = array('text' => $text, 'table' => $relatedTable, 'name' => $relatedName, 'value' => $relatedValue);
             }
         }
 
