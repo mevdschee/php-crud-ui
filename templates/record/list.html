@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <ul class="breadcrumb">
     <li><a href="{{base}}/editor/">home</a></li>
     <li><a href="{{base}}/editor/{{table}}/list">{{table}}</a></li>
@@ -6,6 +7,11 @@
 <h2>list records</h2>
 
 <p><a href="{{base}}/editor/{{table}}/export">export</a></p>
+=======
+<p>home / {{table}}</p>
+<h2>{{table}}</h2>
+<p><a href="{{base}}/{{table}}/export">export</a></p>
+>>>>>>> 8e61401017bd8a92e787ed13d966af81d090354b
 {{if:field}}
     <div class="well well-sm"><div style="float:right;">
     <a class="btn btn-default btn-xs" href="{{base}}/editor/{{table}}/list">Clear filter</a>
@@ -13,20 +19,32 @@
 {{endif}}
 <table class="table">
 <thead><tr>
+<<<<<<< HEAD
 {{if:primaryKey}}
     <th></th>
 {{endif}}
+=======
+    <th>&nbsp;</th>
+>>>>>>> 8e61401017bd8a92e787ed13d966af81d090354b
 {{for:column:columns}}
     <th>{{column}}</th>
 {{endfor}}
 </tr></thead><tbody>
 {{for:record:records}}
     <tr>
+<<<<<<< HEAD
     {{if:primaryKey}}
         <td><a href="{{base}}/editor/{{table}}/update/{{record|prop(primaryKey)}}">edit</a></td>
     {{endif}}
     {{for:value:key:record}}
         <td>{{value}}</td>
+=======
+        <td><a href="{{base}}/{{table}}/read/{{record|prop(primaryKey)}}">view</a></td>
+    {{for:value:key:record}}
+        <td>
+            {{value}}
+        </td>
+>>>>>>> 8e61401017bd8a92e787ed13d966af81d090354b
     {{endfor}}
     </tr>
 {{endfor}}
