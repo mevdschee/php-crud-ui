@@ -49,3 +49,9 @@ You can update all dependencies of this project using the following command:
 This script will install and run [Composer](https://getcomposer.org/) to update the dependencies.
 
 NB: The update script will patch the dependencies in the vendor directory for PHP 7.0 compatibility.
+
+## Local or remote API
+
+This script is powered by [PHP-CRUD-API](https://github.com/mevdschee/php-crud-api) and embeds this project. Alternatively, it can run against a remote (live) installation.
+
+If you want to run this against a remote installation, then replace the 'api' config parameter with one called 'url' that holds the base URL of your [PHP-CRUD-API](https://github.com/mevdschee/php-crud-api) installation.
