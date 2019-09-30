@@ -1,7 +1,0 @@
-GET /cache/clear
-===
-200
-Content-Type: application/json
-Content-Length: 4
-
-true

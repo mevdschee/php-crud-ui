@@ -1,7 +1,0 @@
-GET /records/categories?filter=icon,nis,null
-===
-200
-Content-Type: application/json
-Content-Length: 14
-
-{"records":[]}

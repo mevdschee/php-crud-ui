@@ -4,8 +4,7 @@ Single file PHP script that adds a UI to a [PHP-CRUD-API](https://github.com/mev
 
 ## Requirements
 
-  - PHP 7.0 or higher with Curl enabled
-  - An URL of PHP-CRUD-API v2
+  - PHP 7.0 or higher with PDO drivers for MySQL, PgSQL or SqlSrv enabled
 
 ## Installation
 
@@ -23,12 +22,30 @@ Don't forget to modify the configuration at the bottom of the file.
 
 ## Compilation
 
+You can install all dependencies of this project using the following command:
+
+    php install.php
+
 You can compile all files into a single "`ui.php`" file using:
 
     php build.php
 
+NB: The install script will patch the dependencies in the vendor directory for PHP 7.0 compatibility.
+
+### Development
+
 You can access the non-compiled code at the URL:
 
-    http://localhost:8080/src/posts/list
+    http://localhost:8080/src/editor/posts/list
 
 The non-compiled code resides in the "`src`" and "`vendor`" directories. The "`vendor`" directory contains the dependencies.
+
+### Updating dependencies
+
+You can update all dependencies of this project using the following command:
+
+    php update.php
+
+This script will install and run [Composer](https://getcomposer.org/) to update the dependencies.
+
+NB: The update script will patch the dependencies in the vendor directory for PHP 7.0 compatibility.
