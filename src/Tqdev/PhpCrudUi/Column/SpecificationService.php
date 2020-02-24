@@ -122,7 +122,6 @@ class SpecificationService
     public function getColumnPair(string $table)
     {
         $primaryKey = $this->getPrimaryKey($table, 'list');
-        $columns = $this->getColumns($table, 'list');
         $displayColumn = $this->getDisplayColumn($table, 'list');
         return array($primaryKey, $displayColumn);
     }
@@ -146,7 +145,6 @@ class SpecificationService
 
     public function referenceText(string $table, /* object */ $record)
     {
-        $properties = $this->getProperties($table, 'read');
         $displayColumn = $this->getDisplayColumn($table, 'read');
         return $record[$displayColumn];
     }
