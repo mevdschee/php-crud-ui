@@ -107,23 +107,23 @@ class SpecificationService
         return false;
     }
 
-    private function getDisplayColumn($columns)
+    private function getDisplayColumn(string $table, string $action)
     {
-        // TODO: make configurable
-        $names = array('name', 'title', 'description', 'username', 'email', 'address');
-        foreach ($names as $name) {
-            if (in_array($name, $columns)) {
-                return $name;
+        $properties = $this->getProperties($table, $action);
+
+        foreach ($properties as $field => $property) {
+            if ($property['type'] == 'string') {
+                return $field;
             }
         }
-        return $columns[0];
+        return false;
     }
 
     public function getColumnPair(string $table)
     {
         $primaryKey = $this->getPrimaryKey($table, 'list');
         $columns = $this->getColumns($table, 'list');
-        $displayColumn = $this->getDisplayColumn($columns);
+        $displayColumn = $this->getDisplayColumn($table, 'list');
         return array($primaryKey, $displayColumn);
     }
 
@@ -147,7 +147,7 @@ class SpecificationService
     public function referenceText(string $table, /* object */ $record)
     {
         $properties = $this->getProperties($table, 'read');
-        $displayColumn = $this->getDisplayColumn(array_keys($properties));
+        $displayColumn = $this->getDisplayColumn($table, 'read');
         return $record[$displayColumn];
     }
 
