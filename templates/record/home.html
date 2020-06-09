@@ -1,0 +1,11 @@
+<ul class="breadcrumb">
+    <li><a href="{{base}}/">home</a></li>
+</ul>
+
+<ul class="nav nav-pills nav-stacked">
+    {{for:item:menu}}
+        <li>
+            <a href="{{base}}/{{item}}/list">{{item}}</a>
+        </li>
+    {{endfor}}
+</ul>

@@ -1,14 +1,14 @@
 <ul class="breadcrumb">
-    <li><a href="{{base}}/editor/">home</a></li>
-    <li><a href="{{base}}/editor/{{table}}/list">{{table}}</a></li>
+    <li><a href="{{base}}/">home</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
 </ul>
 
 <h2>list {{table}}</h2>
 
-<p><a href="{{base}}/editor/{{table}}/export">export</a></p>
+<p><a href="{{base}}/{{table}}/export">export</a></p>
 {{if:field}}
     <div class="well well-sm"><div style="float:right;">
-    <a class="btn btn-default btn-xs" href="{{base}}/editor/{{table}}/list">Clear filter</a>
+    <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/list">Clear filter</a>
     </div>Filtered by: {{field}} = {{name}}</div>
 {{endif}}
 <table class="table">
@@ -25,13 +25,13 @@
     {{for:field:name:record}}
         {{if:primaryKey}}
             {{if:name|eq(primaryKey)}}
-                <td><a href="{{base}}/editor/{{table}}/read/{{field.value}}">view</a></td>
+                <td><a href="{{base}}/{{table}}/read/{{field.value}}">view</a></td>
             {{endif}}
         {{endif}}
     {{endfor}}
     {{for:field:name:record}}
         {{if:field.table}}
-            <td><a href="{{base}}/editor/{{field.table}}/read/{{field.value}}">{{field.text}}</a></td>
+            <td><a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a></td>
         {{else}}
             <td>{{field.text}}</td>
         {{endif}}
@@ -55,7 +55,7 @@
     </div>
 {{endif}}
 {{if:primaryKey}}
-    <p><a href="{{base}}/editor/{{table}}/create" class="btn btn-primary">Add</a></p>
+    <p><a href="{{base}}/{{table}}/create" class="btn btn-primary">Add</a></p>
 {{endif}}
 <br/>
 <br/>
@@ -63,10 +63,10 @@
 <ul>
 {{for:relation:field:references}}
     {{if:relation}}
-        <li><a href="{{base}}/editor/{{relation}}/list">{{relation}}</a></li>
+        <li><a href="{{base}}/{{relation}}/list">{{relation}}</a></li>
     {{endif}}
 {{endfor}}
 {{for:relation:referenced}}
-    <li><a href="{{base}}/editor/{{relation.0}}/list">{{relation.0}}</a></li>
+    <li><a href="{{base}}/{{relation.0}}/list">{{relation.0}}</a></li>
 {{endfor}}
 </ul>

@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
-    <li><a href="{{base}}/editor/">home</a></li>
-    <li><a href="{{base}}/editor/{{table}}/list">{{table}}</a></li>
+    <li><a href="{{base}}/">home</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
 </ul>
 
 <h2>view {{table}}</h2>
@@ -13,7 +13,7 @@
         <td>{{name}}</td>
         </td><td>
             {{if:field.table}}
-                <a href="{{base}}/editor/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
+                <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
             {{else}}
                 {{field.text}}
             {{endif}}
@@ -23,8 +23,8 @@
 </tbody></table>
 
 <p>
-    <a class="btn btn-primary" href="{{base}}/editor/{{table}}/update/{{id}}">Edit</a>
-    <a class="btn btn-danger" href="{{base}}/editor/{{table}}/delete/{{id}}">Delete</a>
+    <a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
+    <a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
 </p>
 
 <br/>
@@ -33,9 +33,9 @@
 <ul>
 {{for:relation:field:references}}
     {{if:relation}}
-        <li><a href="{{base}}/editor/{{relation}}/list">{{relation}}</a></li>
+        <li><a href="{{base}}/{{relation}}/list">{{relation}}</a></li>
     {{endif}}
 {{endfor}}
 {{for:relation:referenced}}
-    <li><a href="{{base}}/editor/{{relation.0}}/list/{{relation.1}}/{{id}}/{{name}}">{{relation.0}} (filtered)</a></li>
+    <li><a href="{{base}}/{{relation.0}}/list/{{relation.1}}/{{id}}/{{name}}">{{relation.0}} (filtered)</a></li>
 {{endfor}}
