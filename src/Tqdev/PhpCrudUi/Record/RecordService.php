@@ -122,14 +122,15 @@ class RecordService
 
     public function updateForm(string $table, string $action, string $id): TemplateDocument
     {
+        $types = $this->definition->getTypes($table, $action);
         $references = $this->definition->getReferences($table, $action);
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
         $record = $this->api->readRecord($table, $id, []);
 
         foreach ($record as $key => $value) {
-            $values = $this->getDropDownValues($references[$key]);
-            $record[$key] = array('value' => $value, 'values' => $values);
+            $values = $this->getDropDownValues($references[$key]);;
+            $record[$key] = array('type' => $types[$key], 'value' => $value, 'values' => $values);
         }
 
         $variables = array(

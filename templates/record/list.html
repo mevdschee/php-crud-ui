@@ -3,6 +3,12 @@
     <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
 </ul>
 
+<style>
+{{for:column:i:columns}}
+th:nth-of-type({{i|add(6)}}), td:nth-of-type({{i|add(6)}}) { display: none; }
+{{endfor}}
+</style>
+
 <h2>list {{table}}</h2>
 
 <p><a href="{{base}}/{{table}}/export">export</a></p>
@@ -57,16 +63,3 @@
 {{if:primaryKey}}
     <p><a href="{{base}}/{{table}}/create" class="btn btn-primary">Add</a></p>
 {{endif}}
-<br/>
-<br/>
-<h4>Related</h4>
-<ul>
-{{for:relation:field:references}}
-    {{if:relation}}
-        <li><a href="{{base}}/{{relation}}/list">{{relation}}</a></li>
-    {{endif}}
-{{endfor}}
-{{for:relation:referenced}}
-    <li><a href="{{base}}/{{relation.0}}/list">{{relation.0}}</a></li>
-{{endfor}}
-</ul>

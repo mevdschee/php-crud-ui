@@ -31,11 +31,6 @@
 <br/>
 <h4>Related</h4>
 <ul>
-{{for:relation:field:references}}
-    {{if:relation}}
-        <li><a href="{{base}}/{{relation}}/list">{{relation}}</a></li>
-    {{endif}}
-{{endfor}}
 {{for:relation:referenced}}
-    <li><a href="{{base}}/{{relation.0}}/list/{{relation.1}}/{{id}}/{{name}}">{{relation.0}} (filtered)</a></li>
+    <li><a href="{{base}}/{{relation.0}}/list/{{relation.1}}/{{id}}/{{name}}">{{relation.0}}</a></li>
 {{endfor}}

@@ -79,6 +79,22 @@ class SpecificationService
         return $references;
     }
 
+    public function getTypes(string $table, string $action)
+    {
+        $properties = $this->getProperties($table, $action);
+
+        $types = array();
+        foreach ($properties as $field => $property) {
+            $types[$field] = false;
+            if (isset($property['format'])) {
+                $types[$field] = $property['format'];
+            } else if (isset($property['type'])) {
+                $types[$field] = $property['type'];
+            }
+        }
+        return $types;
+    }
+
     public function getReferenced(string $table, string $action)
     {
         $properties = $this->getProperties($table, $action);

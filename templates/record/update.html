@@ -7,18 +7,26 @@
 
 <form method="post">
     {{for:value:key:record}}
-        <div class="form-group">
-            <label for="{{key}}">{{key}}</label>
-            {{if:value.values}}
-                <select id="{{key}}" name="{{key}}" class="form-control">
-                    <option value=""></option>
-                    {{for:v:k:value.values}}
-                        <option value="{{k}}"{{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
-                    {{endfor}}
-                </select>
-            {{else}}
-                <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-            {{endif}}
+        <div class="form-group row">
+            <label for="{{key}}" class="col-sm-2 col-form-label">{{key}}</label>
+            <div class="col-sm-10">
+                {{if:value.values}}
+                    <select id="{{key}}" name="{{key}}" class="form-control">
+                        <option value=""></option>
+                        {{for:v:k:value.values}}
+                            <option value="{{k}}"{{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
+                        {{endfor}}
+                    </select>
+                {{else}}
+                    {{if:value.type|eq("string")}}
+                        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
+                    {{elseif:value.type|eq("int32")}}
+                        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
+                    {{else}}
+                        {{value.type}}
+                    {{endif}}
+                {{endif}}
+            </div>
         </div>
     {{endfor}}
     <button type="submit" class="btn btn-primary">Save</button>
