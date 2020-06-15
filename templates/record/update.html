@@ -18,11 +18,7 @@
                         {{endfor}}
                     </select>
                 {{else}}
-                    {{if:value.type.format|eq("string")}}
-                        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-                    {{elseif:value.type.format|eq("int32")}}
-                        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-                    {{elseif:value.type.format|eq("decimal")}}
+                    {{if:value.type.format|eq("decimal")}}
                         <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
                     {{elseif:value.type.format|eq("date-time")}}
                         <input class="form-control" id="{{key}}" type="datetime-local" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
@@ -32,8 +28,10 @@
                         <input class="form-control" id="{{key}}" type="time" name="{{key}}" value=""{{if:key|eq(primaryKey)}} disabled{{endif}}/>
                     {{elseif:value.type.format|eq("large-string")}}
                         <textarea class="form-control" id="{{key}}" name="{{key}}">{{value.value}}</textarea>
+                    {{elseif:value.type.format|eq("boolean")}}
+                        <input class="form-control" id="{{key}}" name="{{key}}" type="checkbox" {{if:value.value}} checked{{endif}}/>
                     {{else}}
-                        {{value.type.format}}
+                        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
                     {{endif}}
                 {{endif}}
             </div>
