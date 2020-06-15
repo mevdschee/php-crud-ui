@@ -88,6 +88,7 @@ class SpecificationService
             $type = $property['type'];
             $nullable = $property['nullable'];
             $format = isset($property['format']) ? $property['format'] : $property['type'];
+            $maxLength = isset($property['maxLength']) ? $property['maxLength'] : 0;
             $pattern = $property['pattern'];
             $hint = '';
             switch ($format) {
@@ -111,6 +112,7 @@ class SpecificationService
                 'type' => $type,
                 'nullable' => $nullable,
                 'format' => $format,
+                'maxLength' => $maxLength,
                 'hint' => $hint,
                 'pattern' => $pattern,
             ];
