@@ -103,6 +103,7 @@ class SpecificationService
                     break;
                 case 'decimal':
                     if (preg_match_all('/{1,([0-9]+)}/', $pattern, $matches) == 2) {
+                        $maxLength = array_sum($matches[1]) + 2;
                         $decimals = $matches[1][1];
                         $hint = '#.' . str_repeat('#', $decimals);
                     }
