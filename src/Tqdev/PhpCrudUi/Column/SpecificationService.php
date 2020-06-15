@@ -94,12 +94,15 @@ class SpecificationService
             switch ($format) {
                 case 'timestamp':
                     $hint = 'yyyy-mm-dd hh:mm:ss';
+                    $maxLength = 19;
                     break;
                 case 'date':
                     $hint = 'yyyy-mm-dd';
+                    $maxLength = 10;
                     break;
                 case 'time':
                     $hint = 'hh:mm:ss';
+                    $maxLength = 8;
                     break;
                 case 'decimal':
                     if (preg_match_all('/{1,([0-9]+)}/', $pattern, $matches) == 2) {
