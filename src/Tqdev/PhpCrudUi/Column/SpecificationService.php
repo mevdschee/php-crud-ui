@@ -85,12 +85,35 @@ class SpecificationService
 
         $types = array();
         foreach ($properties as $field => $property) {
-            $types[$field] = false;
-            if (isset($property['format'])) {
-                $types[$field] = $property['format'];
-            } else if (isset($property['type'])) {
-                $types[$field] = $property['type'];
+            $type = $property['type'];
+            $nullable = $property['nullable'];
+            $format = isset($property['format']) ? $property['format'] : $property['type'];
+            $pattern = $property['pattern'];
+            $hint = '';
+            switch ($format) {
+                case 'timestamp':
+                    $hint = 'yyyy-mm-dd hh:mm:ss';
+                    break;
+                case 'date':
+                    $hint = 'yyyy-mm-dd';
+                    break;
+                case 'time':
+                    $hint = 'hh:mm:ss';
+                    break;
+                case 'decimal':
+                    if (preg_match_all('/{1,([0-9]+)}/', $pattern, $matches) == 2) {
+                        $decimals = $matches[1][1];
+                        $hint = '#.' . str_repeat('#', $decimals);
+                    }
+                    break;
             }
+            $types[$field] = [
+                'type' => $type,
+                'nullable' => $nullable,
+                'format' => $format,
+                'hint' => $hint,
+                'pattern' => $pattern,
+            ];
         }
         return $types;
     }

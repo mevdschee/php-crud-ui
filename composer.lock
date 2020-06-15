@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "mevdschee/php-crud-api",
-            "version": "v2.5.4",
+            "version": "v2.9.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mevdschee/php-crud-api.git",
-                "reference": "c298c4681df4233ecd81058e28ca55a2d65c8774"
+                "reference": "8553f18dcd06aac699d489d297e24b5738288829"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mevdschee/php-crud-api/zipball/c298c4681df4233ecd81058e28ca55a2d65c8774",
-                "reference": "c298c4681df4233ecd81058e28ca55a2d65c8774",
+                "url": "https://api.github.com/repos/mevdschee/php-crud-api/zipball/8553f18dcd06aac699d489d297e24b5738288829",
+                "reference": "8553f18dcd06aac699d489d297e24b5738288829",
                 "shasum": ""
             },
             "require": {
@@ -76,20 +76,20 @@
                 "swagger",
                 "ubuntu-linux"
             ],
-            "time": "2019-09-29T18:36:19+00:00"
+            "time": "2020-06-13T13:52:55+00:00"
         },
         {
             "name": "nyholm/psr7",
-            "version": "1.2.1",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nyholm/psr7.git",
-                "reference": "55ff6b76573f5b242554c9775792bd59fb52e11c"
+                "reference": "c17f4f73985f62054a331cbc4ffdf9868c4ef256"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/55ff6b76573f5b242554c9775792bd59fb52e11c",
-                "reference": "55ff6b76573f5b242554c9775792bd59fb52e11c",
+                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/c17f4f73985f62054a331cbc4ffdf9868c4ef256",
+                "reference": "c17f4f73985f62054a331cbc4ffdf9868c4ef256",
                 "shasum": ""
             },
             "require": {
@@ -104,8 +104,9 @@
             },
             "require-dev": {
                 "http-interop/http-factory-tests": "dev-master",
-                "php-http/psr7-integration-tests": "dev-master",
-                "phpunit/phpunit": "^7.5"
+                "php-http/psr7-integration-tests": "^1.0",
+                "phpunit/phpunit": "^7.5",
+                "symfony/error-handler": "^4.4"
             },
             "type": "library",
             "extra": {
@@ -138,20 +139,20 @@
                 "psr-17",
                 "psr-7"
             ],
-            "time": "2019-09-05T13:24:16+00:00"
+            "time": "2020-05-23T11:29:07+00:00"
         },
         {
             "name": "nyholm/psr7-server",
-            "version": "0.3.0",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nyholm/psr7-server.git",
-                "reference": "1b71a848fcb066fb805b7a9ab3f41ff65bffcde8"
+                "reference": "862529918766fb3825116d39e96feabf1e4bee4e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nyholm/psr7-server/zipball/1b71a848fcb066fb805b7a9ab3f41ff65bffcde8",
-                "reference": "1b71a848fcb066fb805b7a9ab3f41ff65bffcde8",
+                "url": "https://api.github.com/repos/Nyholm/psr7-server/zipball/862529918766fb3825116d39e96feabf1e4bee4e",
+                "reference": "862529918766fb3825116d39e96feabf1e4bee4e",
                 "shasum": ""
             },
             "require": {
@@ -161,7 +162,7 @@
             },
             "require-dev": {
                 "nyholm/nsa": "^1.1",
-                "nyholm/psr7": "^1.0",
+                "nyholm/psr7": "^1.3",
                 "phpunit/phpunit": "^7.0"
             },
             "type": "library",
@@ -190,7 +191,7 @@
                 "psr-17",
                 "psr-7"
             ],
-            "time": "2018-09-02T10:41:28+00:00"
+            "time": "2020-06-06T12:17:00+00:00"
         },
         {
             "name": "php-http/message-factory",
