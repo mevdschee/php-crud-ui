@@ -112,6 +112,27 @@ class SpecificationService
                         $hint = '#.' . str_repeat('#', $decimals);
                     }
                     break;
+                case 'color':
+                    $pattern = '/^#?[0-9a-fA-F]{6}$/';
+                    $hint = '#3399ff';
+                    $maxLength = 7;
+                    break;
+                case 'email':
+                    $pattern = '/^.+@[^\.].*\.[a-z]{2,}$/';
+                    $hint = 'xxx@xxx.xxx';
+                    break;
+                case 'url':
+                    $pattern = '/^(ftp|http|https):\/\/.*$/';
+                    $hint = 'https://...';
+                    break;
+                case 'point':
+                    $pattern = '/^POINT\s?\(.*\)$/';
+                    $hint = 'POINT(lon lat)';
+                    break;
+                case 'polygon':
+                    $pattern = '/^POLYGON\s?\(\(.*\)\)$/';
+                    $hint = 'POLYGON((lon1 lat1,lon2 lat2,lon3 lat3,lon1 lat1))';
+                    break;
             }
             $types[$field] = [
                 'type' => $type,

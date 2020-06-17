@@ -15,23 +15,12 @@ $config = new Config([
         'password' => 'php-crud-api',
         'database' => 'php-crud-api',
     ],
-    'formatMapping' => [
-        'string' => [
-            '/_color$/' => [
-                'format' => 'color',
-                'hint' => '#8888ff',
-                'pattern' => '/#[0-9a-f]{6}/',
-                'maxLength' => 7,
-            ],
-            '/_email$/' => [
-                'format' => 'email',
-                'hint' => 'xx@xx.xx',
-            ],
-        ],
-        'geometry' => [
-            '/_point$/' => 'point',
-        ],
-    ],
+    'passwordMapping' => 'string,password$',
+    'colorMapping' => 'string,_color$',
+    'emailMapping' => 'string,_email$',
+    'urlMapping' => 'string,_url$',
+    'pointMapping' => 'geometry,_point$',
+    'polygonMapping' => 'geometry,_polygon$',
     'templatePath' => '../templates',
 ]);
 $request = RequestFactory::fromGlobals();
