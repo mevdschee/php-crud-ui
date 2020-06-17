@@ -91,6 +91,7 @@ class SpecificationService
             $maxLength = isset($property['maxLength']) ? $property['maxLength'] : 0;
             $pattern = $property['pattern'];
             $hint = '';
+
             switch ($format) {
                 case 'timestamp':
                     $hint = 'yyyy-mm-dd hh:mm:ss';
