@@ -11,16 +11,10 @@ require '../vendor/autoload.php';
 
 $config = new Config([
     'api' => [
-        'username' => 'php-crud-api',
-        'password' => 'php-crud-api',
-        'database' => 'php-crud-api',
+        'username' => 'masterlist',
+        'password' => 'masterlist',
+        'database' => 'masterlist',
     ],
-    'passwordMapping' => 'string,password$',
-    'colorMapping' => 'string,_color$',
-    'emailMapping' => 'string,_email$',
-    'urlMapping' => 'string,_url$',
-    'pointMapping' => 'geometry,_point$',
-    'polygonMapping' => 'geometry,_polygon$',
     'templatePath' => '../templates',
 ]);
 $request = RequestFactory::fromGlobals();
