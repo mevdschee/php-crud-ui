@@ -15,12 +15,6 @@ $config = new Config([
         'password' => 'php-crud-api',
         'database' => 'php-crud-api',
     ],
-    'passwordMapping' => 'string,password$',
-    'colorMapping' => 'string,_color$',
-    'emailMapping' => 'string,_email$',
-    'urlMapping' => 'string,_url$',
-    'pointMapping' => 'geometry,_point$',
-    'polygonMapping' => 'geometry,_polygon$',
     'templatePath' => '../templates',
 ]);
 $request = RequestFactory::fromGlobals();

@@ -15,6 +15,18 @@ class Config
         'debug' => false,
         'basePath' => '',
         'templatePath' => '.',
+        'passwordColumnFormat' => 'string',
+        'passwordColumnName' => 'password$',
+        'colorColumnFormat' => 'string',
+        'colorColumnName' => '_color$',
+        'emailColumnFormat' => 'string',
+        'emailColumnName' => '_email$',
+        'urlColumnFormat' => 'string',
+        'urlColumnName' => '_url$',
+        'pointColumnFormat' => 'geometry',
+        'pointColumnName' => '_point$',
+        'polygonColumnFormat' => 'geometry',
+        'polygonColumnName' => '_polygon$',
     ];
 
     public function __construct(array $values)
@@ -76,5 +88,65 @@ class Config
     public function getTemplatePath(): string
     {
         return $this->values['templatePath'];
+    }
+
+    public function getPasswordColumnFormat(): string
+    {
+        return $this->values['passwordColumnFormat'];
+    }
+
+    public function getPasswordColumnName(): string
+    {
+        return $this->values['passwordColumnName'];
+    }
+
+    public function getColorColumnFormat(): string
+    {
+        return $this->values['colorColumnFormat'];
+    }
+
+    public function getColorColumnName(): string
+    {
+        return $this->values['colorColumnName'];
+    }
+
+    public function getEmailColumnFormat(): string
+    {
+        return $this->values['emailColumnFormat'];
+    }
+
+    public function getEmailColumnName(): string
+    {
+        return $this->values['emailColumnName'];
+    }
+
+    public function getUrlColumnFormat(): string
+    {
+        return $this->values['urlColumnFormat'];
+    }
+
+    public function getUrlColumnName(): string
+    {
+        return $this->values['urlColumnName'];
+    }
+
+    public function getPointColumnFormat(): string
+    {
+        return $this->values['pointColumnFormat'];
+    }
+
+    public function getPointColumnName(): string
+    {
+        return $this->values['pointColumnName'];
+    }
+
+    public function getPolygonColumnFormat(): string
+    {
+        return $this->values['polygonColumnFormat'];
+    }
+
+    public function getPolygonColumnName(): string
+    {
+        return $this->values['polygonColumnName'];
     }
 }
