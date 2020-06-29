@@ -4,8 +4,8 @@ namespace Tqdev\PhpCrudUi\Record;
 
 use Tqdev\PhpCrudUi\Client\CrudApi;
 use Tqdev\PhpCrudUi\Column\SpecificationService;
-use Tqdev\PhpCrudUi\Document\TemplateDocument;
 use Tqdev\PhpCrudUi\Document\CsvDocument;
+use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
 class RecordService
 {
@@ -129,7 +129,7 @@ class RecordService
         $record = $this->api->readRecord($table, $id, []);
 
         foreach ($record as $key => $value) {
-            $values = $this->getDropDownValues($references[$key]);;
+            $values = $this->getDropDownValues($references[$key]);
             $record[$key] = array('type' => $types[$key], 'value' => $value, 'values' => $values);
         }
 
@@ -205,7 +205,7 @@ class RecordService
 
         $columns = $this->definition->getColumns($table, $action);
 
-        $pageParams = isset($params['page']) ? $params['page'][0] : '1,5';
+        $pageParams = isset($params['page']) ? $params['page'][0] : '1,50';
         list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
 
         $args = array();

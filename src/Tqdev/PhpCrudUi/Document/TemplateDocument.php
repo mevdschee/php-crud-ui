@@ -39,6 +39,9 @@ class TemplateDocument
             'eq' => function ($a, $b) {
                 return $a == $b;
             },
+            'neq' => function ($a, $b) {
+                return $a != $b;
+            },
             'add' => function ($a, $b) {
                 return $a + $b;
             },
@@ -54,15 +57,18 @@ class TemplateDocument
             'or' => function ($a, $b) {
                 return $a ?: $b;
             },
+            'humanize' => function ($a) {
+                return ucfirst(str_replace('_', ' ', $a));
+            },
         );
     }
 
-    public function addVariables(array $variables)/*: void*/
+    public function addVariables(array $variables) /*: void*/
     {
         $this->variables = array_merge($variables, $this->variables);
     }
 
-    public function setTemplatePath(string $path)/*: void*/
+    public function setTemplatePath(string $path) /*: void*/
     {
         $this->templatePath = rtrim($path, '/');
     }

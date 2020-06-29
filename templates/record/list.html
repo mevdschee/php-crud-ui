@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
-    <li><a href="{{base}}/">home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
+    <li><a href="{{base}}/">Home</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
 <style>
@@ -9,21 +9,47 @@ th:nth-of-type({{i|add(6)}}), td:nth-of-type({{i|add(6)}}) { display: none; }
 {{endfor}}
 </style>
 
-<h2>list {{table}}</h2>
-
-<p><a href="{{base}}/{{table}}/export">export</a></p>
-{{if:field}}
-    <div class="well well-sm"><div style="float:right;">
-    <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/list">Clear filter</a>
-    </div>Filtered by: {{field}} = {{name}}</div>
+{{if:primaryKey}}
+    <div class="titlebar">
+        <h1>{{table|humanize}}</h1>
+        <div>
+            <a onclick="document.querySelector('.addfilter').classList.toggle('visible');" href="#" class="btn">Add filter</a>
+            <a href="{{base}}/{{table}}/create" class="btn">New item</a>
+        </div>
+    </div>
 {{endif}}
+
+{{if:field}}
+    <div class="filterbar">
+        <div>{{field|humanize}} = '{{name}}'</div>
+        <a class="close" href="{{base}}/{{table}}/list" title="Clear filter"></a>
+    </div>
+{{endif}}
+
+<div class="addfilter">
+    <select>
+        {{for:column:columns}}
+            <option>{{column|humanize}}</option>
+        {{endfor}}
+    </select>&nbsp;
+    <select>
+        <option>=</option>
+        <option>&lt;</option>
+        <option>&gt;</option>
+    </select>&nbsp;
+    <input type="text" />&nbsp;
+    <input type="submit" value="Add" />
+</div>
+
 <table class="table">
 <thead><tr>
 {{if:primaryKey}}
     <th></th>
 {{endif}}
 {{for:column:columns}}
-    <th>{{column}}</th>
+    {{if:column|neq(primaryKey)}}
+        <th>{{column|humanize}}</th>
+    {{endif}}
 {{endfor}}
 </tr></thead><tbody>
 {{for:record:records}}
@@ -36,30 +62,33 @@ th:nth-of-type({{i|add(6)}}), td:nth-of-type({{i|add(6)}}) { display: none; }
         {{endif}}
     {{endfor}}
     {{for:field:name:record}}
-        {{if:field.table}}
-            <td><a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a></td>
-        {{else}}
-            <td>{{field.text}}</td>
+        {{if:name|neq(primaryKey)}}
+            {{if:field.table}}
+                <td><a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a></td>
+            {{else}}
+                <td>{{field.text}}</td>
+            {{endif}}
         {{endif}}
     {{endfor}}
     </tr>
 {{endfor}}
 </tbody></table>
 {{if:maxPage|gt(1)}}
-    <div style="float:right">
-        page {{pageNumber}} / {{maxPage}}
+    <div class="pagination">
         {{if:pageNumber|gt(1)}}
-            <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="btn btn-default">&lt;</a>
+            <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="btn">&lt;</a>
         {{else}}
-            <a href="javascript:void(0);" class="btn btn-default" disabled>&lt;</a>
+            <a href="javascript:void(0);" class="btn" disabled>&lt;</a>
         {{endif}}
+        page {{pageNumber}} / {{maxPage}}
         {{if:pageNumber|lt(maxPage)}}
-            <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="btn btn-default">&gt;</a>
+            <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="btn">&gt;</a>
         {{else}}
-            <a href="javascript:void(0);" class="btn btn-default" disabled>&gt;</a>
+            <a href="javascript:void(0);" class="btn" disabled>&gt;</a>
         {{endif}}
     </div>
 {{endif}}
-{{if:primaryKey}}
-    <p><a href="{{base}}/{{table}}/create" class="btn btn-primary">Add</a></p>
-{{endif}}
+<div class="footeractions">
+    <a href="{{base}}/{{table}}/export" class="btn">Export</a>
+
+</div>
