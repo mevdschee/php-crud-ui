@@ -12,10 +12,9 @@ th:nth-of-type({{i|add(6)}}), td:nth-of-type({{i|add(6)}}) { display: none; }
 {{if:primaryKey}}
     <div class="titlebar">
         <h1>{{table|humanize}}</h1>
-        <div>
-            <a onclick="document.querySelector('.addfilter').classList.toggle('visible');" href="#" class="btn">Add filter</a>
+            <a onclick="document.querySelector('.addfilter').classList.toggle('visible');" href="#" class="icon filter">Add filter</a>
+            <a onclick="document.querySelector('.addfilter').classList.toggle('visible');" href="#" class="icon search">Search</a>
             <a href="{{base}}/{{table}}/create" class="btn">New item</a>
-        </div>
     </div>
 {{endif}}
 
@@ -76,15 +75,15 @@ th:nth-of-type({{i|add(6)}}), td:nth-of-type({{i|add(6)}}) { display: none; }
 {{if:maxPage|gt(1)}}
     <div class="pagination">
         {{if:pageNumber|gt(1)}}
-            <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="btn">&lt;</a>
+            <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="icon prev">&lt;</a>
         {{else}}
-            <a href="javascript:void(0);" class="btn" disabled>&lt;</a>
+            <a href="javascript:void(0);" class="icon prev" disabled>&lt;</a>
         {{endif}}
         page {{pageNumber}} / {{maxPage}}
         {{if:pageNumber|lt(maxPage)}}
-            <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="btn">&gt;</a>
+            <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="icon next">&gt;</a>
         {{else}}
-            <a href="javascript:void(0);" class="btn" disabled>&gt;</a>
+            <a href="javascript:void(0);" class="icon next" disabled>&gt;</a>
         {{endif}}
     </div>
 {{endif}}
