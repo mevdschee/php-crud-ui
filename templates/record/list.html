@@ -19,12 +19,12 @@ th:nth-of-type({{i|add(6)}}), td:nth-of-type({{i|add(6)}}) { display: none; }
     </div>
 {{endif}}
 
-{{if:field}}
+{{for:filter:filters}}
     <div class="filterbar">
-        <div>{{field|humanize}} = '{{name}}'</div>
-        <a class="close" href="{{base}}/{{table}}/list" title="Clear filter"></a>
+        <div>{{filter.field|humanize}} = '{{filter.name}}'</div>
+        <a class="close" href="{{base}}/{{table}}/list" title="Clear filters"></a>
     </div>
-{{endif}}
+{{endfor}}
 
 <div class="addfilter">
     <select>

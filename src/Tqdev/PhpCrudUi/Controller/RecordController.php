@@ -26,7 +26,6 @@ class RecordController
         $router->register('GET', '/*/delete/*', array($this, 'deleteForm'));
         $router->register('POST', '/*/delete/*', array($this, 'delete'));
         $router->register('GET', '/*/list', array($this, '_list'));
-        $router->register('GET', '/*/list/*/*/*', array($this, '_list'));
         $router->register('GET', '/*/export', array($this, 'export'));
         $this->service = $service;
         $this->responder = $responder;
@@ -133,14 +132,11 @@ class RecordController
     {
         $table = RequestUtils::getPathSegment($request, 1);
         $action = RequestUtils::getPathSegment($request, 2);
-        $field = RequestUtils::getPathSegment($request, 3);
-        $id = RequestUtils::getPathSegment($request, 4);
-        $name = RequestUtils::getPathSegment($request, 5);
         $params = RequestUtils::getParams($request);
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        $result = $this->service->_list($table, $action, $field, $id, $name, $params);
+        $result = $this->service->_list($table, $action, $params);
         return $this->responder->success($result);
     }
 

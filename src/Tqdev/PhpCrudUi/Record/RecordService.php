@@ -197,7 +197,7 @@ class RecordService
         return new TemplateDocument('layouts/default', 'record/deleted', $variables);
     }
 
-    public function _list(string $table, string $action, string $field, string $id, string $name, array $params): TemplateDocument
+    public function _list(string $table, string $action, array $params): TemplateDocument
     {
         $references = $this->definition->getReferences($table, $action);
         $referenced = $this->definition->getReferenced($table, $action);
@@ -208,10 +208,14 @@ class RecordService
         $pageParams = isset($params['page']) ? $params['page'][0] : '1,50';
         list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
 
+        $filters = array();
         $args = array();
-        if ($field) {
-            $args['filter'] = $field . ',eq,' . $id;
+        foreach ($params['filter'] as $i => $filter) {
+            $filter = array_combine(array('field', 'operator', 'value', 'name'), explode(',', $filter, 4));
+            $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], $filter['value']));
+            $filters[] = $filter;
         }
+
         $args['join'] = array_values(array_filter($references));
         $args['page'] = "$pageNumber,$pageSize";
         $data = $this->api->listRecords($table, $args);
@@ -243,9 +247,7 @@ class RecordService
         $variables = array(
             'table' => $table,
             'action' => $action,
-            'field' => $field,
-            'id' => $id,
-            'name' => $name,
+            'filters' => $filters,
             'references' => $references,
             'referenced' => $referenced,
             'primaryKey' => $primaryKey,

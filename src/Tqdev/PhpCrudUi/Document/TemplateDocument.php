@@ -58,7 +58,8 @@ class TemplateDocument
                 return $a ?: $b;
             },
             'humanize' => function ($a) {
-                return ucfirst(str_replace('_', ' ', $a));
+                $a = substr($a, -3) == '_id' ? substr($a, 0, -3) : $a;
+                return ucwords(str_replace('_', ' ', $a));
             },
         );
     }

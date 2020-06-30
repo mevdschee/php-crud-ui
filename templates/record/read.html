@@ -6,31 +6,39 @@
 <h1>view {{table|humanize}}</h1>
 
 <table class="table read">
-<thead><tr><th>key</th><th>value</th></tr></thead>
-<tbody>
-{{for:field:name:record}}
-    <tr>
-        <td>{{name|humanize}}</td>
-        </td><td>
-            {{if:field.table}}
+    <thead>
+        <tr>
+            <th>key</th>
+            <th>value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{for:field:name:record}}
+        <tr>
+            <td>{{name|humanize}}</td>
+            </td>
+            <td>
+                {{if:field.table}}
                 <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
-            {{else}}
+                {{else}}
                 {{field.text}}
-            {{endif}}
-        </td>
-    </tr>
-{{endfor}}
-</tbody></table>
+                {{endif}}
+            </td>
+        </tr>
+        {{endfor}}
+    </tbody>
+</table>
 
 <p>
     <a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
     <a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
 </p>
 
-<br/>
-<br/>
+<br />
+<br />
 <h4>Related</h4>
 <ul class="related">
-{{for:relation:referenced}}
-    <li><a href="{{base}}/{{relation.0}}/list/{{relation.1}}/{{id}}/{{name}}">{{relation.0|humanize}}</a></li>
-{{endfor}}
+    {{for:relation:referenced}}
+    <li><a href="{{base}}/{{relation.0}}/list?filter={{relation.1}},eq,{{id}},{{name}}">{{relation.0|humanize}}</a>
+    </li>
+    {{endfor}}
