@@ -38,13 +38,13 @@ th:nth-of-type({{i|add(6)}}), td:nth-of-type({{i|add(6)}}) { display: none; }
         <option>&gt;</option>
     </select>&nbsp;
     <input type="text" />&nbsp;
-    <input type="submit" value="Add" />
+    <input type="submit" value="Filter" />
 </div>
 
-<table class="table">
+<table class="table list">
 <thead><tr>
 {{if:primaryKey}}
-    <th></th>
+    <th>Action</th>
 {{endif}}
 {{for:column:columns}}
     {{if:column|neq(primaryKey)}}

@@ -5,12 +5,12 @@
 
 <h1>view {{table|humanize}}</h1>
 
-<table class="table">
+<table class="table read">
 <thead><tr><th>key</th><th>value</th></tr></thead>
 <tbody>
 {{for:field:name:record}}
     <tr>
-        <td>{{name}}</td>
+        <td>{{name|humanize}}</td>
         </td><td>
             {{if:field.table}}
                 <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
