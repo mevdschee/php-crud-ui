@@ -1,14 +1,14 @@
 <ul class="breadcrumb">
-    <li><a href="{{base}}/">home</a></li>
-    <li><a href="{{base}}/column/{{table}}/list">{{table}}</a></li>
+    <li><a href="{{base}}/">Home</a></li>
+    <li><a href="{{base}}/column/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h2>create {{table}}</h2>
+<h1>create {{table}}</h1>
 
 <form method="post">
     {{for:column:columns}}
-        <div class="form-group">
-            <label for="{{column.name}}">{{column.name}}</label>
+        <div>
+            <label for="{{column.name}}">{{column.name|humanize}}</label>
             {{if:column.values}}
                 <select id="{{column.name}}" name="{{column.name}}" class="form-control">
                     <option value=""></option>

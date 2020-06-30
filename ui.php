@@ -20,7 +20,7 @@ namespace {
 namespace {
 $_HTML['error/show'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
-    <li><a href="{{base}}/">home</a></li>
+    <li><a href="{{base}}/">Home</a></li>
     <li><a href="{{base}}/column/{{table}}/list">{{table}}</a></li>
 </ul>
 
@@ -103,7 +103,7 @@ END_OF_HTML;
 namespace {
 $_HTML['record/create'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
-    <li><a href="{{base}}/">home</a></li>
+    <li><a href="{{base}}/">Home</a></li>
     <li><a href="{{base}}/column/{{table}}/list">{{table}}</a></li>
 </ul>
 
@@ -135,7 +135,7 @@ END_OF_HTML;
 namespace {
 $_HTML['record/created'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
-    <li><a href="{{base}}/">home</a></li>
+    <li><a href="{{base}}/">Home</a></li>
     <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
 </ul>
 
@@ -151,7 +151,7 @@ END_OF_HTML;
 namespace {
 $_HTML['record/delete'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
-    <li><a href="{{base}}/">home</a></li>
+    <li><a href="{{base}}/">Home</a></li>
     <li><a href="{{base}}/column/{{table}}/list">{{table}}</a></li>
 </ul>
 
@@ -171,7 +171,7 @@ END_OF_HTML;
 namespace {
 $_HTML['record/deleted'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
-    <li><a href="{{base}}/">home</a></li>
+    <li><a href="{{base}}/">Home</a></li>
     <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
 </ul>
 
@@ -187,7 +187,7 @@ END_OF_HTML;
 namespace {
 $_HTML['record/home'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
-    <li><a href="{{base}}/">home</a></li>
+    <li><a href="{{base}}/">Home</a></li>
 </ul>
 
 <ul class="nav nav-pills nav-stacked">
@@ -205,7 +205,7 @@ END_OF_HTML;
 namespace {
 $_HTML['record/list'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
-    <li><a href="{{base}}/">home</a></li>
+    <li><a href="{{base}}/">Home</a></li>
     <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
 </ul>
 
@@ -277,7 +277,7 @@ END_OF_HTML;
 namespace {
 $_HTML['record/read'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
-    <li><a href="{{base}}/">home</a></li>
+    <li><a href="{{base}}/">Home</a></li>
     <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
 </ul>
 
@@ -319,7 +319,7 @@ END_OF_HTML;
 namespace {
 $_HTML['record/update'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
-    <li><a href="{{base}}/">home</a></li>
+    <li><a href="{{base}}/">Home</a></li>
     <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
 </ul>
 
@@ -359,7 +359,7 @@ END_OF_HTML;
 namespace {
 $_HTML['record/updated'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
-    <li><a href="{{base}}/">home</a></li>
+    <li><a href="{{base}}/">Home</a></li>
     <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
 </ul>
 

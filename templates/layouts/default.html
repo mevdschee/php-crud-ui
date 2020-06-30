@@ -3,22 +3,143 @@
     <head>
         <title>PHP-CRUD-UI</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css" rel="stylesheet">
+<style>
+
+* {margin: 0; padding: 0; box-sizing: border-box;}
+html {font-size: 16px;}
+body {font-size: 1rem; line-height: 1.4;}
+
+.content {min-height: 100vh;}
+.navigation {background-color: white; display: flex; border-bottom: 1px solid #ddd; position: fixed; width: 100%; justify-content: space-between;}
+.title {padding: 0.5rem 2rem; color: black; text-decoration: none;}
+.title span {font-weight: bold; display: block;}
+.body {padding: 7rem 2rem; flex-grow: 1; padding-bottom: 10rem;}
+.hamburger {padding: 0 1rem; margin: 0.5rem 1rem; display: inline-block; text-decoration: none; color: black; font-size: 2rem; line-height: 1.2; transform: scaleX(1.5);}
+
+th.selected::after {content: " ▾";}
+
+td, th, dl > * {padding: 0.2rem 1.5rem 0.2rem 0.5rem; text-align: left;}
+label {padding: calc(0.2rem + 1px) 1.5rem calc(0.2rem + 1px) 0;}
+td:last-child a {display: inline-block; margin-right: 0.5rem;}
+.logo img {height: 2rem; vertical-align: middle;}
+a {color: black;}
+label {width: 11rem; min-width: 11rem; padding-right: 2rem;}
+h1 {font-size: 2.2rem; margin-bottom: 0.5rem; margin-right: 1rem; line-height: 1;}
+table {border-collapse: collapse; margin-top: 1.5rem;}
+table tr:nth-child(even) {background: rgba(0,0,0,0.05);}
+table tr th {background: rgb(222, 222, 222);  padding: 0.4rem 1.5rem 0.4rem 0.5rem; font-weight: bold;}
+p, table {margin-bottom: 1.4rem;}
+table {font-size: 0.93rem;}
+
+.titlebar {display: flex; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap;}
+.titlebar > div {margin-bottom: 0.5rem;}
+
+.cols {column-width: 700px; margin-top: -2em;}
+.col {
+    -webkit-column-break-inside: avoid; /* Chrome, Safari */
+    page-break-inside: avoid;           /* Theoretically FF 20+ */
+    break-inside: avoid-column;         /* IE 11 */
+    display:table;                      /* Actually FF 20+ */
+}
+
+input, textarea, select{
+    height: calc(2rem + 2px); 
+    line-height: 1.4rem; 
+    text-decoration: none; 
+    border: 1px solid black; 
+    padding: 0 0.5rem; 
+    background: transparent;
+    color: black;
+    font-family: inherit;
+    font-size: inherit;
+    flex-grow: 1;
+}
+button, input[type="submit"], .btn {
+    height: calc(2rem + 2px); 
+    line-height: 2rem; 
+    border: 1px solid transparent; 
+    display: inline-block; 
+    text-decoration: none; 
+    padding: 0 1rem; 
+    background: transparent;
+    color: black;
+    font-family: inherit;
+    font-size: inherit;
+    background-color: rgb(222, 222, 222);
+    cursor: pointer;
+}
+button:focus, input[type="submit"]:focus, .btn:focus {border-color: black;}
+select::-ms-expand {display: none;}
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: white url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiID8+DQo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPg0KPHN2ZyB3aWR0aD0iMjA2cHQiIGhlaWdodD0iMTc0cHQiIHZpZXdCb3g9IjAgMCAyMDYgMTc0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+DQo8cGF0aCBvcGFjaXR5PSIxLjAwIiBkPSIgTSA1LjA4IDguOTcgQyA3MC41MSA5LjEzIDEzNS45NCA4Ljc4IDIwMS4zNyA5LjE1IEMgMTczLjQzIDU2LjA4IDE0NC4zNiAxMDIuMzQgMTE2LjA1IDE0OS4wNSBDIDExMS44NiAxNTUuODAgMTA3LjkxIDE2Mi43MCAxMDMuNDAgMTY5LjI1IEMgNzAuNTIgMTE1Ljg5IDM4LjAwIDYyLjMwIDUuMDggOC45NyBaIiAvPg0KPC9zdmc+') calc(100% - 0.6rem) 50% no-repeat;
+    background-size: auto 0.5rem;
+    padding-right: 1.75rem;
+    max-width: calc(100% - 11rem);
+}
+input[type="radio"], input[type="checkbox"], input[type="file"] {border: 0; height: auto; line-height: auto; margin-right: 0.4rem; vertical-align: middle; position: relative; bottom: 0.1rem;}
+input[type="file"] {padding: 0; margin: 0; bottom: 0;}
+input[type='number'] {-moz-appearance: textfield;}
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {-webkit-appearance: none;}
+input[type="number"] {-moz-appearance: textfield;}
+input::-webkit-outer-spin-button, 
+input::-webkit-inner-spin-button {-webkit-appearance: none;}
+textarea {min-height: 10rem; padding: 0.35rem 0.5rem; }
+
+form, dl {width: 100%; max-width: 40rem;}
+form > div {display: flex; margin-bottom: 0.25rem;}
+form > div > *:nth-child(2) {flex-grow: 1;}
+form > div > *:nth-child(3) {margin-left: 0.25rem;}
+
+dl {display: flex; margin-bottom: 1.4rem;}
+dt {width: 11rem; min-width: 11rem; padding-right: 2rem;}
+dd {flex-grow: 1;}
+dl + dl {margin-top: -1.4rem;}
+dl + dl dt {border-top: 1px solid transparent;}
+dl + dl dd {border-top: 1px solid silver;}
+
+ul.breadcrumb {margin-bottom: 0.2rem;}
+ul.breadcrumb li {display: inline; list-style: none; font-size: 0.8rem;}
+ul.breadcrumb li + li::before {content: "/ "; color: silver;}
+ul.breadcrumb li a {color: silver; text-decoration: none;}
+
+ul.related li, ul.home li {list-style: none;}
+
+
+.filterbar {padding: 0.5rem 0.7rem; background: rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;}
+
+.close::before{content: "+"; text-decoration: none; transform: rotate(45deg); display: inline-block;}
+
+.addfilter {margin-bottom: 0.5rem; display: none;}
+.addfilter.visible {display: block;}
+.footeractions {margin-top: 1.5rem;}
+
+
+
+
+@media only screen and (min-width: 1500px) {
+    .content {display: block;}
+    .title {position: absolute; bottom: 1.5rem;}
+    .navigation {display: block; width: 15rem; border: 0; border-right: 1px solid #ddd; height: 100vh;}
+    .body {padding-top: 3rem; margin-left: 15rem;}
+    .hamburger {font-size: 3rem; line-height: 1.2; padding-bottom: 0.75rem; margin-left: 1.3rem;}
+}
+@media only screen and (max-width: 800px) {
+    ul.related li a, ul.home li a  {display: inline-block; padding: 0.2rem 0;}
+}
+
+</style>
     </head>
-    <body>
-        <div class="container-fluid">
-            <nav class="navbar navbar-default">
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <a class="navbar-brand" href="{{base}}/">PHP-CRUD-UI</a>
-                    </div>
-                </div>
-            </nav>
-            <div class="row">
-                <div class="col-md-12">
-                    {{content}}
-                </div>
+    <body class="viewname">
+        <div class="content">
+            <div class="navigation">
+                <a href="{{base}}/" class="title"><span>Projectnaam</span>Subtitel</a>
+                <a class="hamburger" href="{{base}}/">☰</a>
+            </div>
+            <div class="body">
+                {{content}}
             </div>
         </div>
     </body>

@@ -205,7 +205,7 @@ class RecordService
 
         $columns = $this->definition->getColumns($table, $action);
 
-        $pageParams = isset($params['page']) ? $params['page'][0] : '1,5';
+        $pageParams = isset($params['page']) ? $params['page'][0] : '1,50';
         list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
 
         $args = array();
