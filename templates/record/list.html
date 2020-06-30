@@ -79,7 +79,7 @@ th:nth-of-type({{i|add(6)}}), td:nth-of-type({{i|add(6)}}) { display: none; }
         {{else}}
             <a href="javascript:void(0);" class="icon prev" disabled>&lt;</a>
         {{endif}}
-        page {{pageNumber}} / {{maxPage}}
+        &nbsp;page {{pageNumber}} / {{maxPage}}&nbsp;
         {{if:pageNumber|lt(maxPage)}}
             <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="icon next">&gt;</a>
         {{else}}
