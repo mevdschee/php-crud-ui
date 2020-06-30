@@ -33,7 +33,6 @@
                     <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
                 {{endif}}
             {{endif}}
-            <div class="hint">{{value.type.hint}}</div>
         </div>
     {{endfor}}
     <button type="submit" class="btn">Save</button>

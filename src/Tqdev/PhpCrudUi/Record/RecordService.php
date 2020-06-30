@@ -86,6 +86,7 @@ class RecordService
 
     public function read(string $table, string $action, string $id, array $params): TemplateDocument
     {
+        $types = $this->definition->getTypes($table, $action);
         $references = $this->definition->getReferences($table, $action);
         $referenced = $this->definition->getReferenced($table, $action);
 
@@ -104,7 +105,7 @@ class RecordService
                 $relatedValue = $this->definition->referenceId($relatedTable, $value);
                 $text = $this->definition->referenceText($relatedTable, $value);
             }
-            $record[$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue);
+            $record[$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue, 'type' => $types[$key]);
         }
 
         $variables = array(

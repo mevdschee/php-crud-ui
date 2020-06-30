@@ -19,9 +19,13 @@
             </td>
             <td>
                 {{if:field.table}}
-                <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
+                    <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
                 {{else}}
-                {{field.text}}
+                    {{if:field.type.format|eq("large-string")}}
+                        <div style="white-space: pre-wrap;">{{field.text}}</div>
+                    {{else}}
+                        {{field.text}}
+                    {{endif}}        
                 {{endif}}
             </td>
         </tr>
