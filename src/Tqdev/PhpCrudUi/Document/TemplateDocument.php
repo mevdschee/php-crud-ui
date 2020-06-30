@@ -58,11 +58,7 @@ class TemplateDocument
                 return $a ?: $b;
             },
             'humanize' => function ($a) {
-<<<<<<< HEAD
-                return ucfirst(str_replace('_',' ',$a));  
-=======
                 return ucfirst(str_replace('_', ' ', $a));
->>>>>>> 4f39e6b4f4cc498f3d1f2caa0c81495fe61ff15d
             },
         );
     }
