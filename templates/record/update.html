@@ -8,7 +8,7 @@
 <form method="post">
     {{for:value:key:record}}
         <div>
-            <label for="{{key}}" class="col-sm-2 col-form-label">{{key|humanize}}</label>
+            <label for="{{key}}" class="col-sm-2 col-form-label" title="{{key|humanize}}">{{key|humanize}}</label>
             {{if:value.values}}
                 <select id="{{key}}" name="{{key}}" class="form-control">
                     <option value=""></option>
@@ -36,5 +36,5 @@
             <div class="hint">{{value.type.hint}}</div>
         </div>
     {{endfor}}
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn">Save</button>
 </form>

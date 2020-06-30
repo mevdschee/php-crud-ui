@@ -13,23 +13,29 @@ body {font-size: 1rem; line-height: 1.4;}
 .navigation {background-color: white; display: flex; border-bottom: 1px solid #ddd; position: fixed; width: 100%; justify-content: space-between;}
 .title {padding: 0.5rem 2rem; color: black; text-decoration: none;}
 .title span {font-weight: bold; display: block;}
-.body {padding: 7rem 2rem; flex-grow: 1; padding-bottom: 10rem;}
-.hamburger {padding: 0 1rem; margin: 0.5rem 1rem; display: inline-block; text-decoration: none; color: black; font-size: 2rem; line-height: 1.2; transform: scaleX(1.5);}
+.body {padding: 6rem 2rem; flex-grow: 1; padding-bottom: 10rem;}
+.hamburger {padding: 0 1rem; margin: 0.3rem 1rem; display: inline-block; text-decoration: none; color: black; font-size: 2.25rem; line-height: 1.2; transform: scaleX(1.5);}
 
 th.selected::after {content: " ▾";}
 
 td, th, dl > * {padding: 0.2rem 1.5rem 0.2rem 0.5rem; text-align: left;}
-label {padding: calc(0.2rem + 1px) 1.5rem calc(0.2rem + 1px) 0;}
+td, th {max-width: 40rem;}
+table.list td, table.list th {text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: 25rem;}
+table.read thead {display: none;}
+label, .hint {padding: calc(0.2rem + 1px) 1.5rem calc(0.2rem + 1px) 0; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+.hint {padding-right: 0; color: silver;}
 td:last-child a {display: inline-block; margin-right: 0.5rem;}
 .logo img {height: 2rem; vertical-align: middle;}
 a {color: black;}
-label {width: 11rem; min-width: 11rem; padding-right: 2rem;}
+label {width: 15rem; min-width: 15rem; padding-right: 2rem;}
 h1 {font-size: 2.2rem; margin-bottom: 0.5rem; margin-right: 1rem; line-height: 1;}
 table {border-collapse: collapse; margin-top: 1.5rem;}
 table tr:nth-child(even) {background: rgba(0,0,0,0.05);}
-table tr th {background: rgb(222, 222, 222);  padding: 0.4rem 1.5rem 0.4rem 0.5rem; font-weight: bold;}
+table.read tr:nth-child(even) {background: none;}
+table.read tr:nth-child(odd) {background: rgba(0,0,0,0.05);}
+table tr th {padding: 0.3rem 1.5rem 0.3rem 0.5rem; font-weight: bold; border-bottom: 1px solid black;}
 p, table {margin-bottom: 1.4rem;}
-table {font-size: 0.93rem;}
+table, form {font-size: 0.93rem;}
 
 .titlebar {display: flex; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap;}
 .titlebar > div {margin-bottom: 0.5rem;}
@@ -77,7 +83,7 @@ select {
     background: white url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiID8+DQo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPg0KPHN2ZyB3aWR0aD0iMjA2cHQiIGhlaWdodD0iMTc0cHQiIHZpZXdCb3g9IjAgMCAyMDYgMTc0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+DQo8cGF0aCBvcGFjaXR5PSIxLjAwIiBkPSIgTSA1LjA4IDguOTcgQyA3MC41MSA5LjEzIDEzNS45NCA4Ljc4IDIwMS4zNyA5LjE1IEMgMTczLjQzIDU2LjA4IDE0NC4zNiAxMDIuMzQgMTE2LjA1IDE0OS4wNSBDIDExMS44NiAxNTUuODAgMTA3LjkxIDE2Mi43MCAxMDMuNDAgMTY5LjI1IEMgNzAuNTIgMTE1Ljg5IDM4LjAwIDYyLjMwIDUuMDggOC45NyBaIiAvPg0KPC9zdmc+') calc(100% - 0.6rem) 50% no-repeat;
     background-size: auto 0.5rem;
     padding-right: 1.75rem;
-    max-width: calc(100% - 11rem);
+    max-width: calc(100% - 15rem - 0.25rem);
 }
 input[type="radio"], input[type="checkbox"], input[type="file"] {border: 0; height: auto; line-height: auto; margin-right: 0.4rem; vertical-align: middle; position: relative; bottom: 0.1rem;}
 input[type="file"] {padding: 0; margin: 0; bottom: 0;}
@@ -88,10 +94,12 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {-webkit-appearance: none;}
 textarea {min-height: 10rem; padding: 0.35rem 0.5rem; }
 
+form {margin-top: 1.5rem;}
 form, dl {width: 100%; max-width: 40rem;}
 form > div {display: flex; margin-bottom: 0.25rem;}
 form > div > *:nth-child(2) {flex-grow: 1;}
 form > div > *:nth-child(3) {margin-left: 0.25rem;}
+form > button {margin-top: 1.5rem;}
 
 dl {display: flex; margin-bottom: 1.4rem;}
 dt {width: 11rem; min-width: 11rem; padding-right: 2rem;}
@@ -124,7 +132,7 @@ ul.related li, ul.home li {list-style: none;}
     .title {position: absolute; bottom: 1.5rem;}
     .navigation {display: block; width: 15rem; border: 0; border-right: 1px solid #ddd; height: 100vh;}
     .body {padding-top: 3rem; margin-left: 15rem;}
-    .hamburger {font-size: 3rem; line-height: 1.2; padding-bottom: 0.75rem; margin-left: 1.3rem;}
+    .hamburger {font-size: 2.5rem; line-height: 1.2; margin-left: 1.3rem;}
 }
 @media only screen and (max-width: 800px) {
     ul.related li a, ul.home li a  {display: inline-block; padding: 0.2rem 0;}
@@ -132,7 +140,7 @@ ul.related li, ul.home li {list-style: none;}
 
 </style>
     </head>
-    <body class="viewname">
+    <body>
         <div class="content">
             <div class="navigation">
                 <a href="{{base}}/" class="title"><span>Projectnaam</span>Subtitel</a>
