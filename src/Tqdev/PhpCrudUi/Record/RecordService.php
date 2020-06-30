@@ -4,8 +4,8 @@ namespace Tqdev\PhpCrudUi\Record;
 
 use Tqdev\PhpCrudUi\Client\CrudApi;
 use Tqdev\PhpCrudUi\Column\SpecificationService;
-use Tqdev\PhpCrudUi\Document\TemplateDocument;
 use Tqdev\PhpCrudUi\Document\CsvDocument;
+use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
 class RecordService
 {
@@ -129,7 +129,7 @@ class RecordService
         $record = $this->api->readRecord($table, $id, []);
 
         foreach ($record as $key => $value) {
-            $values = $this->getDropDownValues($references[$key]);;
+            $values = $this->getDropDownValues($references[$key]);
             $record[$key] = array('type' => $types[$key], 'value' => $value, 'values' => $values);
         }
 

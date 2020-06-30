@@ -58,17 +58,21 @@ class TemplateDocument
                 return $a ?: $b;
             },
             'humanize' => function ($a) {
+<<<<<<< HEAD
                 return ucfirst(str_replace('_',' ',$a));  
+=======
+                return ucfirst(str_replace('_', ' ', $a));
+>>>>>>> 4f39e6b4f4cc498f3d1f2caa0c81495fe61ff15d
             },
         );
     }
 
-    public function addVariables(array $variables)/*: void*/
+    public function addVariables(array $variables) /*: void*/
     {
         $this->variables = array_merge($variables, $this->variables);
     }
 
-    public function setTemplatePath(string $path)/*: void*/
+    public function setTemplatePath(string $path) /*: void*/
     {
         $this->templatePath = rtrim($path, '/');
     }
