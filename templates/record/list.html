@@ -154,7 +154,7 @@
         {{else}}
         <a href="javascript:void(0);" class="icon prev disabled">&lt;</a>
         {{endif}}
-        &nbsp;page {{pageNumber}} / {{maxPage}}&nbsp;
+        &nbsp;page {{pageNumber}}/{{maxPage}}&nbsp;
         {{if:pageNumber|lt(maxPage)}}
         <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="icon next"
             onclick="return navigatePage('{{pageNumber|add(1)}},{{pageSize}}')">&gt;</a>
