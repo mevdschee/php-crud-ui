@@ -42,7 +42,6 @@ table.read tr:nth-child(even) {background: none;}
 table.read tr:nth-child(odd) {background: rgba(0,0,0,0.05);}
 table tr th {padding: 0.3rem 1.5rem 0.3rem 0.5rem; font-weight: bold; border-bottom: 1px solid black;}
 p, table {margin-bottom: 1.4rem;}
-table, form {font-size: 0.93rem;}
 
 .titlebar {display: flex; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap;}
 .titlebar > div {margin-bottom: 0.5rem;}
@@ -140,8 +139,8 @@ dl + dl {margin-top: -1.4rem;}
 dl + dl dt {border-top: 1px solid transparent;}
 dl + dl dd {border-top: 1px solid silver;}
 
-ul.breadcrumb {margin-bottom: 0.3rem;}
-ul.breadcrumb li {display: inline; list-style: none; font-size: 0.8rem;}
+ul.breadcrumb {margin-bottom: 0.3rem; font-size: 0.9rem;}
+ul.breadcrumb li {display: inline; list-style: none;}
 ul.breadcrumb li + li::before {content: "/ "; color: silver;}
 ul.breadcrumb li a {color: silver; text-decoration: none;}
 
@@ -160,6 +159,7 @@ ul.related li, ul.home li {list-style: none;}
 .pagination .icon {margin-right: 0.25rem;}
 .disabled {opacity: 0.4; cursor: default;}
 .pagination .icon:last-child {margin-right: 0; margin-left: 0.25rem;}
+.hidden {display: none;}
 
 @media only screen and (min-width: 1500px) {
     .content {display: block;}
