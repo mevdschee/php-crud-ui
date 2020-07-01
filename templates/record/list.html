@@ -3,89 +3,162 @@
     <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<style>
-{{for:column:i:columns}}
-th:nth-of-type({{i|add(6)}}), td:nth-of-type({{i|add(6)}}) { display: none; }
-{{endfor}}
-</style>
-
 {{if:primaryKey}}
-    <div class="titlebar">
-        <h1>{{table|humanize}}</h1>
-            <a onclick="document.querySelector('.addfilter').classList.toggle('visible');" href="#" class="icon filter">Add filter</a>
-            <a onclick="document.querySelector('.addfilter').classList.toggle('visible');" href="#" class="icon search">Search</a>
-            <a href="{{base}}/{{table}}/create" class="btn">New item</a>
-    </div>
+<div class="titlebar">
+    <h1>{{table|humanize}}</h1>
+    <a onclick="document.querySelector('.addfilter').classList.toggle('visible');" href="#" class="icon filter">Add
+        filter</a>
+    <a onclick="document.querySelector('.addfilter').classList.toggle('visible');" href="#"
+        class="icon search">Search</a>
+    <a href="{{base}}/{{table}}/create" class="btn">New item</a>
+</div>
 {{endif}}
 
-{{for:filter:filters}}
-    <div class="filterbar">
+<script>
+    function closeFilter(index) {
+        const elements = document.querySelectorAll('.filterbar');
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i].dataset.index == index) {
+                elements[i].parentNode.removeChild(elements[i]);
+            }
+        }
+        return reloadQuery();
+    }
+    function navigatePage(page) {
+        const element = document.querySelector('.pagination');
+        if (element) {
+            element.dataset.page = page;
+        }
+        return reloadQuery();
+    }
+    function isPartiallyOffscreen(element) {
+        var rect = element.getBoundingClientRect();
+        return (rect.x < 0 || rect.y < 0 ||
+            (rect.x + rect.width) > window.innerWidth - 20 ||
+            (rect.y + rect.height) > window.innerHeight);
+    }
+    // var timeOut = null;
+    // function resizeWindow() {
+    //     if (timeOut != null) clearTimeout(timeOut);
+    //     timeOut = setTimeout(hideColumns, 100);
+    // }
+    function hideColumns() {
+        const elements = document.querySelectorAll('th');
+        var max = 0;
+        for (var i = 0; i < elements.length; i++) {
+            if (isPartiallyOffscreen(elements[i])) {
+                max = i;
+                break;
+            }
+        }
+        // const all = document.querySelectorAll('th, td');
+        // for (var i = 0; i < all.length; i++) {
+        //     all[i].classList.remove('hidden');
+        // }
+        const headers = document.querySelectorAll('th:nth-child(n+' + (max + 1) + ')');
+        for (var i = 0; i < headers.length; i++) {
+            headers[i].classList.add('hidden');
+        }
+        const cells = document.querySelectorAll('td:nth-child(n+' + (max + 1) + ')');
+        for (var i = 0; i < cells.length; i++) {
+            cells[i].classList.add('hidden');
+        }
+    }
+    function reloadQuery() {
+        const elements = document.querySelectorAll('.filterbar');
+        var params = [];
+        for (var i = 0; i < elements.length; i++) {
+            params.push('filter=' + encodeURIComponent(elements[i].dataset.filter));
+        }
+        const element = document.querySelector('.pagination');
+        if (element) {
+            params.push('page=' + encodeURIComponent(element.dataset.page));
+        }
+        document.location.href = '?' + params.join('&');
+        return false;
+    }
+    window.addEventListener('load', function () { hideColumns(); })
+    // window.addEventListener('resize', function () { resizeWindow(); })
+</script>
+
+<form style="display:inline">
+    {{for:filter:i:filters}}
+    <div class="filterbar" data-index="{{i}}"
+        data-filter="{{filter.field}},{{filter.operator}},{{filter.value}},{{filter.name}}">
         <div>{{filter.field|humanize}} = '{{filter.name}}'</div>
-        <a class="close" href="{{base}}/{{table}}/list" title="Clear filters"></a>
+
+        <a class="close" href="{{base}}/{{table}}/list" title="Clear filters"
+            onclick="return closeFilter('{{i}}');"></a>
     </div>
-{{endfor}}
+    {{endfor}}
+</form>
 
 <div class="addfilter">
-    <select>
+    <select class="field">
         {{for:column:columns}}
-            <option>{{column|humanize}}</option>
+        <option>{{column|humanize}}</option>
         {{endfor}}
     </select>&nbsp;
-    <select>
+    <select class="operator">
         <option>=</option>
         <option>&lt;</option>
         <option>&gt;</option>
     </select>&nbsp;
-    <input type="text" />&nbsp;
+    <input type="text" class="value" />&nbsp;
     <input type="submit" value="Filter" />
 </div>
 
 <table class="table list">
-<thead><tr>
-{{if:primaryKey}}
-    <th>Action</th>
-{{endif}}
-{{for:column:columns}}
-    {{if:column|neq(primaryKey)}}
-        <th>{{column|humanize}}</th>
-    {{endif}}
-{{endfor}}
-</tr></thead><tbody>
-{{for:record:records}}
-    <tr>
-    {{for:field:name:record}}
-        {{if:primaryKey}}
+    <thead>
+        <tr>
+            {{if:primaryKey}}
+            <th>Action</th>
+            {{endif}}
+            {{for:column:columns}}
+            {{if:column|neq(primaryKey)}}
+            <th>{{column|humanize}}</th>
+            {{endif}}
+            {{endfor}}
+        </tr>
+    </thead>
+    <tbody>
+        {{for:record:records}}
+        <tr>
+            {{for:field:name:record}}
+            {{if:primaryKey}}
             {{if:name|eq(primaryKey)}}
-                <td><a href="{{base}}/{{table}}/read/{{field.value}}">view</a></td>
+            <td><a href="{{base}}/{{table}}/read/{{field.value}}">view</a></td>
             {{endif}}
-        {{endif}}
-    {{endfor}}
-    {{for:field:name:record}}
-        {{if:name|neq(primaryKey)}}
+            {{endif}}
+            {{endfor}}
+            {{for:field:name:record}}
+            {{if:name|neq(primaryKey)}}
             {{if:field.table}}
-                <td><a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a></td>
+            <td><a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a></td>
             {{else}}
-                <td>{{field.text}}</td>
+            <td>{{field.text}}</td>
             {{endif}}
-        {{endif}}
-    {{endfor}}
-    </tr>
-{{endfor}}
-</tbody></table>
+            {{endif}}
+            {{endfor}}
+        </tr>
+        {{endfor}}
+    </tbody>
+</table>
 {{if:maxPage|gt(1)}}
-    <div class="pagination">
-        {{if:pageNumber|gt(1)}}
-            <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="icon prev">&lt;</a>
-        {{else}}
-            <a href="javascript:void(0);" class="icon prev" disabled>&lt;</a>
-        {{endif}}
-        &nbsp;page {{pageNumber}} / {{maxPage}}&nbsp;
-        {{if:pageNumber|lt(maxPage)}}
-            <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="icon next">&gt;</a>
-        {{else}}
-            <a href="javascript:void(0);" class="icon next" disabled>&gt;</a>
-        {{endif}}
-    </div>
+{{if:pageNumber|gt(1)}}
+<a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="icon prev"
+    onclick="return navigatePage('{{pageNumber|sub(1)}},{{pageSize}}')">&lt;</a>
+{{else}}
+<a href="javascript:void(0);" class="icon prev" disabled>&lt;</a>
+{{endif}}
+&nbsp;page {{pageNumber}} / {{maxPage}}&nbsp;
+{{if:pageNumber|lt(maxPage)}}
+<a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="icon next"
+    onclick="return navigatePage('{{pageNumber|add(1)}},{{pageSize}}')">&gt;</a>
+{{else}}
+<a href="javascript:void(0);" class="icon next" disabled>&gt;</a>
+{{endif}}
+</div>
 {{endif}}
 <div class="footeractions">
     <a href="{{base}}/{{table}}/export" class="btn">Export</a>
