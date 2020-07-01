@@ -118,6 +118,7 @@ $dirs = [
     'vendor/nyholm',
     'vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi',
     'src',
+    'webroot',
 ];
 
 run(__DIR__, $dirs, 'ui.php', $ignore);

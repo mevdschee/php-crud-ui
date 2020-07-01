@@ -45,25 +45,237 @@ $_HTML['layouts/default'] = <<<'END_OF_HTML'
     <head>
         <title>PHP-CRUD-UI</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css" rel="stylesheet">
+<style>
+
+* {margin: 0; padding: 0; box-sizing: border-box;}
+html {font-size: 16px;}
+body {font-size: 1rem; line-height: 1.4;}
+
+.content {min-height: 100vh;}
+.navigation {
+    background-color: white; 
+    display: flex; 
+    position: fixed; 
+    width: 100%; 
+    justify-content: space-between;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.25);
+    z-index: 9;
+}
+.title {padding: 0.5rem 2rem; color: black; text-decoration: none;}
+.title span {font-weight: bold; display: block;}
+.body {padding: 6rem 2rem; flex-grow: 1; padding-bottom: 10rem;}
+.hamburger {padding: 0 1rem 0.5rem; margin: 0.3rem 1rem; display: inline-block; text-decoration: none; color: black; font-size: 2.25rem; line-height: 1.2; transform: scaleX(1.5);}
+
+th.selected::after {content: " ▾";}
+
+td, th, dl > * {padding: 0.2rem 1.5rem 0.2rem 0.5rem; text-align: left;}
+td, th {max-width: 40rem;}
+table.list td, table.list th {text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: 25rem;}
+table.read thead {display: none;}
+label {padding: calc(0.2rem + 1px) 1.5rem calc(0.2rem + 1px) 0; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+td:last-child a {display: inline-block; margin-right: 0.5rem;}
+.logo img {height: 2rem; vertical-align: middle;}
+a {color: black;}
+label {width: 15rem; min-width: 15rem; padding-right: 2rem;}
+h1 {font-size: 2.2rem; margin-bottom: 0.5rem; margin-right: 1rem; line-height: 1;}
+h2 {font-size: 1.5rem; margin-bottom: 0.5rem;}
+table {border-collapse: collapse; margin-top: 1.5rem;}
+table tr:nth-child(even) {background: rgba(0,0,0,0.05);}
+table.read tr:nth-child(even) {background: none;}
+table.read tr:nth-child(odd) {background: rgba(0,0,0,0.05);}
+table tr th {padding-top: 0.3rem; padding-bottom: 0.3rem; font-weight: bold; border-bottom: 1px solid black;}
+p, table {margin-bottom: 1.4rem;}
+
+.titlebar {display: flex; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap;}
+.titlebar > div {margin-bottom: 0.5rem;}
+
+.cols {column-width: 700px; margin-top: -2em;}
+.col {
+    -webkit-column-break-inside: avoid; /* Chrome, Safari */
+    page-break-inside: avoid;           /* Theoretically FF 20+ */
+    break-inside: avoid-column;         /* IE 11 */
+    display:table;                      /* Actually FF 20+ */
+}
+
+input, textarea, select{
+    height: calc(2rem + 2px); 
+    line-height: 1.4rem; 
+    text-decoration: none; 
+    border: 1px solid black; 
+    padding: 0 0.5rem; 
+    background: transparent;
+    color: black;
+    font-family: inherit;
+    font-size: inherit;
+    flex-grow: 1;
+    background: white;
+}
+button, input[type="submit"], .btn {
+    height: calc(2rem + 2px); 
+    line-height: 2rem; 
+    border: 1px solid transparent; 
+    display: inline-block; 
+    text-decoration: none; 
+    padding: 0 1rem; 
+    background: transparent;
+    color: black;
+    font-family: inherit;
+    font-size: inherit;
+    background-color: rgb(222, 222, 222);
+    cursor: pointer;
+    border-radius: 0.15rem;
+}
+button:focus, input[type="submit"]:focus, .btn:focus, .icon:focus {border-color: black;}
+select::-ms-expand {display: none;}
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: white url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiID8+DQo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPg0KPHN2ZyB3aWR0aD0iMjA2cHQiIGhlaWdodD0iMTc0cHQiIHZpZXdCb3g9IjAgMCAyMDYgMTc0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+DQo8cGF0aCBvcGFjaXR5PSIxLjAwIiBkPSIgTSA1LjA4IDguOTcgQyA3MC41MSA5LjEzIDEzNS45NCA4Ljc4IDIwMS4zNyA5LjE1IEMgMTczLjQzIDU2LjA4IDE0NC4zNiAxMDIuMzQgMTE2LjA1IDE0OS4wNSBDIDExMS44NiAxNTUuODAgMTA3LjkxIDE2Mi43MCAxMDMuNDAgMTY5LjI1IEMgNzAuNTIgMTE1Ljg5IDM4LjAwIDYyLjMwIDUuMDggOC45NyBaIiAvPg0KPC9zdmc+') calc(100% - 0.6rem) 50% no-repeat;
+    background-size: auto 0.5rem;
+    padding-right: 1.75rem;
+    max-width: calc(100% - 15rem);
+}
+input[type="radio"], input[type="checkbox"], input[type="file"] {border: 0; height: auto; line-height: auto; margin-right: 0.4rem; vertical-align: middle; position: relative; bottom: 0.1rem;}
+input[type="file"] {padding: 0; margin: 0; bottom: 0;}
+input[type='number'] {-moz-appearance: textfield;}
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {-webkit-appearance: none;}
+input[type="number"] {-moz-appearance: textfield;}
+input::-webkit-outer-spin-button, 
+input::-webkit-inner-spin-button {-webkit-appearance: none;}
+textarea {min-height: 10rem; padding: 0.35rem 0.5rem; }
+
+.icon {
+    display: inline-block; 
+    text-decoration: none; 
+    width: 0; 
+    height: 0; 
+    overflow: hidden; 
+    padding-top: 2rem; 
+    padding-left: 2rem; 
+    position: relative;
+    background-color: rgb(222, 222, 222);
+    cursor: pointer;
+    border-radius: 0.15rem;
+    border: 1px solid transparent;
+    vertical-align: bottom;
+}
+.icon::before {content: ''; position: absolute; width: 2rem; height: 2rem; left: 0; top: 0;}
+.icon.filter::before {
+    background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCEtLSBTdmcgVmVjdG9yIEljb25zIDogaHR0cDovL3d3dy5vbmxpbmV3ZWJmb250cy5jb20vaWNvbiAtLT4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMTAwMCAxMDAwIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxMDAwIDEwMDAiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8bWV0YWRhdGE+IFN2ZyBWZWN0b3IgSWNvbnMgOiBodHRwOi8vd3d3Lm9ubGluZXdlYmZvbnRzLmNvbS9pY29uIDwvbWV0YWRhdGE+CjxnPjxwYXRoIGQ9Ik05OTAsMTB2NjUuM0w1OTgsNTMyLjdWOTkwTDQwMiw4NTkuM1Y1MzIuN0wxMCw3NS4zVjEwSDk5MHoiLz48L2c+Cjwvc3ZnPg==') center center / auto 45% no-repeat;}
+.icon.search::before {
+    background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCI+DQogIDx0aXRsZT4NCiAgICBzZWFyY2gNCiAgPC90aXRsZT4NCiAgPHBhdGggZD0iTTE5IDE3bC01LjE1LTUuMTVhNyA3IDAgMSAwLTIgMkwxNyAxOXpNMy41IDhBNC41IDQuNSAwIDEgMSA4IDEyLjUgNC41IDQuNSAwIDAgMSAzLjUgOHoiLz4NCjwvc3ZnPg0K') center center / auto 57% no-repeat;}
+.icon.prev::before {
+    background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgd2lkdGg9IjIwNnB0IgogICBoZWlnaHQ9IjE3NHB0IgogICB2aWV3Qm94PSIwIDAgMjA2IDE3NCIKICAgdmVyc2lvbj0iMS4xIj4KICA8cGF0aAogICAgIGQ9Im0gMTY0LjE5NTUxLDE0LjU1ODIyMyBjIC0wLjEzMDU2LDQ5LjcwMTE5IDAuMTU1MDQsOTkuNDAyMzY3IC0wLjE0Njg4LDE0OS4xMDM1NTcgQyAxMjUuNzUzNzUsMTQyLjQzODMyIDg4LjAwNTU4MSwxMjAuMzU2NSA0OS44OTAyMjEsOTguODUxOTgzIGMgLTUuNTA3OTksLTMuMTgyNzYgLTExLjEzODM5LC02LjE4MzIyIC0xNi40ODMxOSwtOS42MDkwNSA0My41NDE3NiwtMjQuOTc1OTMgODcuMjcxMTk5LC00OS42Nzg0IDEzMC43ODg0NzksLTc0LjY4NDcxIHoiIC8+Cjwvc3ZnPgo=') center 48% / auto 40% no-repeat;}
+.icon.next::before {
+    background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgd2lkdGg9IjIwNnB0IgogICBoZWlnaHQ9IjE3NHB0IgogICB2aWV3Qm94PSIwIDAgMjA2IDE3NCIKICAgdmVyc2lvbj0iMS4xIj4KICA8cGF0aAogICAgIGQ9Im0gNDQuNDY2MzU2LDE2My42NjE3OCBjIDAuMTMwNTYsLTQ5LjcwMTE5IC0wLjE1NTA0LC05OS40MDIzNzMgMC4xNDY4OCwtMTQ5LjEwMzU2IDM4LjI5NDg3OSwyMS4yMjM0NjMgNzYuMDQzMDQ0LDQzLjMwNTI4MyAxMTQuMTU4NDA0LDY0LjgwOTgwMSA1LjUwNzk5LDMuMTgyNzU5IDExLjEzODM5LDYuMTgzMjEzIDE2LjQ4MzE5LDkuNjA5MDQ4IEMgMTMxLjcxMzA3LDExMy45NTMgODcuOTgzNjM0LDEzOC42NTU0NyA0NC40NjYzNTYsMTYzLjY2MTc4IFoiIC8+Cjwvc3ZnPgo=') center 48% / auto 40% no-repeat;}
+form {margin-top: 1.5rem;}
+form, dl {width: 100%; max-width: 40rem;}
+form > div {display: flex; margin-bottom: 0.25rem;}
+form > div > *:nth-child(2) {flex-grow: 1;}
+form > div > *:nth-child(3) {margin-left: 0.25rem;}
+form > button {margin-top: 1.5rem;}
+
+dl {display: flex; margin-bottom: 1.4rem;}
+dt {width: 11rem; min-width: 11rem; padding-right: 2rem;}
+dd {flex-grow: 1;}
+dl + dl {margin-top: -1.4rem;}
+dl + dl dt {border-top: 1px solid transparent;}
+dl + dl dd {border-top: 1px solid silver;}
+
+ul.breadcrumb {margin-bottom: 0.3rem; font-size: 0.9rem; opacity: 0.45;}
+ul.breadcrumb li {display: inline; list-style: none;}
+ul.breadcrumb li + li::before {content: "/ ";}
+ul.breadcrumb li a {text-decoration: none;}
+
+ul.related li, ul.home li {list-style: none;}
+
+.filterbar {padding: 0.5rem 0.7rem; background: rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;}
+
+.close::before{content: "+"; text-decoration: none; transform: rotate(45deg); display: inline-block;}
+
+.addFilter {margin-bottom: 0.5rem; display: none;}
+.addFilter.visible {display: block;}
+.addSearch {margin-bottom: 0.5rem; display: none;}
+.addSearch.visible {display: block;}
+.footeractions {margin-top: 1.5rem;}
+
+.pagination {display: flex; align-items: center; font-size: 0.9rem;}
+.pagination .icon {margin-right: 0.25rem;}
+.disabled {opacity: 0.4; cursor: default;}
+.pagination .icon:last-child {margin-right: 0; margin-left: 0.25rem;}
+.hidden {display: none;}
+
+@media only screen and (min-width: 1500px) {
+    .content {display: block;}
+    .title {position: absolute; bottom: 1.5rem;}
+    .navigation {display: block; width: 15rem; height: 100vh;}
+    .body {padding-top: 3rem; margin-left: 15rem; padding-left: 5rem;}
+    .hamburger {font-size: 2.5rem; line-height: 1.2; margin-left: 1.3rem; margin-top: 1rem;}
+}
+
+.mobile-only {display: none;}
+@media only screen and (max-width: 600px) {
+
+    ul.related li a, ul.home li a  {display: inline-block; padding: 0.2rem 0;}
+
+    table.read tr {display: block; padding: 0.7rem 0.5rem;}
+    table.read tr td {display: block; padding: 0;}
+    table.read td:nth-child(odd) {font-weight: bold;}
+    
+    .mobile-only {display: initial;}
+    
+    form > div {flex-direction: column;}
+    select {max-width: 100%;}
+
+}
+
+/* SPOTIFY THEME */
+
+/*
+body {background-color: #181818; font-family: sans-serif;}
+body, a {color: #aaa;}
+.navigation {background-color: #121212; box-shadow: none;}
+a {text-decoration: none;}
+ul:not(.breadcrumb) a::after, td a::after {content: " ‣"}
+button, .btn, input[type="submit"], .icon {
+    background-color: #1ed760; 
+    border-radius: 2rem;
+    filter: invert(100%) hue-rotate(-180deg) saturate(0.6) brightness(1.8);
+}
+table tr th {border-color: #333;}
+h2, .hamburger, table tr th, h1, .pagination, a:not(.icon):not(.btn):hover, .title {color: white;}
+table tr:nth-child(even), table.read tr:nth-child(odd) {background: none;}
+ul.related, ul.home {display: inline-block;}
+ul.related li, ul.home li, table tr td {border-bottom: 1px solid #333;}
+ul.related li:last-child, ul.home li:last-child, table tr:last-child td {border: 0;}
+ul.related li, ul.home li, td, th, dl > * {padding: 0.2rem 1.5rem 0.2rem 0;}
+input, textarea, select {filter: invert(100%) contrast(0.6) brightness(1); border-color: transparent;}
+.filterbar {background:#333;}
+@media only screen and (max-width: 600px) {
+    table.read tr {display: block;}
+    form > div {padding: 0.5rem 0;}
+    table.read tr {padding: 0.7rem 0;}
+    table tr td {border: 0;}
+    table.read td:nth-child(2n+1), label {font-weight: normal; color: white;}
+}
+*/
+
+</style>
     </head>
     <body>
-        <div class="container-fluid">
-            <nav class="navbar navbar-default">
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <a class="navbar-brand" href="{{base}}/">PHP-CRUD-UI</a>
-                    </div>
-                </div>
-            </nav>
-            <div class="row">
-                <div class="col-md-12">
-                    {{content}}
-                </div>
+        <div class="content">
+            <div class="navigation">
+                <a href="{{base}}/" class="title"><span>Projectnaam</span>Subtitel</a>
+                <a class="hamburger" href="{{base}}/">☰</a>
+            </div>
+            <div class="body">
+                {{content}}
             </div>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>
 END_OF_HTML;
 }
@@ -73,28 +285,32 @@ namespace {
 $_HTML['layouts/error'] = <<<'END_OF_HTML'
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>PHP-CRUD-UI</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css" rel="stylesheet">
-    </head>
-    <body>
-        <div class="container-fluid">
-            <nav class="navbar navbar-default">
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <a class="navbar-brand" href="{{base}}/">PHP-CRUD-UI</a>
-                    </div>
-                </div>
-            </nav>
-            <div class="row">
-                <div class="col-md-12">
-                    {{content}}
+
+<head>
+    <title>PHP-CRUD-UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{{base}}/">PHP-CRUD-UI</a>
                 </div>
             </div>
+        </nav>
+        <div class="row">
+            <div class="col-md-12">
+                {{content}}
+            </div>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>
 END_OF_HTML;
 }
@@ -104,15 +320,15 @@ namespace {
 $_HTML['record/create'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
     <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/column/{{table}}/list">{{table}}</a></li>
+    <li><a href="{{base}}/column/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h2>create {{table}}</h2>
+<h1>create {{table}}</h1>
 
 <form method="post">
     {{for:column:columns}}
-        <div class="form-group">
-            <label for="{{column.name}}">{{column.name}}</label>
+        <div>
+            <label for="{{column.name}}">{{column.name|humanize}}</label>
             {{if:column.values}}
                 <select id="{{column.name}}" name="{{column.name}}" class="form-control">
                     <option value=""></option>
@@ -136,10 +352,10 @@ namespace {
 $_HTML['record/created'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
     <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h2>create {{table}}</h2>
+<h1>create {{table}}</h1>
 
 <p>Added with {{primaryKey}} {{id}}</p>
 
@@ -152,10 +368,10 @@ namespace {
 $_HTML['record/delete'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
     <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/column/{{table}}/list">{{table}}</a></li>
+    <li><a href="{{base}}/column/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h2>delete {{table}}</h2>
+<h1>delete {{table}}</h1>
 
 <p>The action cannot be undone.</p>
 
@@ -172,10 +388,10 @@ namespace {
 $_HTML['record/deleted'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
     <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h2>delete {{table}}</h2>
+<h1>delete {{table}}</h1>
 
 <p>Deleted with {{primaryKey}} {{id}}</p>
 
@@ -190,10 +406,12 @@ $_HTML['record/home'] = <<<'END_OF_HTML'
     <li><a href="{{base}}/">Home</a></li>
 </ul>
 
-<ul class="nav nav-pills nav-stacked">
+<h1>Projectnaam</h1>
+<br />
+<ul class="home">
     {{for:item:menu}}
         <li>
-            <a href="{{base}}/{{item}}/list">{{item}}</a>
+            <a href="{{base}}/{{item}}/list">{{item|humanize}}</a>
         </li>
     {{endfor}}
 </ul>
@@ -206,70 +424,177 @@ namespace {
 $_HTML['record/list'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
     <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<style>
-{{for:column:i:columns}}
-th:nth-of-type({{i|add(6)}}), td:nth-of-type({{i|add(6)}}) { display: none; }
-{{endfor}}
-</style>
-
-<h2>list {{table}}</h2>
-
-<p><a href="{{base}}/{{table}}/export">export</a></p>
-{{if:field}}
-    <div class="well well-sm"><div style="float:right;">
-    <a class="btn btn-default btn-xs" href="{{base}}/{{table}}/list">Clear filter</a>
-    </div>Filtered by: {{field}} = {{name}}</div>
-{{endif}}
-<table class="table">
-<thead><tr>
 {{if:primaryKey}}
-    <th></th>
-{{endif}}
-{{for:column:columns}}
-    <th>{{column}}</th>
-{{endfor}}
-</tr></thead><tbody>
-{{for:record:records}}
-    <tr>
-    {{for:field:name:record}}
-        {{if:primaryKey}}
-            {{if:name|eq(primaryKey)}}
-                <td><a href="{{base}}/{{table}}/read/{{field.value}}">view</a></td>
-            {{endif}}
-        {{endif}}
-    {{endfor}}
-    {{for:field:name:record}}
-        {{if:field.table}}
-            <td><a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a></td>
-        {{else}}
-            <td>{{field.text}}</td>
-        {{endif}}
-    {{endfor}}
-    </tr>
-{{endfor}}
-</tbody></table>
-{{if:maxPage|gt(1)}}
-    <div style="float:right">
-        page {{pageNumber}} / {{maxPage}}
-        {{if:pageNumber|gt(1)}}
-            <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="btn btn-default">&lt;</a>
-        {{else}}
-            <a href="javascript:void(0);" class="btn btn-default" disabled>&lt;</a>
-        {{endif}}
-        {{if:pageNumber|lt(maxPage)}}
-            <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="btn btn-default">&gt;</a>
-        {{else}}
-            <a href="javascript:void(0);" class="btn btn-default" disabled>&gt;</a>
-        {{endif}}
+<div class="titlebar">
+    <h1>{{table|humanize}}</h1>
+    <div>
+        <a onclick="document.querySelector('.addFilter').classList.toggle('visible');" href="#" class="icon filter">Add
+            filter</a>
+        <a onclick="document.querySelector('.addSearch').classList.toggle('visible');" href="#"
+            class="icon search">Search</a>
+        <a href="{{base}}/{{table}}/create" class="btn">New item</a>
     </div>
-{{endif}}
-{{if:primaryKey}}
-    <p><a href="{{base}}/{{table}}/create" class="btn btn-primary">Add</a></p>
+</div>
 {{endif}}
 
+<script>
+    function closeFilter(index) {
+        const elements = document.querySelectorAll('.filterbar');
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i].dataset.index == index) {
+                elements[i].parentNode.removeChild(elements[i]);
+            }
+        }
+        return reloadQuery();
+    }
+    function navigatePage(page) {
+        const element = document.querySelector('.pagination');
+        if (element) {
+            element.dataset.page = page;
+        }
+        return reloadQuery();
+    }
+    function isPartiallyOffscreen(element) {
+        var rect = element.getBoundingClientRect();
+        return rect.x < 0 || (rect.x + rect.width) > (window.innerWidth - 20);
+    }
+    var timeOut = null;
+    function resizeWindow() {
+        if (timeOut != null) clearTimeout(timeOut);
+        timeOut = setTimeout(hideColumns, 100);
+    }
+    function hideColumns() {
+        const all = document.querySelectorAll('th, td');
+        for (var i = 0; i < all.length; i++) {
+            all[i].classList.remove('hidden');
+        }
+        const elements = document.querySelectorAll('th');
+        var max = elements.length - 1;
+        for (var i = 0; i < elements.length; i++) {
+            if (isPartiallyOffscreen(elements[i])) {
+                max = i;
+                break;
+            }
+        }
+        const headers = document.querySelectorAll('th:nth-child(n+' + (max + 1) + ')');
+        for (var i = 0; i < headers.length; i++) {
+            headers[i].classList.add('hidden');
+        }
+        const cells = document.querySelectorAll('td:nth-child(n+' + (max + 1) + ')');
+        for (var i = 0; i < cells.length; i++) {
+            cells[i].classList.add('hidden');
+        }
+    }
+    function reloadQuery() {
+        const elements = document.querySelectorAll('.filterbar');
+        var params = [];
+        for (var i = 0; i < elements.length; i++) {
+            params.push('filter=' + encodeURIComponent(elements[i].dataset.filter));
+        }
+        const element = document.querySelector('.pagination');
+        if (element) {
+            params.push('page=' + encodeURIComponent(element.dataset.page));
+        }
+        document.location.href = '?' + params.join('&');
+        return false;
+    }
+    window.addEventListener('load', function () { hideColumns(); })
+    window.addEventListener('resize', function () { resizeWindow(); })
+</script>
+
+{{for:filter:i:filters}}
+<div class="filterbar" data-index="{{i}}"
+    data-filter="{{filter.field}},{{filter.operator}},{{filter.value}},{{filter.name}}">
+    <div>{{filter.field|humanize}} = '{{filter.name}}'</div>
+
+    <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
+</div>
+{{endfor}}
+
+<div class="addFilter">
+    <form style="display:inline">
+        <select name="field">
+            {{for:column:columns}}
+            <option>{{column|humanize}}</option>
+            {{endfor}}
+        </select>&nbsp;
+        <select name="operator">
+            <option>=</option>
+            <option>&lt;</option>
+            <option>&gt;</option>
+        </select>&nbsp;
+        <input type="text" name="value" />&nbsp;
+        <input type="submit" value="Filter" />
+    </form>
+</div>
+
+<div class="addSearch">
+    <form style="display:inline">
+        <input type="text" name="search" />&nbsp;
+        <input type="submit" value="Search" />
+    </form>
+</div>
+
+<table class="table list">
+    <thead>
+        <tr>
+            {{if:primaryKey}}
+            <th>Action</th>
+            {{endif}}
+            {{for:column:columns}}
+            {{if:column|neq(primaryKey)}}
+            <th>{{column|humanize}}</th>
+            {{endif}}
+            {{endfor}}
+        </tr>
+    </thead>
+    <tbody>
+        {{for:record:records}}
+        <tr>
+            {{for:field:name:record}}
+            {{if:primaryKey}}
+            {{if:name|eq(primaryKey)}}
+            <td><a href="{{base}}/{{table}}/read/{{field.value}}">view</a></td>
+            {{endif}}
+            {{endif}}
+            {{endfor}}
+            {{for:field:name:record}}
+            {{if:name|neq(primaryKey)}}
+            {{if:field.table}}
+            <td><a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a></td>
+            {{else}}
+            <td>{{field.text}}</td>
+            {{endif}}
+            {{endif}}
+            {{endfor}}
+        </tr>
+        {{endfor}}
+    </tbody>
+</table>
+{{if:maxPage|gt(1)}}
+<div class="pagination">
+    {{if:pageNumber|gt(1)}}
+    <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="icon prev"
+        onclick="return navigatePage('{{pageNumber|sub(1)}},{{pageSize}}')">&lt;</a>
+    {{else}}
+    <a href="javascript:void(0);" class="icon prev disabled">&lt;</a>
+    {{endif}}
+    &nbsp;page {{pageNumber}}/{{maxPage}}&nbsp;
+    {{if:pageNumber|lt(maxPage)}}
+    <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="icon next"
+        onclick="return navigatePage('{{pageNumber|add(1)}},{{pageSize}}')">&gt;</a>
+    {{else}}
+    <a href="javascript:void(0);" class="icon next disabled">&gt;</a>
+    {{endif}}
+</div>
+{{endif}}
+<div class="footeractions">
+    <a href="{{base}}/{{table}}/export" class="btn">Export</a>
+
+</div>
 END_OF_HTML;
 }
 
@@ -278,40 +603,53 @@ namespace {
 $_HTML['record/read'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
     <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h2>view {{table}}</h2>
+<h1>view {{table|humanize}}</h1>
 
-<table class="table">
-<thead><tr><th>key</th><th>value</th></tr></thead>
-<tbody>
-{{for:field:name:record}}
-    <tr>
-        <td>{{name}}</td>
-        </td><td>
-            {{if:field.table}}
-                <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
-            {{else}}
-                {{field.text}}
-            {{endif}}
-        </td>
-    </tr>
-{{endfor}}
-</tbody></table>
+<table class="table read">
+    <thead>
+        <tr>
+            <th>key</th>
+            <th>value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{for:field:name:record}}
+        <tr>
+            <td>{{name|humanize}}</td>
+            </td>
+            <td>
+                {{if:field.table}}
+                    <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
+                {{else}}
+                    {{if:field.type.format|eq("large-string")}}
+                        <div style="white-space: pre-wrap;">{{field.text}}</div>
+                    {{else}}
+                        {{if:field.text}}{{field.text}}{{else}}<span class="mobile-only">-</span>{{endif}} 
+                    {{endif}}        
+                {{endif}}
+            </td>
+        </tr>
+        {{endfor}}
+    </tbody>
+</table>
 
 <p>
     <a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
     <a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
 </p>
-
-<br/>
-<br/>
-<h4>Related</h4>
-<ul>
-{{for:relation:referenced}}
-    <li><a href="{{base}}/{{relation.0}}/list/{{relation.1}}/{{id}}/{{name}}">{{relation.0}}</a></li>
-{{endfor}}
+{{if:referenced|has(0)}}
+<br />
+<br />
+<h2>Related</h2>
+<ul class="related">
+    {{for:relation:referenced}}
+    <li><a href="{{base}}/{{relation.0}}/list?filter={{relation.1}},eq,{{id}},{{name}}">{{relation.0|humanize}}</a>
+    </li>
+    {{endfor}}
+{{endif}}
 END_OF_HTML;
 }
 
@@ -320,36 +658,42 @@ namespace {
 $_HTML['record/update'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
     <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h2>update {{table}}</h2>
+<h1>update {{table}}</h1>
 
 <form method="post">
     {{for:value:key:record}}
-        <div class="form-group row">
-            <label for="{{key}}" class="col-sm-2 col-form-label">{{key}}</label>
-            <div class="col-sm-10">
-                {{if:value.values}}
-                    <select id="{{key}}" name="{{key}}" class="form-control">
-                        <option value=""></option>
-                        {{for:v:k:value.values}}
-                            <option value="{{k}}"{{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
-                        {{endfor}}
-                    </select>
+        <div>
+            <label for="{{key}}" class="col-sm-2 col-form-label" title="{{key|humanize}}">{{key|humanize}}</label>
+            {{if:value.values}}
+                <select id="{{key}}" name="{{key}}" class="form-control">
+                    <option value=""></option>
+                    {{for:v:k:value.values}}
+                        <option value="{{k}}"{{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
+                    {{endfor}}
+                </select>
+            {{else}}
+                {{if:value.type.format|eq("decimal")}}
+                    <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
+                {{elseif:value.type.format|eq("date-time")}}
+                    <input class="form-control" id="{{key}}" type="datetime-local" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
+                {{elseif:value.type.format|eq("date")}}
+                    <input class="form-control" id="{{key}}" type="date" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
+                {{elseif:value.type.format|eq("time")}}
+                    <input class="form-control" id="{{key}}" type="time" name="{{key}}" value=""{{if:key|eq(primaryKey)}} disabled{{endif}}/>
+                {{elseif:value.type.format|eq("large-string")}}
+                    <textarea class="form-control" id="{{key}}" name="{{key}}">{{value.value}}</textarea>
+                {{elseif:value.type.format|eq("boolean")}}
+                    <input class="form-control" id="{{key}}" name="{{key}}" type="checkbox" {{if:value.value}} checked{{endif}}/>
                 {{else}}
-                    {{if:value.type|eq("string")}}
-                        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-                    {{elseif:value.type|eq("int32")}}
-                        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-                    {{else}}
-                        {{value.type}}
-                    {{endif}}
+                    <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
                 {{endif}}
-            </div>
+            {{endif}}
         </div>
     {{endfor}}
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn">Save</button>
 </form>
 
 END_OF_HTML;
@@ -360,10 +704,10 @@ namespace {
 $_HTML['record/updated'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
     <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table}}</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h2>update {{table}}</h2>
+<h1>update {{table}}</h1>
 
 <p>Updated with {{primaryKey}} {{id}}</p>
 
@@ -1911,6 +2255,25 @@ namespace Nyholm\Psr7\Factory {
     }
 }
 
+// file: vendor/nyholm/psr7/src/LowercaseTrait.php
+namespace Nyholm\Psr7 {
+
+    /**
+     * Trait implementing a locale-independent lowercasing logic.
+     *
+     * @author Nicolas Grekas <p@tchwork.com>
+     *
+     * @internal should not be used outside of Nyholm/Psr7 as it does not fall under our BC promise
+     */
+    trait LowercaseTrait
+    {
+        private static function lowercase(string $value): string
+        {
+            return \strtr($value, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');
+        }
+    }
+}
+
 // file: vendor/nyholm/psr7/src/MessageTrait.php
 namespace Nyholm\Psr7 {
 
@@ -1927,6 +2290,8 @@ namespace Nyholm\Psr7 {
      */
     trait MessageTrait
     {
+        use LowercaseTrait;
+
         /** @var array Map of all registered headers, as original name => array of values */
         private $headers = [];
 
@@ -1963,12 +2328,12 @@ namespace Nyholm\Psr7 {
 
         public function hasHeader($header): bool
         {
-            return isset($this->headerNames[\strtolower($header)]);
+            return isset($this->headerNames[self::lowercase($header)]);
         }
 
         public function getHeader($header): array
         {
-            $header = \strtolower($header);
+            $header = self::lowercase($header);
             if (!isset($this->headerNames[$header])) {
                 return [];
             }
@@ -1986,7 +2351,7 @@ namespace Nyholm\Psr7 {
         public function withHeader($header, $value): self
         {
             $value = $this->validateAndTrimHeader($header, $value);
-            $normalized = \strtolower($header);
+            $normalized = self::lowercase($header);
 
             $new = clone $this;
             if (isset($new->headerNames[$normalized])) {
@@ -2012,7 +2377,7 @@ namespace Nyholm\Psr7 {
 
         public function withoutHeader($header): self
         {
-            $normalized = \strtolower($header);
+            $normalized = self::lowercase($header);
             if (!isset($this->headerNames[$normalized])) {
                 return $this;
             }
@@ -2045,11 +2410,16 @@ namespace Nyholm\Psr7 {
             return $new;
         }
 
-        private function setHeaders(array $headers) /*:void*/
+        private function setHeaders(array $headers): void
         {
             foreach ($headers as $header => $value) {
+                if (\is_int($header)) {
+                    // If a header name was set to a numeric string, PHP will cast the key to an int.
+                    // We must cast it back to a string in order to comply with validation.
+                    $header = (string) $header;
+                }
                 $value = $this->validateAndTrimHeader($header, $value);
-                $normalized = \strtolower($header);
+                $normalized = self::lowercase($header);
                 if (isset($this->headerNames[$normalized])) {
                     $header = $this->headerNames[$normalized];
                     $this->headers[$header] = \array_merge($this->headers[$header], $value);
@@ -2245,7 +2615,7 @@ namespace Nyholm\Psr7 {
             return $new;
         }
 
-        private function updateHostFromUri() /*:void*/
+        private function updateHostFromUri(): void
         {
             if ('' === $host = $this->uri->getHost()) {
                 return;
@@ -2283,7 +2653,7 @@ namespace Nyholm\Psr7 {
         use MessageTrait;
 
         /** @var array Map of standard HTTP status code/reason phrases */
-        /*private*/ const PHRASES = [
+        private const PHRASES = [
             100 => 'Continue', 101 => 'Switching Protocols', 102 => 'Processing',
             200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content', 207 => 'Multi-status', 208 => 'Already Reported',
             300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 306 => 'Switch Proxy', 307 => 'Temporary Redirect',
@@ -2520,6 +2890,8 @@ namespace Nyholm\Psr7 {
 namespace Nyholm\Psr7 {
 
     use Psr\Http\Message\StreamInterface;
+    use Symfony\Component\Debug\ErrorHandler as SymfonyLegacyErrorHandler;
+    use Symfony\Component\ErrorHandler\ErrorHandler as SymfonyErrorHandler;
 
     /**
      * @author Michael Dowling and contributors to guzzlehttp/psr7
@@ -2547,7 +2919,7 @@ namespace Nyholm\Psr7 {
         private $size;
 
         /** @var array Hash of readable and writable stream types */
-        /*private*/ const READ_WRITE_HASH = [
+        private const READ_WRITE_HASH = [
             'read' => [
                 'r' => true, 'w+' => true, 'r+' => true, 'x+' => true, 'c+' => true,
                 'rb' => true, 'w+b' => true, 'r+b' => true, 'x+b' => true,
@@ -2570,8 +2942,6 @@ namespace Nyholm\Psr7 {
          * Creates a new PSR-7 stream.
          *
          * @param string|resource|StreamInterface $body
-         *
-         * @return StreamInterface
          *
          * @throws \InvalidArgumentException
          */
@@ -2610,7 +2980,10 @@ namespace Nyholm\Psr7 {
             $this->close();
         }
 
-        public function __toString(): string
+        /**
+         * @return string
+         */
+        public function __toString()
         {
             try {
                 if ($this->isSeekable()) {
@@ -2618,12 +2991,25 @@ namespace Nyholm\Psr7 {
                 }
 
                 return $this->getContents();
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
+                if (\PHP_VERSION_ID >= 70400) {
+                    throw $e;
+                }
+
+                if (\is_array($errorHandler = \set_error_handler('var_dump'))) {
+                    $errorHandler = $errorHandler[0] ?? null;
+                }
+                \restore_error_handler();
+
+                if ($e instanceof \Error || $errorHandler instanceof SymfonyErrorHandler || $errorHandler instanceof SymfonyLegacyErrorHandler) {
+                    return \trigger_error((string) $e, \E_USER_ERROR);
+                }
+
                 return '';
             }
         }
 
-        public function close() /*:void*/
+        public function close(): void
         {
             if (isset($this->stream)) {
                 if (\is_resource($this->stream)) {
@@ -2647,7 +3033,7 @@ namespace Nyholm\Psr7 {
             return $result;
         }
 
-        public function getSize() /*:?int*/
+        public function getSize(): ?int
         {
             if (null !== $this->size) {
                 return $this->size;
@@ -2691,7 +3077,7 @@ namespace Nyholm\Psr7 {
             return $this->seekable;
         }
 
-        public function seek($offset, $whence = \SEEK_SET) /*:void*/
+        public function seek($offset, $whence = \SEEK_SET): void
         {
             if (!$this->seekable) {
                 throw new \RuntimeException('Stream is not seekable');
@@ -2702,7 +3088,7 @@ namespace Nyholm\Psr7 {
             }
         }
 
-        public function rewind() /*:void*/
+        public function rewind(): void
         {
             $this->seek(0);
         }
@@ -2785,7 +3171,7 @@ namespace Nyholm\Psr7 {
     final class UploadedFile implements UploadedFileInterface
     {
         /** @var array */
-        /*private*/ const ERRORS = [
+        private const ERRORS = [
             \UPLOAD_ERR_OK => 1,
             \UPLOAD_ERR_INI_SIZE => 1,
             \UPLOAD_ERR_FORM_SIZE => 1,
@@ -2864,7 +3250,7 @@ namespace Nyholm\Psr7 {
         /**
          * @throws \RuntimeException if is moved or not ok
          */
-        private function validateActive() /*:void*/
+        private function validateActive(): void
         {
             if (\UPLOAD_ERR_OK !== $this->error) {
                 throw new \RuntimeException('Cannot retrieve stream due to upload error');
@@ -2888,7 +3274,7 @@ namespace Nyholm\Psr7 {
             return Stream::create($resource);
         }
 
-        public function moveTo($targetPath) /*:void*/
+        public function moveTo($targetPath): void
         {
             $this->validateActive();
 
@@ -2930,12 +3316,12 @@ namespace Nyholm\Psr7 {
             return $this->error;
         }
 
-        public function getClientFilename() /*:?string*/
+        public function getClientFilename(): ?string
         {
             return $this->clientFilename;
         }
 
-        public function getClientMediaType() /*:?string*/
+        public function getClientMediaType(): ?string
         {
             return $this->clientMediaType;
         }
@@ -2958,11 +3344,13 @@ namespace Nyholm\Psr7 {
      */
     final class Uri implements UriInterface
     {
-        /*private*/ const SCHEMES = ['http' => 80, 'https' => 443];
+        use LowercaseTrait;
 
-        /*private*/ const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
+        private const SCHEMES = ['http' => 80, 'https' => 443];
 
-        /*private*/ const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
+        private const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
+
+        private const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
 
         /** @var string Uri scheme. */
         private $scheme = '';
@@ -2993,9 +3381,9 @@ namespace Nyholm\Psr7 {
                 }
 
                 // Apply parse_url parts to a URI.
-                $this->scheme = isset($parts['scheme']) ? \strtolower($parts['scheme']) : '';
+                $this->scheme = isset($parts['scheme']) ? self::lowercase($parts['scheme']) : '';
                 $this->userInfo = $parts['user'] ?? '';
-                $this->host = isset($parts['host']) ? \strtolower($parts['host']) : '';
+                $this->host = isset($parts['host']) ? self::lowercase($parts['host']) : '';
                 $this->port = isset($parts['port']) ? $this->filterPort($parts['port']) : null;
                 $this->path = isset($parts['path']) ? $this->filterPath($parts['path']) : '';
                 $this->query = isset($parts['query']) ? $this->filterQueryAndFragment($parts['query']) : '';
@@ -3044,7 +3432,7 @@ namespace Nyholm\Psr7 {
             return $this->host;
         }
 
-        public function getPort() /*:?int*/
+        public function getPort(): ?int
         {
             return $this->port;
         }
@@ -3070,7 +3458,7 @@ namespace Nyholm\Psr7 {
                 throw new \InvalidArgumentException('Scheme must be a string');
             }
 
-            if ($this->scheme === $scheme = \strtolower($scheme)) {
+            if ($this->scheme === $scheme = self::lowercase($scheme)) {
                 return $this;
             }
 
@@ -3104,7 +3492,7 @@ namespace Nyholm\Psr7 {
                 throw new \InvalidArgumentException('Host must be a string');
             }
 
-            if ($this->host === $host = \strtolower($host)) {
+            if ($this->host === $host = self::lowercase($host)) {
                 return $this;
             }
 
@@ -3212,7 +3600,7 @@ namespace Nyholm\Psr7 {
             return !isset(self::SCHEMES[$scheme]) || $port !== self::SCHEMES[$scheme];
         }
 
-        private function filterPort($port) /*:?int*/
+        private function filterPort($port): ?int
         {
             if (null === $port) {
                 return null;
@@ -3301,13 +3689,30 @@ namespace Nyholm\Psr7Server {
 
             $headers = \function_exists('getallheaders') ? getallheaders() : static::getHeadersFromServer($_SERVER);
 
-            return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $_POST, $_FILES, fopen('php://input', 'r') ?: null);
+            $post = null;
+            if ('POST' === $this->getMethodFromEnv($server)) {
+                foreach ($headers as $headerName => $headerValue) {
+                    if ('content-type' !== \strtolower($headerName)) {
+                        continue;
+                    }
+                    if (\in_array(
+                        \strtolower(\trim(\explode(';', $headerValue, 2)[0])),
+                        ['application/x-www-form-urlencoded', 'multipart/form-data']
+                    )) {
+                        $post = $_POST;
+
+                        break;
+                    }
+                }
+            }
+
+            return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $post, $_FILES, \fopen('php://input', 'r') ?: null);
         }
 
         /**
          * {@inheritdoc}
          */
-        public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], array $post = [], array $files = [], $body = null): ServerRequestInterface
+        public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], ?array $post = null, array $files = [], $body = null): ServerRequestInterface
         {
             $method = $this->getMethodFromEnv($server);
             $uri = $this->getUriFromEnvWithHTTP($server);
@@ -3315,6 +3720,11 @@ namespace Nyholm\Psr7Server {
 
             $serverRequest = $this->serverRequestFactory->createServerRequest($method, $uri, $server);
             foreach ($headers as $name => $value) {
+                // Because PHP automatically casts array keys set with numeric strings to integers, we have to make sure
+                // that numeric headers will not be sent along as integers, as withAddedHeader can only accept strings.
+                if (\is_int($name)) {
+                    $name = (string) $name;
+                }
                 $serverRequest = $serverRequest->withAddedHeader($name, $value);
             }
 
@@ -3461,8 +3871,6 @@ namespace Nyholm\Psr7Server {
          * Loops through all nested files and returns a normalized array of
          * UploadedFileInterface instances.
          *
-         * @param array $files
-         *
          * @return UploadedFileInterface[]
          */
         private function normalizeNestedFileSpec(array $files = []): array
@@ -3492,20 +3900,28 @@ namespace Nyholm\Psr7Server {
         {
             $uri = $this->uriFactory->createUri('');
 
-            if (isset($server['REQUEST_SCHEME'])) {
-                $uri = $uri->withScheme($server['REQUEST_SCHEME']);
-            } elseif (isset($server['HTTPS'])) {
-                $uri = $uri->withScheme('on' === $server['HTTPS'] ? 'https' : 'http');
+            if (isset($server['HTTP_X_FORWARDED_PROTO'])) {
+                $uri = $uri->withScheme($server['HTTP_X_FORWARDED_PROTO']);
+            } else {
+                if (isset($server['REQUEST_SCHEME'])) {
+                    $uri = $uri->withScheme($server['REQUEST_SCHEME']);
+                } elseif (isset($server['HTTPS'])) {
+                    $uri = $uri->withScheme('on' === $server['HTTPS'] ? 'https' : 'http');
+                }
+
+                if (isset($server['SERVER_PORT'])) {
+                    $uri = $uri->withPort($server['SERVER_PORT']);
+                }
             }
 
             if (isset($server['HTTP_HOST'])) {
-                $uri = $uri->withHost($server['HTTP_HOST']);
+                if (1 === \preg_match('/^(.+)\:(\d+)$/', $server['HTTP_HOST'], $matches)) {
+                    $uri = $uri->withHost($matches[1])->withPort($matches[2]);
+                } else {
+                    $uri = $uri->withHost($server['HTTP_HOST']);
+                }
             } elseif (isset($server['SERVER_NAME'])) {
                 $uri = $uri->withHost($server['SERVER_NAME']);
-            }
-
-            if (isset($server['SERVER_PORT'])) {
-                $uri = $uri->withPort($server['SERVER_PORT']);
             }
 
             if (isset($server['REQUEST_URI'])) {
@@ -3551,7 +3967,7 @@ namespace Nyholm\Psr7Server {
          * @param array                                $headers typically the output of getallheaders() or similar structure
          * @param array                                $cookie  typically $_COOKIE or similar structure
          * @param array                                $get     typically $_GET or similar structure
-         * @param array                                $post    typically $_POST or similar structure
+         * @param array|null                           $post    typically $_POST or similar structure, represents parsed request body
          * @param array                                $files   typically $_FILES or similar structure
          * @param StreamInterface|resource|string|null $body    Typically stdIn
          *
@@ -3562,7 +3978,7 @@ namespace Nyholm\Psr7Server {
             array $headers = [],
             array $cookie = [],
             array $get = [],
-            array $post = [],
+            ?array $post = null,
             array $files = [],
             $body = null
         ): ServerRequestInterface;
@@ -3571,8 +3987,6 @@ namespace Nyholm\Psr7Server {
          * Get parsed headers from ($_SERVER) array.
          *
          * @param array $server typically $_SERVER or similar structure
-         *
-         * @return array
          */
         public static function getHeadersFromServer(array $server): array;
     }
@@ -3832,6 +4246,9 @@ namespace Tqdev\PhpCrudApi\Cache {
             if ($data === false) {
                 return '';
             }
+            if (strpos($data, '|') === false) {
+                return '';
+            }
             list($ttl, $string) = explode('|', $data, 2);
             if ($ttl > 0 && time() - filemtime($filename) > $ttl) {
                 return '';
@@ -3864,18 +4281,18 @@ namespace Tqdev\PhpCrudApi\Cache {
                     if (strlen($entry) != $len) {
                         continue;
                     }
-                    if (is_file($filename)) {
+                    if (file_exists($filename) && is_file($filename)) {
                         if ($all || $this->getString($filename) == null) {
-                            unlink($filename);
+                            @unlink($filename);
                         }
                     }
                 } else {
                     if (strlen($entry) != $segments[0]) {
                         continue;
                     }
-                    if (is_dir($filename)) {
+                    if (file_exists($filename) && is_dir($filename)) {
                         $this->clean($filename, array_slice($segments, 1), $len - $segments[0], $all);
-                        rmdir($filename);
+                        @rmdir($filename);
                     }
                 }
             }
@@ -4228,23 +4645,43 @@ namespace Tqdev\PhpCrudApi\Column\Reflection {
                 $columns[$column->getName()] = $column;
             }
             // set primary key
-            $columnNames = $reflection->getTablePrimaryKeys($name);
-            if (count($columnNames) == 1) {
-                $columnName = $columnNames[0];
-                if (isset($columns[$columnName])) {
-                    $pk = $columns[$columnName];
-                    $pk->setPk(true);
+            $columnName = false;
+            if ($type == 'view') {
+                $columnName = 'id';
+            } else {
+                $columnNames = $reflection->getTablePrimaryKeys($name);
+                if (count($columnNames) == 1) {
+                    $columnName = $columnNames[0];
                 }
             }
+            if ($columnName && isset($columns[$columnName])) {
+                $pk = $columns[$columnName];
+                $pk->setPk(true);
+            }
             // set foreign keys
-            $fks = $reflection->getTableForeignKeys($name);
-            foreach ($fks as $columnName => $table) {
-                $columns[$columnName]->setFk($table);
+            if ($type == 'view') {
+                $tables = $reflection->getTables();
+                foreach ($columns as $columnName => $column) {
+                    if (substr($columnName, -3) == '_id') {
+                        foreach ($tables as $table) {
+                            $tableName = $table['TABLE_NAME'];
+                            $suffix = $tableName . '_id';
+                            if (substr($columnName, -1 * strlen($suffix)) == $suffix) {
+                                $column->setFk($tableName);
+                            }
+                        }
+                    }
+                }
+            } else {
+                $fks = $reflection->getTableForeignKeys($name);
+                foreach ($fks as $columnName => $table) {
+                    $columns[$columnName]->setFk($table);
+                }
             }
             return new ReflectedTable($name, $type, array_values($columns));
         }
 
-        public static function fromJson(/* object */$json): ReflectedTable
+        public static function fromJson( /* object */$json): ReflectedTable
         {
             $name = $json->name;
             $type = isset($json->type) ? $json->type : 'table';
@@ -4397,7 +4834,8 @@ namespace Tqdev\PhpCrudApi\Column {
                     return false;
                 }
             }
-            if ($newColumn->getType() != $column->getType() ||
+            if (
+                $newColumn->getType() != $column->getType() ||
                 $newColumn->getLength() != $column->getLength() ||
                 $newColumn->getPrecision() != $column->getPrecision() ||
                 $newColumn->getScale() != $column->getScale()
@@ -4581,11 +5019,6 @@ namespace Tqdev\PhpCrudApi\Column {
         public function getTableNames(): array
         {
             return $this->database()->getTableNames();
-        }
-
-        public function getDatabaseName(): string
-        {
-            return $this->database()->getName();
         }
 
         public function removeTable(string $tableName): bool
@@ -5190,9 +5623,14 @@ namespace Tqdev\PhpCrudApi\Database {
                 return '';
             }
             switch ($this->driver) {
-                case 'mysql':return " LIMIT $offset, $limit";
-                case 'pgsql':return " LIMIT $limit OFFSET $offset";
-                case 'sqlsrv':return " OFFSET $offset ROWS FETCH NEXT $limit ROWS ONLY";
+                case 'mysql':
+                    return " LIMIT $offset, $limit";
+                case 'pgsql':
+                    return " LIMIT $limit OFFSET $offset";
+                case 'sqlsrv':
+                    return " OFFSET $offset ROWS FETCH NEXT $limit ROWS ONLY";
+                case 'sqlite':
+                    return " LIMIT $limit OFFSET $offset";
             }
         }
 
@@ -5242,9 +5680,14 @@ namespace Tqdev\PhpCrudApi\Database {
             $valuesSql = '(' . implode(',', $values) . ')';
             $outputColumn = $this->quoteColumnName($table->getPk());
             switch ($this->driver) {
-                case 'mysql':return "$columnsSql VALUES $valuesSql";
-                case 'pgsql':return "$columnsSql VALUES $valuesSql RETURNING $outputColumn";
-                case 'sqlsrv':return "$columnsSql OUTPUT INSERTED.$outputColumn VALUES $valuesSql";
+                case 'mysql':
+                    return "$columnsSql VALUES $valuesSql";
+                case 'pgsql':
+                    return "$columnsSql VALUES $valuesSql RETURNING $outputColumn";
+                case 'sqlsrv':
+                    return "$columnsSql OUTPUT INSERTED.$outputColumn VALUES $valuesSql";
+                case 'sqlite':
+                    return "$columnsSql VALUES $valuesSql";
             }
         }
 
@@ -5424,17 +5867,28 @@ namespace Tqdev\PhpCrudApi\Database {
         private function getSpatialFunctionName(string $operator): string
         {
             switch ($operator) {
-                case 'co':return 'ST_Contains';
-                case 'cr':return 'ST_Crosses';
-                case 'di':return 'ST_Disjoint';
-                case 'eq':return 'ST_Equals';
-                case 'in':return 'ST_Intersects';
-                case 'ov':return 'ST_Overlaps';
-                case 'to':return 'ST_Touches';
-                case 'wi':return 'ST_Within';
-                case 'ic':return 'ST_IsClosed';
-                case 'is':return 'ST_IsSimple';
-                case 'iv':return 'ST_IsValid';
+                case 'co':
+                    return 'ST_Contains';
+                case 'cr':
+                    return 'ST_Crosses';
+                case 'di':
+                    return 'ST_Disjoint';
+                case 'eq':
+                    return 'ST_Equals';
+                case 'in':
+                    return 'ST_Intersects';
+                case 'ov':
+                    return 'ST_Overlaps';
+                case 'to':
+                    return 'ST_Touches';
+                case 'wi':
+                    return 'ST_Within';
+                case 'ic':
+                    return 'ST_IsClosed';
+                case 'is':
+                    return 'ST_IsSimple';
+                case 'iv':
+                    return 'ST_IsValid';
             }
         }
 
@@ -5454,6 +5908,9 @@ namespace Tqdev\PhpCrudApi\Database {
                     $functionName = str_replace('ST_', 'ST', $functionName);
                     $argument = $hasArgument ? 'geometry::STGeomFromText(?,0)' : '';
                     return "$column.$functionName($argument)=1";
+                case 'sqlite':
+                    $argument = $hasArgument ? '?' : '0';
+                    return "$functionName($column, $argument)=1";
             }
         }
 
@@ -5498,22 +5955,34 @@ namespace Tqdev\PhpCrudApi\Database {
 
         private function convertRecordValue($conversion, $value)
         {
-            switch ($conversion) {
+            $args = explode('|', $conversion);
+            $type = array_shift($args);
+            switch ($type) {
                 case 'boolean':
                     return $value ? true : false;
                 case 'integer':
                     return (int) $value;
+                case 'float':
+                    return (float) $value;
+                case 'decimal':
+                    return number_format($value, $args[0], '.', '');
             }
             return $value;
         }
 
         private function getRecordValueConversion(ReflectedColumn $column): string
         {
-            if (in_array($this->driver, ['mysql', 'sqlsrv']) && $column->isBoolean()) {
+            if (in_array($this->driver, ['mysql', 'sqlsrv', 'sqlite']) && $column->isBoolean()) {
                 return 'boolean';
             }
-            if ($this->driver == 'sqlsrv' && $column->getType() == 'bigint') {
+            if (in_array($this->driver, ['sqlsrv', 'sqlite']) && in_array($column->getType(), ['integer', 'bigint'])) {
                 return 'integer';
+            }
+            if (in_array($this->driver, ['sqlite', 'pgsql']) && in_array($column->getType(), ['float', 'double'])) {
+                return 'float';
+            }
+            if (in_array($this->driver, ['sqlite']) && in_array($column->getType(), ['decimal'])) {
+                return 'decimal|' . $column->getScale();
             }
             return 'none';
         }
@@ -5588,6 +6057,7 @@ namespace Tqdev\PhpCrudApi\Database {
         private $address;
         private $port;
         private $database;
+        private $tables;
         private $username;
         private $password;
         private $pdo;
@@ -5606,6 +6076,8 @@ namespace Tqdev\PhpCrudApi\Database {
                     return "$this->driver:host=$this->address port=$this->port dbname=$this->database options='--client_encoding=UTF8'";
                 case 'sqlsrv':
                     return "$this->driver:Server=$this->address,$this->port;Database=$this->database";
+                case 'sqlite':
+                    return "$this->driver:$this->address";
             }
         }
 
@@ -5624,6 +6096,10 @@ namespace Tqdev\PhpCrudApi\Database {
                     ];
                 case 'sqlsrv':
                     return [];
+                case 'sqlite':
+                    return [
+                        'PRAGMA foreign_keys = on;',
+                    ];
             }
         }
 
@@ -5650,6 +6126,8 @@ namespace Tqdev\PhpCrudApi\Database {
                         \PDO::SQLSRV_ATTR_DIRECT_QUERY => false,
                         \PDO::SQLSRV_ATTR_FETCHES_NUMERIC_TYPE => true,
                     ];
+                case 'sqlite':
+                    return $options + [];
             }
         }
 
@@ -5665,26 +6143,27 @@ namespace Tqdev\PhpCrudApi\Database {
             foreach ($commands as $command) {
                 $this->pdo->addInitCommand($command);
             }
-            $this->reflection = new GenericReflection($this->pdo, $this->driver, $this->database);
-            $this->definition = new GenericDefinition($this->pdo, $this->driver, $this->database);
+            $this->reflection = new GenericReflection($this->pdo, $this->driver, $this->database, $this->tables);
+            $this->definition = new GenericDefinition($this->pdo, $this->driver, $this->database, $this->tables);
             $this->conditions = new ConditionsBuilder($this->driver);
             $this->columns = new ColumnsBuilder($this->driver);
             $this->converter = new DataConverter($this->driver);
             return $result;
         }
 
-        public function __construct(string $driver, string $address, int $port, string $database, string $username, string $password)
+        public function __construct(string $driver, string $address, int $port, string $database, array $tables, string $username, string $password)
         {
             $this->driver = $driver;
             $this->address = $address;
             $this->port = $port;
             $this->database = $database;
+            $this->tables = $tables;
             $this->username = $username;
             $this->password = $password;
             $this->initPdo();
         }
 
-        public function reconstruct(string $driver, string $address, int $port, string $database, string $username, string $password): bool
+        public function reconstruct(string $driver, string $address, int $port, string $database, array $tables, string $username, string $password): bool
         {
             if ($driver) {
                 $this->driver = $driver;
@@ -5697,6 +6176,9 @@ namespace Tqdev\PhpCrudApi\Database {
             }
             if ($database) {
                 $this->database = $database;
+            }
+            if ($tables) {
+                $this->tables = $tables;
             }
             if ($username) {
                 $this->username = $username;
@@ -5753,9 +6235,15 @@ namespace Tqdev\PhpCrudApi\Database {
                 case 'mysql':
                     $stmt = $this->query('SELECT LAST_INSERT_ID()', []);
                     break;
+                case 'sqlite':
+                    $stmt = $this->query('SELECT LAST_INSERT_ROWID()', []);
+                    break;
             }
             $pkValue = $stmt->fetchColumn(0);
             if ($this->driver == 'sqlsrv' && $table->getPk()->getType() == 'bigint') {
+                return (int) $pkValue;
+            }
+            if ($this->driver == 'sqlite' && in_array($table->getPk()->getType(), ['integer', 'bigint'])) {
                 return (int) $pkValue;
             }
             return $pkValue;
@@ -5889,6 +6377,7 @@ namespace Tqdev\PhpCrudApi\Database {
                 $this->address,
                 $this->port,
                 $this->database,
+                $this->tables,
                 $this->username
             ]));
         }
@@ -5910,13 +6399,13 @@ namespace Tqdev\PhpCrudApi\Database {
         private $typeConverter;
         private $reflection;
 
-        public function __construct(LazyPdo $pdo, string $driver, string $database)
+        public function __construct(LazyPdo $pdo, string $driver, string $database, array $tables)
         {
             $this->pdo = $pdo;
             $this->driver = $driver;
             $this->database = $database;
             $this->typeConverter = new TypeConverter($driver);
-            $this->reflection = new GenericReflection($pdo, $driver, $database);
+            $this->reflection = new GenericReflection($pdo, $driver, $database, $tables);
         }
 
         private function quote(string $identifier): string
@@ -5968,7 +6457,9 @@ namespace Tqdev\PhpCrudApi\Database {
                     return $column->getPk() ? ' AUTO_INCREMENT' : '';
                 case 'pgsql':
                 case 'sqlsrv':
-                    return '';
+                    return $column->getPk() ? ' IDENTITY(1,1)' : '';
+                case 'sqlite':
+                    return $column->getPk() ? ' AUTOINCREMENT' : '';
             }
         }
 
@@ -5992,6 +6483,8 @@ namespace Tqdev\PhpCrudApi\Database {
                     return "ALTER TABLE $p1 RENAME TO $p2";
                 case 'sqlsrv':
                     return "EXEC sp_rename $p1, $p2";
+                case 'sqlite':
+                    return "ALTER TABLE $p1 RENAME TO $p2";
             }
         }
 
@@ -6010,6 +6503,8 @@ namespace Tqdev\PhpCrudApi\Database {
                 case 'sqlsrv':
                     $p4 = $this->quote($tableName . '.' . $columnName);
                     return "EXEC sp_rename $p4, $p3, 'COLUMN'";
+                case 'sqlite':
+                    return "ALTER TABLE $p1 RENAME COLUMN $p2 TO $p3";
             }
         }
 
@@ -6168,12 +6663,22 @@ namespace Tqdev\PhpCrudApi\Database {
                 $f4 = $this->quote($newColumn->getFk());
                 $f5 = $this->quote($this->getPrimaryKey($newColumn->getFk()));
                 $f6 = $this->quote($tableName . '_' . $pkColumn . '_pkey');
-                $fields[] = "$f1 $f2";
-                if ($newColumn->getPk()) {
-                    $constraints[] = "CONSTRAINT $f6 PRIMARY KEY ($f1)";
-                }
-                if ($newColumn->getFk()) {
-                    $constraints[] = "CONSTRAINT $f3 FOREIGN KEY ($f1) REFERENCES $f4 ($f5)";
+                if ($this->driver == 'sqlite') {
+                    if ($newColumn->getPk()) {
+                        $f2 = str_replace('NULL', 'NULL PRIMARY KEY', $f2);
+                    }
+                    $fields[] = "$f1 $f2";
+                    if ($newColumn->getFk()) {
+                        $constraints[] = "FOREIGN KEY ($f1) REFERENCES $f4 ($f5)";
+                    }
+                } else {
+                    $fields[] = "$f1 $f2";
+                    if ($newColumn->getPk()) {
+                        $constraints[] = "CONSTRAINT $f6 PRIMARY KEY ($f1)";
+                    }
+                    if ($newColumn->getFk()) {
+                        $constraints[] = "CONSTRAINT $f3 FOREIGN KEY ($f1) REFERENCES $f4 ($f5)";
+                    }
                 }
             }
             $p2 = implode(',', array_merge($fields, $constraints));
@@ -6193,6 +6698,8 @@ namespace Tqdev\PhpCrudApi\Database {
                     return "ALTER TABLE $p1 ADD COLUMN $p2 $p3";
                 case 'sqlsrv':
                     return "ALTER TABLE $p1 ADD $p2 $p3";
+                case 'sqlite':
+                    return "ALTER TABLE $p1 ADD COLUMN $p2 $p3";
             }
         }
 
@@ -6205,6 +6712,8 @@ namespace Tqdev\PhpCrudApi\Database {
                 case 'pgsql':
                     return "DROP TABLE $p1 CASCADE;";
                 case 'sqlsrv':
+                    return "DROP TABLE $p1;";
+                case 'sqlite':
                     return "DROP TABLE $p1;";
             }
         }
@@ -6220,44 +6729,46 @@ namespace Tqdev\PhpCrudApi\Database {
                     return "ALTER TABLE $p1 DROP COLUMN $p2 CASCADE;";
                 case 'sqlsrv':
                     return "ALTER TABLE $p1 DROP COLUMN $p2;";
+                case 'sqlite':
+                    return "ALTER TABLE $p1 DROP COLUMN $p2;";
             }
         }
 
         public function renameTable(string $tableName, string $newTableName)
         {
             $sql = $this->getTableRenameSQL($tableName, $newTableName);
-            return $this->query($sql);
+            return $this->query($sql, []);
         }
 
         public function renameColumn(string $tableName, string $columnName, ReflectedColumn $newColumn)
         {
             $sql = $this->getColumnRenameSQL($tableName, $columnName, $newColumn);
-            return $this->query($sql);
+            return $this->query($sql, []);
         }
 
         public function retypeColumn(string $tableName, string $columnName, ReflectedColumn $newColumn)
         {
             $sql = $this->getColumnRetypeSQL($tableName, $columnName, $newColumn);
-            return $this->query($sql);
+            return $this->query($sql, []);
         }
 
         public function setColumnNullable(string $tableName, string $columnName, ReflectedColumn $newColumn)
         {
             $sql = $this->getSetColumnNullableSQL($tableName, $columnName, $newColumn);
-            return $this->query($sql);
+            return $this->query($sql, []);
         }
 
         public function addColumnPrimaryKey(string $tableName, string $columnName, ReflectedColumn $newColumn)
         {
             $sql = $this->getSetColumnPkConstraintSQL($tableName, $columnName, $newColumn);
-            $this->query($sql);
+            $this->query($sql, []);
             if ($this->canAutoIncrement($newColumn)) {
                 $sql = $this->getSetColumnPkSequenceSQL($tableName, $columnName, $newColumn);
-                $this->query($sql);
+                $this->query($sql, []);
                 $sql = $this->getSetColumnPkSequenceStartSQL($tableName, $columnName, $newColumn);
-                $this->query($sql);
+                $this->query($sql, []);
                 $sql = $this->getSetColumnPkDefaultSQL($tableName, $columnName, $newColumn);
-                $this->query($sql);
+                $this->query($sql, []);
             }
             return true;
         }
@@ -6266,56 +6777,56 @@ namespace Tqdev\PhpCrudApi\Database {
         {
             if ($this->canAutoIncrement($newColumn)) {
                 $sql = $this->getSetColumnPkDefaultSQL($tableName, $columnName, $newColumn);
-                $this->query($sql);
+                $this->query($sql, []);
                 $sql = $this->getSetColumnPkSequenceSQL($tableName, $columnName, $newColumn);
-                $this->query($sql);
+                $this->query($sql, []);
             }
             $sql = $this->getSetColumnPkConstraintSQL($tableName, $columnName, $newColumn);
-            $this->query($sql);
+            $this->query($sql, []);
             return true;
         }
 
         public function addColumnForeignKey(string $tableName, string $columnName, ReflectedColumn $newColumn)
         {
             $sql = $this->getAddColumnFkConstraintSQL($tableName, $columnName, $newColumn);
-            return $this->query($sql);
+            return $this->query($sql, []);
         }
 
         public function removeColumnForeignKey(string $tableName, string $columnName, ReflectedColumn $newColumn)
         {
             $sql = $this->getRemoveColumnFkConstraintSQL($tableName, $columnName, $newColumn);
-            return $this->query($sql);
+            return $this->query($sql, []);
         }
 
         public function addTable(ReflectedTable $newTable)
         {
             $sql = $this->getAddTableSQL($newTable);
-            return $this->query($sql);
+            return $this->query($sql, []);
         }
 
         public function addColumn(string $tableName, ReflectedColumn $newColumn)
         {
             $sql = $this->getAddColumnSQL($tableName, $newColumn);
-            return $this->query($sql);
+            return $this->query($sql, []);
         }
 
         public function removeTable(string $tableName)
         {
             $sql = $this->getRemoveTableSQL($tableName);
-            return $this->query($sql);
+            return $this->query($sql, []);
         }
 
         public function removeColumn(string $tableName, string $columnName)
         {
             $sql = $this->getRemoveColumnSQL($tableName, $columnName);
-            return $this->query($sql);
+            return $this->query($sql, []);
         }
 
-        private function query(string $sql): bool
+        private function query(string $sql, array $arguments): bool
         {
             $stmt = $this->pdo->prepare($sql);
-            //echo "- $sql -- []\n";
-            return $stmt->execute();
+            // echo "- $sql -- " . json_encode($arguments) . "\n";
+            return $stmt->execute($arguments);
         }
     }
 }
@@ -6330,13 +6841,15 @@ namespace Tqdev\PhpCrudApi\Database {
         private $pdo;
         private $driver;
         private $database;
+        private $tables;
         private $typeConverter;
 
-        public function __construct(LazyPdo $pdo, string $driver, string $database)
+        public function __construct(LazyPdo $pdo, string $driver, string $database, array $tables)
         {
             $this->pdo = $pdo;
             $this->driver = $driver;
             $this->database = $database;
+            $this->tables = $tables;
             $this->typeConverter = new TypeConverter($driver);
         }
 
@@ -6348,6 +6861,8 @@ namespace Tqdev\PhpCrudApi\Database {
                 case 'pgsql':
                     return ['spatial_ref_sys', 'raster_columns', 'raster_overviews', 'geography_columns', 'geometry_columns'];
                 case 'sqlsrv':
+                    return [];
+                case 'sqlite':
                     return [];
             }
         }
@@ -6361,6 +6876,8 @@ namespace Tqdev\PhpCrudApi\Database {
                     return 'SELECT c.relname as "TABLE_NAME", c.relkind as "TABLE_TYPE" FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind IN (\'r\', \'v\') AND n.nspname <> \'pg_catalog\' AND n.nspname <> \'information_schema\' AND n.nspname !~ \'^pg_toast\' AND pg_catalog.pg_table_is_visible(c.oid) AND \'\' <> ? ORDER BY "TABLE_NAME";';
                 case 'sqlsrv':
                     return 'SELECT o.name as "TABLE_NAME", o.xtype as "TABLE_TYPE" FROM sysobjects o WHERE o.xtype IN (\'U\', \'V\') ORDER BY "TABLE_NAME"';
+                case 'sqlite':
+                    return 'SELECT t.name as "TABLE_NAME", t.type as "TABLE_TYPE" FROM sqlite_master t WHERE t.type IN (\'table\', \'view\') AND \'\' <> ? ORDER BY "TABLE_NAME"';
             }
         }
 
@@ -6368,11 +6885,13 @@ namespace Tqdev\PhpCrudApi\Database {
         {
             switch ($this->driver) {
                 case 'mysql':
-                    return 'SELECT "COLUMN_NAME", "IS_NULLABLE", "DATA_TYPE", "CHARACTER_MAXIMUM_LENGTH" as "CHARACTER_MAXIMUM_LENGTH", "NUMERIC_PRECISION", "NUMERIC_SCALE", "COLUMN_TYPE" FROM "INFORMATION_SCHEMA"."COLUMNS" WHERE "TABLE_NAME" = ? AND "TABLE_SCHEMA" = ?';
+                    return 'SELECT "COLUMN_NAME", "IS_NULLABLE", "DATA_TYPE", "CHARACTER_MAXIMUM_LENGTH" as "CHARACTER_MAXIMUM_LENGTH", "NUMERIC_PRECISION", "NUMERIC_SCALE", "COLUMN_TYPE" FROM "INFORMATION_SCHEMA"."COLUMNS" WHERE "TABLE_NAME" = ? AND "TABLE_SCHEMA" = ? ORDER BY "ORDINAL_POSITION"';
                 case 'pgsql':
-                    return 'SELECT a.attname AS "COLUMN_NAME", case when a.attnotnull then \'NO\' else \'YES\' end as "IS_NULLABLE", pg_catalog.format_type(a.atttypid, -1) as "DATA_TYPE", case when a.atttypmod < 0 then NULL else a.atttypmod-4 end as "CHARACTER_MAXIMUM_LENGTH", case when a.atttypid != 1700 then NULL else ((a.atttypmod - 4) >> 16) & 65535 end as "NUMERIC_PRECISION", case when a.atttypid != 1700 then NULL else (a.atttypmod - 4) & 65535 end as "NUMERIC_SCALE", \'\' AS "COLUMN_TYPE" FROM pg_attribute a JOIN pg_class pgc ON pgc.oid = a.attrelid WHERE pgc.relname = ? AND \'\' <> ? AND a.attnum > 0 AND NOT a.attisdropped;';
+                    return 'SELECT a.attname AS "COLUMN_NAME", case when a.attnotnull then \'NO\' else \'YES\' end as "IS_NULLABLE", pg_catalog.format_type(a.atttypid, -1) as "DATA_TYPE", case when a.atttypmod < 0 then NULL else a.atttypmod-4 end as "CHARACTER_MAXIMUM_LENGTH", case when a.atttypid != 1700 then NULL else ((a.atttypmod - 4) >> 16) & 65535 end as "NUMERIC_PRECISION", case when a.atttypid != 1700 then NULL else (a.atttypmod - 4) & 65535 end as "NUMERIC_SCALE", \'\' AS "COLUMN_TYPE" FROM pg_attribute a JOIN pg_class pgc ON pgc.oid = a.attrelid WHERE pgc.relname = ? AND \'\' <> ? AND a.attnum > 0 AND NOT a.attisdropped ORDER BY a.attnum;';
                 case 'sqlsrv':
-                    return 'SELECT c.name AS "COLUMN_NAME", c.is_nullable AS "IS_NULLABLE", t.Name AS "DATA_TYPE", (c.max_length/2) AS "CHARACTER_MAXIMUM_LENGTH", c.precision AS "NUMERIC_PRECISION", c.scale AS "NUMERIC_SCALE", \'\' AS "COLUMN_TYPE" FROM sys.columns c INNER JOIN sys.types t ON c.user_type_id = t.user_type_id WHERE c.object_id = OBJECT_ID(?) AND \'\' <> ?';
+                    return 'SELECT c.name AS "COLUMN_NAME", c.is_nullable AS "IS_NULLABLE", t.Name AS "DATA_TYPE", (c.max_length/2) AS "CHARACTER_MAXIMUM_LENGTH", c.precision AS "NUMERIC_PRECISION", c.scale AS "NUMERIC_SCALE", \'\' AS "COLUMN_TYPE" FROM sys.columns c INNER JOIN sys.types t ON c.user_type_id = t.user_type_id WHERE c.object_id = OBJECT_ID(?) AND \'\' <> ? ORDER BY c.column_id';
+                case 'sqlite':
+                    return 'SELECT "name" AS "COLUMN_NAME", case when "notnull"==1 then \'no\' else \'yes\' end as "IS_NULLABLE", lower("type") AS "DATA_TYPE", 2147483647 AS "CHARACTER_MAXIMUM_LENGTH", 0 AS "NUMERIC_PRECISION", 0 AS "NUMERIC_SCALE", \'\' AS "COLUMN_TYPE" FROM pragma_table_info(?) WHERE \'\' <> ? ORDER BY "cid"';
             }
         }
 
@@ -6385,6 +6904,8 @@ namespace Tqdev\PhpCrudApi\Database {
                     return 'SELECT a.attname AS "COLUMN_NAME" FROM pg_attribute a JOIN pg_constraint c ON (c.conrelid, c.conkey[1]) = (a.attrelid, a.attnum) JOIN pg_class pgc ON pgc.oid = a.attrelid WHERE pgc.relname = ? AND \'\' <> ? AND c.contype = \'p\'';
                 case 'sqlsrv':
                     return 'SELECT c.NAME as "COLUMN_NAME" FROM sys.key_constraints kc inner join sys.objects t on t.object_id = kc.parent_object_id INNER JOIN sys.index_columns ic ON kc.parent_object_id = ic.object_id and kc.unique_index_id = ic.index_id INNER JOIN sys.columns c ON ic.object_id = c.object_id AND ic.column_id = c.column_id WHERE kc.type = \'PK\' and t.object_id = OBJECT_ID(?) and \'\' <> ?';
+                case 'sqlite':
+                    return 'SELECT "name" as "COLUMN_NAME" FROM pragma_table_info(?) WHERE "pk"=1 AND \'\' <> ?';
             }
         }
 
@@ -6397,6 +6918,8 @@ namespace Tqdev\PhpCrudApi\Database {
                     return 'SELECT a.attname AS "COLUMN_NAME", c.confrelid::regclass::text AS "REFERENCED_TABLE_NAME" FROM pg_attribute a JOIN pg_constraint c ON (c.conrelid, c.conkey[1]) = (a.attrelid, a.attnum) JOIN pg_class pgc ON pgc.oid = a.attrelid WHERE pgc.relname = ? AND \'\' <> ? AND c.contype  = \'f\'';
                 case 'sqlsrv':
                     return 'SELECT COL_NAME(fc.parent_object_id, fc.parent_column_id) AS "COLUMN_NAME", OBJECT_NAME (f.referenced_object_id) AS "REFERENCED_TABLE_NAME" FROM sys.foreign_keys AS f INNER JOIN sys.foreign_key_columns AS fc ON f.OBJECT_ID = fc.constraint_object_id WHERE f.parent_object_id = OBJECT_ID(?) and \'\' <> ?';
+                case 'sqlite':
+                    return 'SELECT "from" AS "COLUMN_NAME", "table" AS "REFERENCED_TABLE_NAME" FROM pragma_foreign_key_list(?) WHERE \'\' <> ?';
             }
         }
 
@@ -6409,21 +6932,27 @@ namespace Tqdev\PhpCrudApi\Database {
         {
             $sql = $this->getTablesSQL();
             $results = $this->query($sql, [$this->database]);
+            $tables = $this->tables;
+            $results = array_filter($results, function ($v) use ($tables) {
+                return !$tables || in_array($v['TABLE_NAME'], $tables);
+            });
             foreach ($results as &$result) {
+                $map = [];
                 switch ($this->driver) {
                     case 'mysql':
                         $map = ['BASE TABLE' => 'table', 'VIEW' => 'view'];
-                        $result['TABLE_TYPE'] = $map[$result['TABLE_TYPE']];
                         break;
                     case 'pgsql':
                         $map = ['r' => 'table', 'v' => 'view'];
-                        $result['TABLE_TYPE'] = $map[$result['TABLE_TYPE']];
                         break;
                     case 'sqlsrv':
                         $map = ['U' => 'table', 'V' => 'view'];
-                        $result['TABLE_TYPE'] = $map[trim($result['TABLE_TYPE'])];
+                        break;
+                    case 'sqlite':
+                        $map = ['table' => 'table', 'view' => 'view'];
                         break;
                 }
+                $result['TABLE_TYPE'] = $map[trim($result['TABLE_TYPE'])];
             }
             return $results;
         }
@@ -6449,6 +6978,23 @@ namespace Tqdev\PhpCrudApi\Database {
                         if (isset($matches[5])) {
                             $result['NUMERIC_SCALE'] = $matches[5];
                         }
+                    }
+                }
+            }
+            if ($this->driver == 'sqlite') {
+                foreach ($results as &$result) {
+                    // sqlite does not properly reflect display width of types
+                    preg_match('|([a-z]+)(\(([0-9]+)(,([0-9]+))?\))?|', $result['DATA_TYPE'], $matches);
+                    if (isset($matches[1])) {
+                        $result['DATA_TYPE'] = $matches[1];
+                    } else {
+                        $result['DATA_TYPE'] = 'integer';
+                    }
+                    if (isset($matches[5])) {
+                        $result['NUMERIC_PRECISION'] = $matches[3];
+                        $result['NUMERIC_SCALE'] = $matches[5];
+                    } else if (isset($matches[3])) {
+                        $result['CHARACTER_MAXIMUM_LENGTH'] = $matches[3];
                     }
                 }
             }
@@ -6632,19 +7178,26 @@ namespace Tqdev\PhpCrudApi\Database {
         private $fromJdbc = [
             'mysql' => [
                 'clob' => 'longtext',
-                'boolean' => 'tinyint',
+                'boolean' => 'tinyint(1)',
                 'blob' => 'longblob',
                 'timestamp' => 'datetime',
             ],
             'pgsql' => [
                 'clob' => 'text',
                 'blob' => 'bytea',
+                'float' => 'real',
+                'double' => 'double precision',
+                'varbinary' => 'bytea',
             ],
             'sqlsrv' => [
                 'boolean' => 'bit',
                 'varchar' => 'nvarchar',
                 'clob' => 'ntext',
                 'blob' => 'image',
+                'time' => 'time(0)',
+                'timestamp' => 'datetime2(0)',
+                'double' => 'float',
+                'float' => 'real',
             ],
         ];
 
@@ -6739,6 +7292,20 @@ namespace Tqdev\PhpCrudApi\Database {
                 'uniqueidentifier' => 'char',
                 'xml' => 'clob',
             ],
+            'sqlite' => [
+                'tinytext' => 'clob',
+                'text' => 'clob',
+                'mediumtext' => 'clob',
+                'longtext' => 'clob',
+                'mediumint' => 'integer',
+                'int' => 'integer',
+                'bigint' => 'bigint',
+                'int2' => 'smallint',
+                'int4' => 'integer',
+                'int8' => 'bigint',
+                'double precision' => 'double',
+                'datetime' => 'timestamp'
+            ],
         ];
 
         // source: https://docs.oracle.com/javase/9/docs/api/java/sql/Types.html
@@ -6799,7 +7366,8 @@ namespace Tqdev\PhpCrudApi\Database {
                 $jdbcType = $this->toJdbc['simplified'][$jdbcType];
             }
             if (!isset($this->valid[$jdbcType])) {
-                throw new \Exception("Unsupported type '$jdbcType' for driver '$this->driver'");
+                //throw new \Exception("Unsupported type '$jdbcType' for driver '$this->driver'");
+                $jdbcType = 'clob';
             }
             return $jdbcType;
         }
@@ -7052,7 +7620,6 @@ namespace Tqdev\PhpCrudApi\GeoJson {
                 $coordinates = preg_replace('|([0-9\-\.]+ )+([0-9\-\.]+)|', '[\1\2]', $coordinates);
             }
             $coordinates = str_replace(['(', ')', ', ', ' '], ['[', ']', ',', ','], $coordinates);
-            $json = $coordinates;
             $coordinates = json_decode($coordinates);
             if (!$coordinates) {
                 throw new \Exception('Could not decode WKT: ' . $wkt);
@@ -7213,7 +7780,9 @@ namespace Tqdev\PhpCrudApi\Middleware\Router {
                         return substr($fullPath, 0, -1 * strlen($path));
                     }
                 }
-                return $fullPath;
+                if ('/' . basename(__FILE__) == $fullPath) {
+                    return $fullPath;
+                }
             }
             return '/';
         }
@@ -7303,6 +7872,8 @@ namespace Tqdev\PhpCrudApi\Middleware\Router {
                 $response = call_user_func($this->routeHandlers[$routeNumbers[0]], $request);
             } catch (\PDOException $e) {
                 if (strpos(strtolower($e->getMessage()), 'duplicate') !== false) {
+                    $response = $this->responder->error(ErrorCode::DUPLICATE_KEY_EXCEPTION, '');
+                } elseif (strpos(strtolower($e->getMessage()), 'unique constraint') !== false) {
                     $response = $this->responder->error(ErrorCode::DUPLICATE_KEY_EXCEPTION, '');
                 } elseif (strpos(strtolower($e->getMessage()), 'default value') !== false) {
                     $response = $this->responder->error(ErrorCode::DATA_INTEGRITY_VIOLATION, '');
@@ -7525,6 +8096,10 @@ namespace Tqdev\PhpCrudApi\Middleware {
         {
             if (session_status() == PHP_SESSION_NONE) {
                 if (!headers_sent()) {
+                    $sessionName = $this->getProperty('sessionName', '');
+                    if ($sessionName) {
+                        session_name($sessionName);
+                    }
                     session_start();
                 }
             }
@@ -7564,7 +8139,6 @@ namespace Tqdev\PhpCrudApi\Middleware {
     use Psr\Http\Message\ResponseInterface;
     use Psr\Http\Message\ServerRequestInterface;
     use Psr\Http\Server\RequestHandlerInterface;
-    use Tqdev\PhpCrudApi\Controller\Responder;
     use Tqdev\PhpCrudApi\Middleware\Base\Middleware;
     use Tqdev\PhpCrudApi\Record\ErrorCode;
     use Tqdev\PhpCrudApi\ResponseFactory;
@@ -7706,6 +8280,10 @@ namespace Tqdev\PhpCrudApi\Middleware {
         {
             if (session_status() == PHP_SESSION_NONE) {
                 if (!headers_sent()) {
+                    $sessionName = $this->getProperty('sessionName', '');
+                    if ($sessionName) {
+                        session_name($sessionName);
+                    }
                     session_start();
                 }
             }
@@ -8077,6 +8655,10 @@ namespace Tqdev\PhpCrudApi\Middleware {
         {
             if (session_status() == PHP_SESSION_NONE) {
                 if (!headers_sent()) {
+                    $sessionName = $this->getProperty('sessionName', '');
+                    if ($sessionName) {
+                        session_name($sessionName);
+                    }
                     session_start();
                 }
             }
@@ -8313,6 +8895,15 @@ namespace Tqdev\PhpCrudApi\Middleware {
             return '';
         }
 
+        private function getTables(): array
+        {
+            $tablesHandler = $this->getProperty('tablesHandler', '');
+            if ($tablesHandler) {
+                return call_user_func($tablesHandler);
+            }
+            return [];
+        }
+
         private function getUsername(): string
         {
             $usernameHandler = $this->getProperty('usernameHandler', '');
@@ -8337,10 +8928,11 @@ namespace Tqdev\PhpCrudApi\Middleware {
             $address = $this->getAddress();
             $port = $this->getPort();
             $database = $this->getDatabase();
+            $tables = $this->getTables();
             $username = $this->getUsername();
             $password = $this->getPassword();
-            if ($driver || $address || $port || $database || $username || $password) {
-                $this->db->reconstruct($driver, $address, $port, $database, $username, $password);
+            if ($driver || $address || $port || $database || $tables || $username || $password) {
+                $this->db->reconstruct($driver, $address, $port, $database, $tables, $username, $password);
             }
             return $next->handle($request);
         }
@@ -8354,6 +8946,7 @@ namespace Tqdev\PhpCrudApi\Middleware {
     use Psr\Http\Message\ServerRequestInterface;
     use Psr\Http\Server\RequestHandlerInterface;
     use Tqdev\PhpCrudApi\Column\Reflection\ReflectedTable;
+    use Tqdev\PhpCrudApi\Column\Reflection\ReflectedColumn;
     use Tqdev\PhpCrudApi\Column\ReflectionService;
     use Tqdev\PhpCrudApi\Controller\Responder;
     use Tqdev\PhpCrudApi\Middleware\Base\Middleware;
@@ -8378,9 +8971,95 @@ namespace Tqdev\PhpCrudApi\Middleware {
                 if ($table->hasColumn($columnName)) {
                     $column = $table->getColumn($columnName);
                     $value = call_user_func($handler, $operation, $tableName, $column->serialize(), $value);
+                    $value = $this->sanitizeType($table, $column, $value);
                 }
             }
             return (object) $context;
+        }
+
+        private function sanitizeType(ReflectedTable $table, ReflectedColumn $column, $value)
+        {
+            $tables = $this->getArrayProperty('tables', 'all');
+            $types = $this->getArrayProperty('types', 'all');
+            if (
+                (in_array('all', $tables) || in_array($table->getName(), $tables)) &&
+                (in_array('all', $types) || in_array($column->getType(), $types))
+            ) {
+                if (is_null($value)) {
+                    return $value;
+                }
+                if (is_string($value)) {
+                    $newValue = null;
+                    switch ($column->getType()) {
+                        case 'integer':
+                        case 'bigint':
+                            $newValue = filter_var(trim($value), FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                            break;
+                        case 'decimal':
+                            $newValue = filter_var(trim($value), FILTER_VALIDATE_FLOAT, FILTER_NULL_ON_FAILURE);
+                            if (is_float($newValue)) {
+                                $newValue = number_format($newValue, $column->getScale(), '.', '');
+                            }
+                            break;
+                        case 'float':
+                        case 'double':
+                            $newValue = filter_var(trim($value), FILTER_VALIDATE_FLOAT, FILTER_NULL_ON_FAILURE);
+                            break;
+                        case 'boolean':
+                            $newValue = filter_var(trim($value), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                            break;
+                        case 'date':
+                            $time = strtotime(trim($value));
+                            if ($time !== false) {
+                                $newValue = date('Y-m-d', $time);
+                            }
+                            break;
+                        case 'time':
+                            $time = strtotime(trim($value));
+                            if ($time !== false) {
+                                $newValue = date('H:i:s', $time);
+                            }
+                            break;
+                        case 'timestamp':
+                            $time = strtotime(trim($value));
+                            if ($time !== false) {
+                                $newValue = date('Y-m-d H:i:s', $time);
+                            }
+                            break;
+                        case 'blob':
+                        case 'varbinary':
+                            // allow base64url format
+                            $newValue = strtr(trim($value), '-_', '+/');
+                            break;
+                        case 'clob':
+                        case 'varchar':
+                            $newValue = $value;
+                            break;
+                        case 'geometry':
+                            $newValue = trim($value);
+                            break;
+                    }
+                    if (!is_null($newValue)) {
+                        $value = $newValue;
+                    }
+                } else {
+                    switch ($column->getType()) {
+                        case 'integer':
+                        case 'bigint':
+                            if (is_float($value)) {
+                                $value = (int) round($value);
+                            }
+                            break;
+                        case 'decimal':
+                            if (is_float($value) || is_int($value)) {
+                                $value = number_format((float) $value, $column->getScale(), '.', '');
+                            }
+                            break;
+                    }
+                }
+                // post process
+            }
+            return $value;
         }
 
         public function process(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
@@ -8411,14 +9090,43 @@ namespace Tqdev\PhpCrudApi\Middleware {
     }
 }
 
+// file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Middleware/SslRedirectMiddleware.php
+namespace Tqdev\PhpCrudApi\Middleware {
+
+    use Psr\Http\Message\ResponseInterface;
+    use Psr\Http\Message\ServerRequestInterface;
+    use Psr\Http\Server\RequestHandlerInterface;
+    use Tqdev\PhpCrudApi\Middleware\Base\Middleware;
+    use Tqdev\PhpCrudApi\ResponseFactory;
+
+    class SslRedirectMiddleware extends Middleware
+    {
+        public function process(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
+        {
+            $uri = $request->getUri();
+            $scheme = $uri->getScheme();
+            if ($scheme == 'http') {
+                $uri = $request->getUri();
+                $uri = $uri->withScheme('https');
+                $response = ResponseFactory::fromStatus(301);
+                $response = $response->withHeader('Location', $uri->__toString());
+            } else {
+                $response = $next->handle($request);
+            }
+            return $response;
+        }
+    }
+}
+
 // file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Middleware/ValidationMiddleware.php
 namespace Tqdev\PhpCrudApi\Middleware {
 
     use Psr\Http\Message\ResponseInterface;
     use Psr\Http\Message\ServerRequestInterface;
     use Psr\Http\Server\RequestHandlerInterface;
-    use Tqdev\PhpCrudApi\Column\Reflection\ReflectedTable;
     use Tqdev\PhpCrudApi\Column\ReflectionService;
+    use Tqdev\PhpCrudApi\Column\Reflection\ReflectedTable;
+    use Tqdev\PhpCrudApi\Column\Reflection\ReflectedColumn;
     use Tqdev\PhpCrudApi\Controller\Responder;
     use Tqdev\PhpCrudApi\Middleware\Base\Middleware;
     use Tqdev\PhpCrudApi\Middleware\Router\Router;
@@ -8426,6 +9134,222 @@ namespace Tqdev\PhpCrudApi\Middleware {
     use Tqdev\PhpCrudApi\RequestUtils;
 
     class ValidationMiddleware extends Middleware
+    {
+    	private $reflection;
+
+    	public function __construct(Router $router, Responder $responder, array $properties, ReflectionService $reflection)
+    	{
+    		parent::__construct($router, $responder, $properties);
+    		$this->reflection = $reflection;
+    	}
+
+    	private function callHandler($handler, $record, string $operation, ReflectedTable $table) /*: ResponseInterface?*/
+    	{
+    		$context = (array) $record;
+    		$details = array();
+    		$tableName = $table->getName();
+    		foreach ($context as $columnName => $value) {
+    			if ($table->hasColumn($columnName)) {
+    				$column = $table->getColumn($columnName);
+    				$valid = call_user_func($handler, $operation, $tableName, $column->serialize(), $value, $context);
+    				if ($valid === true || $valid === '') {
+    					$valid = $this->validateType($table, $column, $value);
+    				}
+    				if ($valid !== true && $valid !== '') {
+    					$details[$columnName] = $valid;
+    				}
+    			}
+    		}
+    		if (count($details) > 0) {
+    			return $this->responder->error(ErrorCode::INPUT_VALIDATION_FAILED, $tableName, $details);
+    		}
+    		return null;
+    	}
+
+    	private function validateType(ReflectedTable $table, ReflectedColumn $column, $value)
+    	{
+    		$tables = $this->getArrayProperty('tables', 'all');
+    		$types = $this->getArrayProperty('types', 'all');
+    		if (
+    			(in_array('all', $tables) || in_array($table->getName(), $tables)) &&
+    			(in_array('all', $types) || in_array($column->getType(), $types))
+    		) {
+    			if (is_null($value)) {
+    				return ($column->getNullable() ? true : "cannot be null");
+    			}
+    			if (is_string($value)) {
+    				// check for whitespace
+    				switch ($column->getType()) {
+    					case 'varchar':
+    					case 'clob':
+    						break;
+    					default:
+    						if (strlen(trim($value)) != strlen($value)) {
+    							return 'illegal whitespace';
+    						}
+    						break;
+    				}
+    				// try to parse
+    				switch ($column->getType()) {
+    					case 'integer':
+    					case 'bigint':
+    						if (
+    							filter_var($value, FILTER_SANITIZE_NUMBER_INT) !== $value ||
+    							filter_var($value, FILTER_VALIDATE_INT) === false
+    						) {
+    							return 'invalid integer';
+    						}
+    						break;
+    					case 'decimal':
+    						if (strpos($value, '.') !== false) {
+    							list($whole, $decimals) = explode('.', $value, 2);
+    						} else {
+    							list($whole, $decimals) = array($value, '');
+    						}
+    						if (strlen($whole) > 0 && !ctype_digit($whole)) {
+    							return 'invalid decimal';
+    						}
+    						if (strlen($decimals) > 0 && !ctype_digit($decimals)) {
+    							return 'invalid decimal';
+    						}
+    						if (strlen($whole) > $column->getPrecision() - $column->getScale()) {
+    							return 'decimal too large';
+    						}
+    						if (strlen($decimals) > $column->getScale()) {
+    							return 'decimal too precise';
+    						}
+    						break;
+    					case 'float':
+    					case 'double':
+    						if (
+    							filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT) !== $value ||
+    							filter_var($value, FILTER_VALIDATE_FLOAT) === false
+    						) {
+    							return 'invalid float';
+    						}
+    						break;
+    					case 'boolean':
+    						if (!in_array(strtolower($value), array('true', 'false'))) {
+    							return 'invalid boolean';
+    						}
+    						break;
+    					case 'date':
+    						if (date_create_from_format('Y-m-d', $value) === false) {
+    							return 'invalid date';
+    						}
+    						break;
+    					case 'time':
+    						if (date_create_from_format('H:i:s', $value) === false) {
+    							return 'invalid time';
+    						}
+    						break;
+    					case 'timestamp':
+    						if (date_create_from_format('Y-m-d H:i:s', $value) === false) {
+    							return 'invalid timestamp';
+    						}
+    						break;
+    					case 'clob':
+    					case 'varchar':
+    						if ($column->hasLength() && mb_strlen($value, 'UTF-8') > $column->getLength()) {
+    							return 'string too long';
+    						}
+    						break;
+    					case 'blob':
+    					case 'varbinary':
+    						if (base64_decode($value, true) === false) {
+    							return 'invalid base64';
+    						}
+    						if ($column->hasLength() && strlen(base64_decode($value)) > $column->getLength()) {
+    							return 'string too long';
+    						}
+    						break;
+    					case 'geometry':
+    						// no checks yet
+    						break;
+    				}
+    			} else { // check non-string types
+    				switch ($column->getType()) {
+    					case 'integer':
+    					case 'bigint':
+    						if (!is_int($value)) {
+    							return 'invalid integer';
+    						}
+    						break;
+    					case 'float':
+    					case 'double':
+    						if (!is_float($value) && !is_int($value)) {
+    							return 'invalid float';
+    						}
+    						break;
+    					case 'boolean':
+    						if (!is_bool($value) && ($value !== 0) && ($value !== 1)) {
+    							return 'invalid boolean';
+    						}
+    						break;
+    					default:
+    						return 'invalid ' . $column->getType();
+    				}
+    			}
+    			// extra checks
+    			switch ($column->getType()) {
+    				case 'integer': // 4 byte signed
+    					$value = filter_var($value, FILTER_VALIDATE_INT);
+    					if ($value > 2147483647 || $value < -2147483648) {
+    						return 'invalid integer';
+    					}
+    					break;
+    			}
+    		}
+    		return (true);
+    	}
+
+    	public function process(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
+    	{
+    		$operation = RequestUtils::getOperation($request);
+    		if (in_array($operation, ['create', 'update', 'increment'])) {
+    			$tableName = RequestUtils::getPathSegment($request, 2);
+    			if ($this->reflection->hasTable($tableName)) {
+    				$record = $request->getParsedBody();
+    				if ($record !== null) {
+    					$handler = $this->getProperty('handler', '');
+    					if ($handler !== '') {
+    						$table = $this->reflection->getTable($tableName);
+    						if (is_array($record)) {
+    							foreach ($record as $r) {
+    								$response = $this->callHandler($handler, $r, $operation, $table);
+    								if ($response !== null) {
+    									return $response;
+    								}
+    							}
+    						} else {
+    							$response = $this->callHandler($handler, $record, $operation, $table);
+    							if ($response !== null) {
+    								return $response;
+    							}
+    						}
+    					}
+    				}
+    			}
+    		}
+    		return $next->handle($request);
+    	}
+    }
+}
+
+// file: vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi/Middleware/XmlMiddleware.php
+namespace Tqdev\PhpCrudApi\Middleware {
+
+    use Psr\Http\Message\ResponseInterface;
+    use Psr\Http\Message\ServerRequestInterface;
+    use Psr\Http\Server\RequestHandlerInterface;
+    use Tqdev\PhpCrudApi\Column\ReflectionService;
+    use Tqdev\PhpCrudApi\Controller\Responder;
+    use Tqdev\PhpCrudApi\Middleware\Base\Middleware;
+    use Tqdev\PhpCrudApi\Middleware\Router\Router;
+    use Tqdev\PhpCrudApi\RequestUtils;
+    use Tqdev\PhpCrudApi\ResponseFactory;
+
+    class XmlMiddleware extends Middleware
     {
         private $reflection;
 
@@ -8435,55 +9359,135 @@ namespace Tqdev\PhpCrudApi\Middleware {
             $this->reflection = $reflection;
         }
 
-        private function callHandler($handler, $record, string $operation, ReflectedTable $table) /*: ResponseInterface?*/
+        private function json2xml($json, $types = 'null,boolean,number,string,object,array')
         {
-            $context = (array) $record;
-            $details = array();
-            $tableName = $table->getName();
-            foreach ($context as $columnName => $value) {
-                if ($table->hasColumn($columnName)) {
-                    $column = $table->getColumn($columnName);
-                    $valid = call_user_func($handler, $operation, $tableName, $column->serialize(), $value, $context);
-                    if ($valid !== true && $valid !== '') {
-                        $details[$columnName] = $valid;
-                    }
+            $a = json_decode($json);
+            $d = new \DOMDocument();
+            $c = $d->createElement("root");
+            $d->appendChild($c);
+            $t = function ($v) {
+                $type = gettype($v);
+                switch ($type) {
+                    case 'integer':
+                        return 'number';
+                    case 'double':
+                        return 'number';
+                    default:
+                        return strtolower($type);
                 }
-            }
-            if (count($details) > 0) {
-                return $this->responder->error(ErrorCode::INPUT_VALIDATION_FAILED, $tableName, $details);
-            }
-            return null;
-        }
-
-        public function process(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
-        {
-            $operation = RequestUtils::getOperation($request);
-            if (in_array($operation, ['create', 'update', 'increment'])) {
-                $tableName = RequestUtils::getPathSegment($request, 2);
-                if ($this->reflection->hasTable($tableName)) {
-                    $record = $request->getParsedBody();
-                    if ($record !== null) {
-                        $handler = $this->getProperty('handler', '');
-                        if ($handler !== '') {
-                            $table = $this->reflection->getTable($tableName);
-                            if (is_array($record)) {
-                                foreach ($record as $r) {
-                                    $response = $this->callHandler($handler, $r, $operation, $table);
-                                    if ($response !== null) {
-                                        return $response;
-                                    }
-                                }
+            };
+            $ts = explode(',', $types);
+            $f = function ($f, $c, $a, $s = false) use ($t, $d, $ts) {
+                if (in_array($t($a), $ts)) {
+                    $c->setAttribute('type', $t($a));
+                }
+                if ($t($a) != 'array' && $t($a) != 'object') {
+                    if ($t($a) == 'boolean') {
+                        $c->appendChild($d->createTextNode($a ? 'true' : 'false'));
+                    } else {
+                        $c->appendChild($d->createTextNode($a));
+                    }
+                } else {
+                    foreach ($a as $k => $v) {
+                        if ($k == '__type' && $t($a) == 'object') {
+                            $c->setAttribute('__type', $v);
+                        } else {
+                            if ($t($v) == 'object') {
+                                $ch = $c->appendChild($d->createElementNS(null, $s ? 'item' : $k));
+                                $f($f, $ch, $v);
+                            } else if ($t($v) == 'array') {
+                                $ch = $c->appendChild($d->createElementNS(null, $s ? 'item' : $k));
+                                $f($f, $ch, $v, true);
                             } else {
-                                $response = $this->callHandler($handler, $record, $operation, $table);
-                                if ($response !== null) {
-                                    return $response;
+                                $va = $d->createElementNS(null, $s ? 'item' : $k);
+                                if ($t($v) == 'boolean') {
+                                    $va->appendChild($d->createTextNode($v ? 'true' : 'false'));
+                                } else {
+                                    $va->appendChild($d->createTextNode($v));
+                                }
+                                $ch = $c->appendChild($va);
+                                if (in_array($t($v), $ts)) {
+                                    $ch->setAttribute('type', $t($v));
                                 }
                             }
                         }
                     }
                 }
+            };
+            $f($f, $c, $a, $t($a) == 'array');
+            return $d->saveXML($d->documentElement);
+        }
+
+        private function xml2json($xml)
+        {
+            $a = @dom_import_simplexml(simplexml_load_string($xml));
+            if (!$a) {
+                return null;
             }
-            return $next->handle($request);
+            $t = function ($v) {
+                $t = $v->getAttribute('type');
+                $txt = $v->firstChild->nodeType == XML_TEXT_NODE;
+                return $t ?: ($txt ? 'string' : 'object');
+            };
+            $f = function ($f, $a) use ($t) {
+                $c = null;
+                if ($t($a) == 'null') {
+                    $c = null;
+                } else if ($t($a) == 'boolean') {
+                    $b = substr(strtolower($a->textContent), 0, 1);
+                    $c = in_array($b, array('1', 't'));
+                } else if ($t($a) == 'number') {
+                    $c = $a->textContent + 0;
+                } else if ($t($a) == 'string') {
+                    $c = $a->textContent;
+                } else if ($t($a) == 'object') {
+                    $c = array();
+                    if ($a->getAttribute('__type')) {
+                        $c['__type'] = $a->getAttribute('__type');
+                    }
+                    for ($i = 0; $i < $a->childNodes->length; $i++) {
+                        $v = $a->childNodes[$i];
+                        $c[$v->nodeName] = $f($f, $v);
+                    }
+                    $c = (object) $c;
+                } else if ($t($a) == 'array') {
+                    $c = array();
+                    for ($i = 0; $i < $a->childNodes->length; $i++) {
+                        $v = $a->childNodes[$i];
+                        $c[$i] = $f($f, $v);
+                    }
+                }
+                return $c;
+            };
+            $c = $f($f, $a);
+            return json_encode($c);
+        }
+
+        public function process(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
+        {
+            parse_str($request->getUri()->getQuery(), $params);
+            $isXml = isset($params['format']) && $params['format'] == 'xml';
+            if ($isXml) {
+                $body = $request->getBody()->getContents();
+                if ($body) {
+                    $json = $this->xml2json($body);
+                    $request = $request->withParsedBody(json_decode($json));
+                }
+            }
+            $response = $next->handle($request);
+            if ($isXml) {
+                $body = $response->getBody()->getContents();
+                if ($body) {
+                    $types = implode(',', $this->getArrayProperty('types', 'null,array'));
+                    if ($types == '' || $types == 'all') {
+                        $xml = $this->json2xml($body);
+                    } else {
+                        $xml = $this->json2xml($body, $types);
+                    }
+                    $response = ResponseFactory::fromXml(ResponseFactory::OK, $xml);
+                }
+            }
+            return $response;
         }
     }
 }
@@ -8660,6 +9664,7 @@ namespace Tqdev\PhpCrudApi\OpenApi {
                         $this->openapi->set("paths|$path|$method|requestBody|\$ref", "#/components/requestBodies/$operationType");
                     }
                     $this->openapi->set("paths|$path|$method|tags|0", "$type");
+                    $this->openapi->set("paths|$path|$method|operationId", "$operation" . "_" . "$type");
                     if ($operationType == 'updateTable') {
                         $this->openapi->set("paths|$path|$method|description", "rename table");
                     } else {
@@ -8830,6 +9835,7 @@ namespace Tqdev\PhpCrudApi\OpenApi {
     use Tqdev\PhpCrudApi\Column\ReflectionService;
     use Tqdev\PhpCrudApi\Middleware\Communication\VariableStore;
     use Tqdev\PhpCrudApi\OpenApi\OpenApiDefinition;
+    use Tqdev\PhpCrudApi\Column\Reflection\ReflectedColumn;
 
     class OpenApiRecordsBuilder
     {
@@ -8847,16 +9853,16 @@ namespace Tqdev\PhpCrudApi\OpenApi {
             'integer' => ['type' => 'integer', 'format' => 'int32'],
             'bigint' => ['type' => 'integer', 'format' => 'int64'],
             'varchar' => ['type' => 'string'],
-            'clob' => ['type' => 'string'],
+            'clob' => ['type' => 'string', 'format' => 'large-string'],   //custom format
             'varbinary' => ['type' => 'string', 'format' => 'byte'],
-            'blob' => ['type' => 'string', 'format' => 'byte'],
-            'decimal' => ['type' => 'string'],
+            'blob' => ['type' => 'string', 'format' => 'large-byte'],     //custom format
+            'decimal' => ['type' => 'string', 'format' => 'decimal'],     //custom format
             'float' => ['type' => 'number', 'format' => 'float'],
             'double' => ['type' => 'number', 'format' => 'double'],
             'date' => ['type' => 'string', 'format' => 'date'],
-            'time' => ['type' => 'string', 'format' => 'date-time'],
+            'time' => ['type' => 'string', 'format' => 'time'],           //custom format
             'timestamp' => ['type' => 'string', 'format' => 'date-time'],
-            'geometry' => ['type' => 'string'],
+            'geometry' => ['type' => 'string', 'format' => 'geometry'],   //custom format
             'boolean' => ['type' => 'boolean'],
         ];
 
@@ -8954,7 +9960,7 @@ namespace Tqdev\PhpCrudApi\OpenApi {
                         $parameters = ['filter', 'include', 'exclude', 'order', 'size', 'page', 'join'];
                     }
                 } else {
-                    $path = sprintf('/records/%s/{%s}', $tableName, $pkName);
+                    $path = sprintf('/records/%s/{id}', $tableName);
                     if ($operation == 'read') {
                         $parameters = ['pk', 'include', 'exclude', 'join'];
                     } else {
@@ -8968,6 +9974,7 @@ namespace Tqdev\PhpCrudApi\OpenApi {
                     $this->openapi->set("paths|$path|$method|requestBody|\$ref", "#/components/requestBodies/$operation-" . rawurlencode($tableName));
                 }
                 $this->openapi->set("paths|$path|$method|tags|0", "$tableName");
+                $this->openapi->set("paths|$path|$method|operationId", "$operation" . "_" . "$tableName");
                 $this->openapi->set("paths|$path|$method|description", "$operation $tableName");
                 switch ($operation) {
                     case 'list':
@@ -8990,6 +9997,49 @@ namespace Tqdev\PhpCrudApi\OpenApi {
                         break;
                 }
             }
+        }
+
+        private function getPattern(ReflectedColumn $column): string
+        {
+            switch ($column->getType()) {
+                case 'integer':
+                    $n = strlen(pow(2, 31));
+                    return '^-?[0-9]{1,' . $n . '}$';
+                case 'bigint':
+                    $n = strlen(pow(2, 63));
+                    return '^-?[0-9]{1,' . $n . '}$';
+                case 'varchar':
+                    $l = $column->getLength();
+                    return '^.{0,' . $l . '}$';
+                case 'clob':
+                    return '^.*$';
+                case 'varbinary':
+                    $l = $column->getLength();
+                    $b = (int) 4 * ceil($l / 3);
+                    return '^[A-Za-z0-9+/]{0,' . $b . '}=*$';
+                case 'blob':
+                    return '^[A-Za-z0-9+/]*=*$';
+                case 'decimal':
+                    $p = $column->getPrecision();
+                    $s = $column->getScale();
+                    return '^-?[0-9]{1,' . ($p - $s) . '}(\.[0-9]{1,' . $s . '})?$';
+                case 'float':
+                    return '^-?[0-9]+(\.[0-9]+)?([eE]-?[0-9]+)?$';
+                case 'double':
+                    return '^-?[0-9]+(\.[0-9]+)?([eE]-?[0-9]+)?$';
+                case 'date':
+                    return '^[0-9]{4}-[0-9]{2}-[0-9]{2}$';
+                case 'time':
+                    return '^[0-9]{2}:[0-9]{2}:[0-9]{2}$';
+                case 'timestamp':
+                    return '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$';
+                    return '';
+                case 'geometry':
+                    return '^(POINT|LINESTRING|POLYGON|MULTIPOINT|MULTILINESTRING|MULTIPOLYGON)\s*\(.*$';
+                case 'boolean':
+                    return '^(true|false)$';
+            }
+            return '';
         }
 
         private function setComponentSchema(string $tableName, array $references) /*: void*/
@@ -9027,8 +10077,13 @@ namespace Tqdev\PhpCrudApi\OpenApi {
                     }
                     $column = $table->getColumn($columnName);
                     $properties = $this->types[$column->getType()];
+                    $properties['maxLength'] = $column->hasLength() ? $column->getLength() : 0;
+                    $properties['nullable'] = $column->getNullable();
+                    $properties['pattern'] = $this->getPattern($column);
                     foreach ($properties as $key => $value) {
-                        $this->openapi->set("$prefix|properties|$columnName|$key", $value);
+                        if ($value) {
+                            $this->openapi->set("$prefix|properties|$columnName|$key", $value);
+                        }
                     }
                     if ($column->getPk()) {
                         $this->openapi->set("$prefix|properties|$columnName|x-primary-key", true);
@@ -10095,6 +11150,9 @@ namespace Tqdev\PhpCrudApi\Record {
                 foreach ($params['join'] as $tableNames) {
                     $path = array();
                     foreach (explode(',', $tableNames) as $tableName) {
+                        if (!$this->reflection->hasTable($tableName)) {
+                            continue;
+                        }
                         $t = $this->reflection->getTable($tableName);
                         if ($t != null) {
                             $path[] = $t->getName();
@@ -10357,7 +11415,9 @@ namespace Tqdev\PhpCrudApi {
     use Tqdev\PhpCrudApi\Middleware\ReconnectMiddleware;
     use Tqdev\PhpCrudApi\Middleware\Router\SimpleRouter;
     use Tqdev\PhpCrudApi\Middleware\SanitationMiddleware;
+    use Tqdev\PhpCrudApi\Middleware\SslRedirectMiddleware;
     use Tqdev\PhpCrudApi\Middleware\ValidationMiddleware;
+    use Tqdev\PhpCrudApi\Middleware\XmlMiddleware;
     use Tqdev\PhpCrudApi\Middleware\XsrfMiddleware;
     use Tqdev\PhpCrudApi\OpenApi\OpenApiService;
     use Tqdev\PhpCrudApi\Record\ErrorCode;
@@ -10377,6 +11437,7 @@ namespace Tqdev\PhpCrudApi {
                 $config->getAddress(),
                 $config->getPort(),
                 $config->getDatabase(),
+                $config->getTables(),
                 $config->getUsername(),
                 $config->getPassword()
             );
@@ -10387,6 +11448,9 @@ namespace Tqdev\PhpCrudApi {
             $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime(), $config->getDebug());
             foreach ($config->getMiddlewares() as $middleware => $properties) {
                 switch ($middleware) {
+                    case 'sslRedirect':
+                        new SslRedirectMiddleware($router, $responder, $properties);
+                        break;
                     case 'cors':
                         new CorsMiddleware($router, $responder, $properties);
                         break;
@@ -10431,6 +11495,9 @@ namespace Tqdev\PhpCrudApi {
                         break;
                     case 'customization':
                         new CustomizationMiddleware($router, $responder, $properties, $reflection);
+                        break;
+                    case 'xml':
+                        new XmlMiddleware($router, $responder, $properties, $reflection);
                         break;
                 }
             }
@@ -10495,12 +11562,17 @@ namespace Tqdev\PhpCrudApi {
         {
             $parsedBody = $request->getParsedBody();
             if ($parsedBody) {
-                $request = $this->applySlimHack($request);
+                $request = $this->applyParsedBodyHack($request);
             } else {
                 $body = $request->getBody();
-                if ($body->isReadable() && $body->isSeekable()) {
+                if ($body->isReadable()) {
+                    if ($body->isSeekable()) {
+                        $body->rewind();
+                    }
                     $contents = $body->getContents();
-                    $body->rewind();
+                    if ($body->isSeekable()) {
+                        $body->rewind();
+                    }
                     if ($contents) {
                         $parsedBody = $this->parseBody($contents);
                         $request = $request->withParsedBody($parsedBody);
@@ -10510,11 +11582,10 @@ namespace Tqdev\PhpCrudApi {
             return $request;
         }
 
-        private function applySlimHack(ServerRequestInterface $request): ServerRequestInterface
+        private function applyParsedBodyHack(ServerRequestInterface $request): ServerRequestInterface
         {
-            $class = get_class($request);
-            if (in_array($class, ['Slim\Http\Request', 'Slim\Http\Request'])) {
-                $parsedBody = $request->getParsedBody();
+            $parsedBody = $request->getParsedBody();
+            if (is_array($parsedBody)) { // is it really?
                 $contents = json_encode($parsedBody);
                 $parsedBody = $this->parseBody($contents);
                 $request = $request->withParsedBody($parsedBody);
@@ -10550,6 +11621,7 @@ namespace Tqdev\PhpCrudApi {
             'username' => null,
             'password' => null,
             'database' => null,
+            'tables' => '',
             'middlewares' => 'cors',
             'controllers' => 'records,geojson,openapi',
             'customControllers' => '',
@@ -10579,6 +11651,8 @@ namespace Tqdev\PhpCrudApi {
                     return 5432;
                 case 'sqlsrv':
                     return 1433;
+                case 'sqlite':
+                    return 0;
             }
         }
 
@@ -10591,6 +11665,8 @@ namespace Tqdev\PhpCrudApi {
                     return 'localhost';
                 case 'sqlsrv':
                     return 'localhost';
+                case 'sqlite':
+                    return 'data.db';
             }
         }
 
@@ -10669,6 +11745,11 @@ namespace Tqdev\PhpCrudApi {
         public function getDatabase(): string
         {
             return $this->values['database'];
+        }
+
+        public function getTables(): array
+        {
+            return array_filter(array_map('trim', explode(',', $this->values['tables'])));
         }
 
         public function getMiddlewares(): array
@@ -10791,7 +11872,8 @@ namespace Tqdev\PhpCrudApi {
         {
             $params = array();
             $query = $request->getUri()->getQuery();
-            $query = str_replace('][]=', ']=', str_replace('=', '[]=', $query));
+            //$query = str_replace('][]=', ']=', str_replace('=', '[]=', $query));
+            $query = str_replace('%5D%5B%5D=', '%5D=', str_replace('=', '%5B%5D=', $query));
             parse_str($query, $params);
             return $params;
         }
@@ -10816,6 +11898,7 @@ namespace Tqdev\PhpCrudApi {
                     return 'document';
                 case 'columns':
                     return $method == 'get' ? 'reflect' : 'remodel';
+                case 'geojson':
                 case 'records':
                     switch ($method) {
                         case 'POST':
@@ -10883,10 +11966,14 @@ namespace Tqdev\PhpCrudApi {
         const UNPROCESSABLE_ENTITY = 422;
         const INTERNAL_SERVER_ERROR = 500;
 
+        public static function fromXml(int $status, string $xml): ResponseInterface
+        {
+            return self::from($status, 'text/xml', $xml);
+        }
+
         public static function fromCsv(int $status, string $csv): ResponseInterface
         {
-            $response = self::from($status, 'text/csv', $csv);
-            return $response->withHeader('Content-Type', 'text/csv');
+            return self::from($status, 'text/csv', $csv);
         }
 
         public static function fromHtml(int $status, string $html): ResponseInterface
@@ -10900,6 +11987,17 @@ namespace Tqdev\PhpCrudApi {
             return self::from($status, 'application/json', $content);
         }
 
+        public static function fromFile(int $status, string $filename): ResponseInterface
+        {
+            $psr17Factory = new Psr17Factory();
+            $response = $psr17Factory->createResponse($status);
+            $stream = $psr17Factory->createStreamFromFile($filename);
+            $response = $response->withBody($stream);
+            $response = $response->withHeader('Content-Type', mime_content_type(basename($filename)));
+            $response = $response->withHeader('Content-Length', filesize($filename));
+            return $response;
+        }
+
         private static function from(int $status, string $contentType, string $content): ResponseInterface
         {
             $psr17Factory = new Psr17Factory();
@@ -10907,7 +12005,7 @@ namespace Tqdev\PhpCrudApi {
             $stream = $psr17Factory->createStream($content);
             $stream->rewind();
             $response = $response->withBody($stream);
-            $response = $response->withHeader('Content-Type', $contentType);
+            $response = $response->withHeader('Content-Type', $contentType . '; charset=utf-8');
             $response = $response->withHeader('Content-Length', strlen($content));
             return $response;
         }
@@ -11176,12 +12274,63 @@ namespace Tqdev\PhpCrudUi\Column {
 
             $types = array();
             foreach ($properties as $field => $property) {
-                $types[$field] = false;
-                if (isset($property['format'])) {
-                    $types[$field] = $property['format'];
-                } else if (isset($property['type'])) {
-                    $types[$field] = $property['type'];
+                $type = $property['type'];
+                $nullable = isset($property['nullable']) ? $property['nullable'] : false;
+                $format = isset($property['format']) ? $property['format'] : $property['type'];
+                $maxLength = isset($property['maxLength']) ? $property['maxLength'] : 0;
+                $pattern = $property['pattern'];
+                $hint = '';
+
+                switch ($format) {
+                    case 'timestamp':
+                        $hint = 'yyyy-mm-dd hh:mm:ss';
+                        $maxLength = 19;
+                        break;
+                    case 'date':
+                        $hint = 'yyyy-mm-dd';
+                        $maxLength = 10;
+                        break;
+                    case 'time':
+                        $hint = 'hh:mm:ss';
+                        $maxLength = 8;
+                        break;
+                    case 'decimal':
+                        if (preg_match_all('/{1,([0-9]+)}/', $pattern, $matches) == 2) {
+                            $maxLength = array_sum($matches[1]) + 2;
+                            $decimals = $matches[1][1];
+                            $hint = '#.' . str_repeat('#', $decimals);
+                        }
+                        break;
+                    case 'color':
+                        $pattern = '/^#?[0-9a-fA-F]{6}$/';
+                        $hint = '#3399ff';
+                        $maxLength = 7;
+                        break;
+                    case 'email':
+                        $pattern = '/^.+@[^\.].*\.[a-z]{2,}$/';
+                        $hint = 'xxx@xxx.xxx';
+                        break;
+                    case 'url':
+                        $pattern = '/^(ftp|http|https):\/\/.*$/';
+                        $hint = 'https://...';
+                        break;
+                    case 'point':
+                        $pattern = '/^POINT\s?\(.*\)$/';
+                        $hint = 'POINT(lon lat)';
+                        break;
+                    case 'polygon':
+                        $pattern = '/^POLYGON\s?\(\(.*\)\)$/';
+                        $hint = 'POLYGON((lon1 lat1,lon2 lat2,lon3 lat3,lon1 lat1))';
+                        break;
                 }
+                $types[$field] = [
+                    'type' => $type,
+                    'nullable' => $nullable,
+                    'format' => $format,
+                    'maxLength' => $maxLength,
+                    'hint' => $hint,
+                    'pattern' => $pattern,
+                ];
             }
             return $types;
         }
@@ -11272,8 +12421,8 @@ namespace Tqdev\PhpCrudUi\Controller {
     use Tqdev\PhpCrudApi\Record\Document\ErrorDocument;
     use Tqdev\PhpCrudApi\Record\ErrorCode;
     use Tqdev\PhpCrudApi\ResponseFactory;
-    use Tqdev\PhpCrudUi\Document\TemplateDocument;
     use Tqdev\PhpCrudUi\Document\CsvDocument;
+    use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
     class MultiResponder implements Responder
     {
@@ -11344,7 +12493,6 @@ namespace Tqdev\PhpCrudUi\Controller {
             $router->register('GET', '/*/delete/*', array($this, 'deleteForm'));
             $router->register('POST', '/*/delete/*', array($this, 'delete'));
             $router->register('GET', '/*/list', array($this, '_list'));
-            $router->register('GET', '/*/list/*/*/*', array($this, '_list'));
             $router->register('GET', '/*/export', array($this, 'export'));
             $this->service = $service;
             $this->responder = $responder;
@@ -11451,14 +12599,11 @@ namespace Tqdev\PhpCrudUi\Controller {
         {
             $table = RequestUtils::getPathSegment($request, 1);
             $action = RequestUtils::getPathSegment($request, 2);
-            $field = RequestUtils::getPathSegment($request, 3);
-            $id = RequestUtils::getPathSegment($request, 4);
-            $name = RequestUtils::getPathSegment($request, 5);
             $params = RequestUtils::getParams($request);
             if (!$this->service->hasTable($table, $action)) {
                 return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
             }
-            $result = $this->service->_list($table, $action, $field, $id, $name, $params);
+            $result = $this->service->_list($table, $action, $params);
             return $this->responder->success($result);
         }
 
@@ -11541,11 +12686,17 @@ namespace Tqdev\PhpCrudUi\Document {
                 'eq' => function ($a, $b) {
                     return $a == $b;
                 },
+                'neq' => function ($a, $b) {
+                    return $a != $b;
+                },
                 'add' => function ($a, $b) {
                     return $a + $b;
                 },
                 'sub' => function ($a, $b) {
                     return $a - $b;
+                },
+                'has' => function ($a, $b) {
+                    return isset($a[$b]);
                 },
                 'prop' => function ($a, $b) {
                     return $a[$b];
@@ -11556,15 +12707,19 @@ namespace Tqdev\PhpCrudUi\Document {
                 'or' => function ($a, $b) {
                     return $a ?: $b;
                 },
+                'humanize' => function ($a) {
+                    $a = substr($a, -3) == '_id' ? substr($a, 0, -3) : $a;
+                    return ucwords(str_replace('_', ' ', $a));
+                },
             );
         }
 
-        public function addVariables(array $variables)/*: void*/
+        public function addVariables(array $variables) /*: void*/
         {
             $this->variables = array_merge($variables, $this->variables);
         }
 
-        public function setTemplatePath(string $path)/*: void*/
+        public function setTemplatePath(string $path) /*: void*/
         {
             $this->templatePath = rtrim($path, '/');
         }
@@ -11590,13 +12745,53 @@ namespace Tqdev\PhpCrudUi\Document {
     }
 }
 
+// file: src/Tqdev/PhpCrudUi/Middleware/StaticFileMiddleware.php
+namespace Tqdev\PhpCrudUi\Middleware {
+
+    use Psr\Http\Message\ResponseInterface;
+    use Psr\Http\Message\ServerRequestInterface;
+    use Psr\Http\Server\RequestHandlerInterface;
+    use Tqdev\PhpCrudApi\Middleware\Base\Middleware;
+    use Tqdev\PhpCrudApi\ResponseFactory;
+
+    class StaticFileMiddleware extends Middleware
+    {
+
+        private function santizeFilename(string $filename): string
+        {
+            $realBase = realpath($this->getProperty('webRootPath', '.'));
+            $realUserPath = realpath($filename);
+
+            if ($realUserPath === false || strpos($realUserPath, $realBase) !== 0) {
+                return '';
+            }
+            return $realUserPath;
+        }
+
+        public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+        {
+            $response = $handler->handle($request);
+            //var_dump(':' . $response->getStatusCode() . $request->getUri()->getPath());
+
+            if ($response->getStatusCode() == 404) {
+                $filename = $request->getUri()->getPath();
+                $filename = $this->santizeFilename($filename);
+                if ($filename) {
+                    return ResponseFactory::fromFile(ResponseFactory::OK, $filename);
+                }
+            }
+            return $response;
+        }
+    }
+}
+
 // file: src/Tqdev/PhpCrudUi/Record/RecordService.php
 namespace Tqdev\PhpCrudUi\Record {
 
     use Tqdev\PhpCrudUi\Client\CrudApi;
     use Tqdev\PhpCrudUi\Column\SpecificationService;
-    use Tqdev\PhpCrudUi\Document\TemplateDocument;
     use Tqdev\PhpCrudUi\Document\CsvDocument;
+    use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
     class RecordService
     {
@@ -11677,6 +12872,7 @@ namespace Tqdev\PhpCrudUi\Record {
 
         public function read(string $table, string $action, string $id, array $params): TemplateDocument
         {
+            $types = $this->definition->getTypes($table, $action);
             $references = $this->definition->getReferences($table, $action);
             $referenced = $this->definition->getReferenced($table, $action);
 
@@ -11695,7 +12891,7 @@ namespace Tqdev\PhpCrudUi\Record {
                     $relatedValue = $this->definition->referenceId($relatedTable, $value);
                     $text = $this->definition->referenceText($relatedTable, $value);
                 }
-                $record[$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue);
+                $record[$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue, 'type' => $types[$key]);
             }
 
             $variables = array(
@@ -11720,7 +12916,7 @@ namespace Tqdev\PhpCrudUi\Record {
             $record = $this->api->readRecord($table, $id, []);
 
             foreach ($record as $key => $value) {
-                $values = $this->getDropDownValues($references[$key]);;
+                $values = $this->getDropDownValues($references[$key]);
                 $record[$key] = array('type' => $types[$key], 'value' => $value, 'values' => $values);
             }
 
@@ -11788,7 +12984,7 @@ namespace Tqdev\PhpCrudUi\Record {
             return new TemplateDocument('layouts/default', 'record/deleted', $variables);
         }
 
-        public function _list(string $table, string $action, string $field, string $id, string $name, array $params): TemplateDocument
+        public function _list(string $table, string $action, array $params): TemplateDocument
         {
             $references = $this->definition->getReferences($table, $action);
             $referenced = $this->definition->getReferenced($table, $action);
@@ -11796,13 +12992,19 @@ namespace Tqdev\PhpCrudUi\Record {
 
             $columns = $this->definition->getColumns($table, $action);
 
-            $pageParams = isset($params['page']) ? $params['page'][0] : '1,5';
+            $pageParams = isset($params['page']) ? $params['page'][0] : '1,50';
             list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
 
+            $filters = array();
             $args = array();
-            if ($field) {
-                $args['filter'] = $field . ',eq,' . $id;
+            if (isset($params['filter'])) {
+                foreach ($params['filter'] as $i => $filter) {
+                    $filter = array_combine(array('field', 'operator', 'value', 'name'), explode(',', $filter, 4));
+                    $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], $filter['value']));
+                    $filters[] = $filter;
+                }
             }
+
             $args['join'] = array_values(array_filter($references));
             $args['page'] = "$pageNumber,$pageSize";
             $data = $this->api->listRecords($table, $args);
@@ -11834,9 +13036,7 @@ namespace Tqdev\PhpCrudUi\Record {
             $variables = array(
                 'table' => $table,
                 'action' => $action,
-                'field' => $field,
-                'id' => $id,
-                'name' => $name,
+                'filters' => $filters,
                 'references' => $references,
                 'referenced' => $referenced,
                 'primaryKey' => $primaryKey,
@@ -11936,6 +13136,7 @@ namespace Tqdev\PhpCrudUi\Template {
             return $tokens;
         }
 
+        // performance optimization possible?
         private function explode(string $separator, string $str, int $count = -1): array
         {
             $tokens = [];
@@ -12234,6 +13435,7 @@ namespace Tqdev\PhpCrudUi {
             'url' => '',
             'api' => [],
             'definition' => '',
+            'middlewares' => 'staticFile',
             'controllers' => 'records',
             'cacheType' => 'TempFile',
             'cachePath' => '',
@@ -12241,17 +13443,59 @@ namespace Tqdev\PhpCrudUi {
             'debug' => false,
             'basePath' => '',
             'templatePath' => '.',
+            'passwordColumnFormat' => 'string',
+            'passwordColumnName' => 'password$',
+            'colorColumnFormat' => 'string',
+            'colorColumnName' => '_color$',
+            'emailColumnFormat' => 'string',
+            'emailColumnName' => '_email$',
+            'urlColumnFormat' => 'string',
+            'urlColumnName' => '_url$',
+            'pointColumnFormat' => 'geometry',
+            'pointColumnName' => '_point$',
+            'polygonColumnFormat' => 'geometry',
+            'polygonColumnName' => '_polygon$',
         ];
+
+        private function parseMiddlewares(array $values): array
+        {
+            $newValues = array();
+            $properties = array();
+            $middlewares = array_map('trim', explode(',', $values['middlewares']));
+            foreach ($middlewares as $middleware) {
+                $properties[$middleware] = [];
+            }
+            foreach ($values as $key => $value) {
+                if (strpos($key, '.') === false) {
+                    $newValues[$key] = $value;
+                } else {
+                    list($middleware, $key2) = explode('.', $key, 2);
+                    if (isset($properties[$middleware])) {
+                        $properties[$middleware][$key2] = $value;
+                    } else {
+                        throw new \Exception("Config has invalid value '$key'");
+                    }
+                }
+            }
+            $newValues['middlewares'] = array_reverse($properties, true);
+            return $newValues;
+        }
 
         public function __construct(array $values)
         {
             $newValues = array_merge($this->values, $values);
+            $newValues = $this->parseMiddlewares($newValues);
             $diff = array_diff_key($newValues, $this->values);
             if (!empty($diff)) {
                 $key = array_keys($diff)[0];
                 throw new \Exception("Config has invalid value '$key'");
             }
             $this->values = $newValues;
+        }
+
+        public function getMiddlewares(): array
+        {
+            return $this->values['middlewares'];
         }
 
         public function getControllers(): array
@@ -12303,6 +13547,66 @@ namespace Tqdev\PhpCrudUi {
         {
             return $this->values['templatePath'];
         }
+
+        public function getPasswordColumnFormat(): string
+        {
+            return $this->values['passwordColumnFormat'];
+        }
+
+        public function getPasswordColumnName(): string
+        {
+            return $this->values['passwordColumnName'];
+        }
+
+        public function getColorColumnFormat(): string
+        {
+            return $this->values['colorColumnFormat'];
+        }
+
+        public function getColorColumnName(): string
+        {
+            return $this->values['colorColumnName'];
+        }
+
+        public function getEmailColumnFormat(): string
+        {
+            return $this->values['emailColumnFormat'];
+        }
+
+        public function getEmailColumnName(): string
+        {
+            return $this->values['emailColumnName'];
+        }
+
+        public function getUrlColumnFormat(): string
+        {
+            return $this->values['urlColumnFormat'];
+        }
+
+        public function getUrlColumnName(): string
+        {
+            return $this->values['urlColumnName'];
+        }
+
+        public function getPointColumnFormat(): string
+        {
+            return $this->values['pointColumnFormat'];
+        }
+
+        public function getPointColumnName(): string
+        {
+            return $this->values['pointColumnName'];
+        }
+
+        public function getPolygonColumnFormat(): string
+        {
+            return $this->values['polygonColumnFormat'];
+        }
+
+        public function getPolygonColumnName(): string
+        {
+            return $this->values['polygonColumnName'];
+        }
     }
 }
 
@@ -12323,6 +13627,7 @@ namespace Tqdev\PhpCrudUi {
     use Tqdev\PhpCrudUi\Record\RecordService;
     use Tqdev\PhpCrudUi\Client\LocalCaller;
     use Tqdev\PhpCrudUi\Client\CurlCaller;
+    use Tqdev\PhpCrudUi\Middleware\StaticFileMiddleware;
 
     class Ui implements RequestHandlerInterface
     {
@@ -12342,6 +13647,13 @@ namespace Tqdev\PhpCrudUi {
             $definition = new SpecificationService($api, $cache, $config->getCacheTime());
             $responder = new MultiResponder($config->getTemplatePath());
             $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime(), $config->getDebug());
+            foreach ($config->getMiddlewares() as $middleware => $properties) {
+                switch ($middleware) {
+                    case 'staticFile':
+                        new StaticFileMiddleware($router, $responder, $properties);
+                        break;
+                }
+            }
             $responder->setVariable('base', $router->getBasePath());
             $responder->setVariable('menu', $definition->getMenu());
             $responder->setVariable('table', '');
@@ -12377,6 +13689,8 @@ namespace Tqdev\PhpCrudUi {
             $response = null;
             try {
                 $response = $this->router->route($this->addParsedBody($request));
+                if ($response->getStatusCode() == 404) {
+                }
             } catch (\Throwable $e) {
                 $response = $this->responder->error(ErrorCode::ERROR_NOT_FOUND, $e->getMessage());
                 if ($this->debug) {
@@ -12398,10 +13712,34 @@ namespace Tqdev\PhpCrudUi {
 
     $config = new Config([
         'api' => [
-            'username' => 'php-crud-api',
-            'password' => 'php-crud-api',
-            'database' => 'php-crud-api',
+            'username' => 'masterlist',
+            'password' => 'masterlist',
+            'database' => 'masterlist',
         ],
+        'staticFile.webRootPath' => '../webroot',
+        'templatePath' => '../templates',
+    ]);
+    $request = RequestFactory::fromGlobals();
+    $ui = new Ui($config);
+    $response = $ui->handle($request);
+    ResponseUtils::output($response);
+}
+
+// file: webroot/index.php
+namespace Tqdev\PhpCrudUi {
+
+    use Tqdev\PhpCrudApi\RequestFactory;
+    use Tqdev\PhpCrudApi\ResponseUtils;
+    use Tqdev\PhpCrudUi\Config;
+    use Tqdev\PhpCrudUi\Ui;
+
+    $config = new Config([
+        'api' => [
+            'username' => 'masterlist',
+            'password' => 'masterlist',
+            'database' => 'masterlist',
+        ],
+        'staticFile.webRootPath' => '../webroot',
         'templatePath' => '../templates',
     ]);
     $request = RequestFactory::fromGlobals();
