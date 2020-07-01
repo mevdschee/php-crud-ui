@@ -37,7 +37,7 @@
     <a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
     <a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
 </p>
-
+{{if:relation.referenced}}
 <br />
 <br />
 <h4>Related</h4>
@@ -46,3 +46,4 @@
     <li><a href="{{base}}/{{relation.0}}/list?filter={{relation.1}},eq,{{id}},{{name}}">{{relation.0|humanize}}</a>
     </li>
     {{endfor}}
+{{endif}}
