@@ -8,6 +8,7 @@ class Config
         'url' => '',
         'api' => [],
         'definition' => '',
+        'middlewares' => 'staticFile',
         'controllers' => 'records',
         'cacheType' => 'TempFile',
         'cachePath' => '',
@@ -15,6 +16,7 @@ class Config
         'debug' => false,
         'basePath' => '',
         'templatePath' => '.',
+        'webRootPath' => '.',
         'passwordColumnFormat' => 'string',
         'passwordColumnName' => 'password$',
         'colorColumnFormat' => 'string',
@@ -29,15 +31,45 @@ class Config
         'polygonColumnName' => '_polygon$',
     ];
 
+    private function parseMiddlewares(array $values): array
+    {
+        $newValues = array();
+        $properties = array();
+        $middlewares = array_map('trim', explode(',', $values['middlewares']));
+        foreach ($middlewares as $middleware) {
+            $properties[$middleware] = [];
+        }
+        foreach ($values as $key => $value) {
+            if (strpos($key, '.') === false) {
+                $newValues[$key] = $value;
+            } else {
+                list($middleware, $key2) = explode('.', $key, 2);
+                if (isset($properties[$middleware])) {
+                    $properties[$middleware][$key2] = $value;
+                } else {
+                    throw new \Exception("Config has invalid value '$key'");
+                }
+            }
+        }
+        $newValues['middlewares'] = array_reverse($properties, true);
+        return $newValues;
+    }
+
     public function __construct(array $values)
     {
         $newValues = array_merge($this->values, $values);
+        $newValues = $this->parseMiddlewares($newValues);
         $diff = array_diff_key($newValues, $this->values);
         if (!empty($diff)) {
             $key = array_keys($diff)[0];
             throw new \Exception("Config has invalid value '$key'");
         }
         $this->values = $newValues;
+    }
+
+    public function getMiddlewares(): array
+    {
+        return $this->values['middlewares'];
     }
 
     public function getControllers(): array
