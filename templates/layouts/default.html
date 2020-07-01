@@ -196,6 +196,7 @@ body {background-color: #181818; font-family: sans-serif;}
 body, a {color: #aaa;}
 .navigation {background-color: #121212; box-shadow: none;}
 a {text-decoration: none;}
+ul:not(.breadcrumb) a::after, td a::after {content: " ‣"}
 button, .btn, input[type="submit"], .icon {
     background-color: #1ed760; 
     border-radius: 2rem;
@@ -204,6 +205,7 @@ button, .btn, input[type="submit"], .icon {
 table tr th {border-color: #333;}
 h2, .hamburger, table tr th, h1, .pagination, a:not(.icon):not(.btn):hover, .title {color: white;}
 table tr:nth-child(even), table.read tr:nth-child(odd) {background: none;}
+ul.related, ul.home {display: inline-block;}
 ul.related li, ul.home li, table tr td {border-bottom: 1px solid #333;}
 ul.related li:last-child, ul.home li:last-child, table tr:last-child td {border: 0;}
 ul.related li, ul.home li, td, th, dl > * {padding: 0.2rem 1.5rem 0.2rem 0;}
