@@ -12,9 +12,11 @@ th:nth-of-type({{i|add(6)}}), td:nth-of-type({{i|add(6)}}) { display: none; }
 {{if:primaryKey}}
     <div class="titlebar">
         <h1>{{table|humanize}}</h1>
+        <div>
             <a onclick="document.querySelector('.addfilter').classList.toggle('visible');" href="#" class="icon filter">Add filter</a>
             <a onclick="document.querySelector('.addfilter').classList.toggle('visible');" href="#" class="icon search">Search</a>
             <a href="{{base}}/{{table}}/create" class="btn">New item</a>
+        </div>
     </div>
 {{endif}}
 

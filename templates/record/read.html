@@ -24,7 +24,7 @@
                     {{if:field.type.format|eq("large-string")}}
                         <div style="white-space: pre-wrap;">{{field.text}}</div>
                     {{else}}
-                        {{field.text}}
+                        {{if:field.text}}{{field.text}}{{else}}<span class="mobile-only">-</span>{{endif}} 
                     {{endif}}        
                 {{endif}}
             </td>
