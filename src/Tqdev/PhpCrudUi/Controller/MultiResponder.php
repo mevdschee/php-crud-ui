@@ -7,8 +7,9 @@ use Tqdev\PhpCrudApi\Controller\Responder;
 use Tqdev\PhpCrudApi\Record\Document\ErrorDocument;
 use Tqdev\PhpCrudApi\Record\ErrorCode;
 use Tqdev\PhpCrudApi\ResponseFactory;
-use Tqdev\PhpCrudUi\Document\TemplateDocument;
 use Tqdev\PhpCrudUi\Document\CsvDocument;
+use Tqdev\PhpCrudUi\Document\StaticFileDocument;
+use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
 class MultiResponder implements Responder
 {
@@ -44,6 +45,9 @@ class MultiResponder implements Responder
         } elseif ($result instanceof TemplateDocument) {
             $result->addVariables($this->variables);
             $result->setTemplatePath($this->templatePath);
+            return ResponseFactory::fromHtml(ResponseFactory::OK, (string) $result);
+        } elseif ($result instanceof StaticFileDocument) {
+            $result->setWebRootPath($this->webRootPath);
             return ResponseFactory::fromHtml(ResponseFactory::OK, (string) $result);
         } else {
             throw new \Exception('Document type not supported: ' . get_class($result));

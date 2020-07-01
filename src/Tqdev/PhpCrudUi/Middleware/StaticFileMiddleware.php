@@ -5,13 +5,12 @@ namespace Tqdev\PhpCrudUi\Middleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-
 use Tqdev\PhpCrudApi\Middleware\Base\Middleware;
 
 class StaticFileMiddleware extends Middleware
 {
 
-    private function santizeFilename()
+    private function santizeFilename(string $filename)
     {
         $basepath = '/foo/bar/baz/';
         $realBase = realpath($basepath);
@@ -30,7 +29,8 @@ class StaticFileMiddleware extends Middleware
     {
         $response = $handler->handle($request);
         if ($response->getStatusCode() == 404) {
-            return $this->responder->
+            //$filename = $request->getUri()->getPath();
+            //return $this->responder->success(new StaticFileDocument());
         }
         return $response;
     }
