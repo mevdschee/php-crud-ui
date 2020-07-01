@@ -48,6 +48,9 @@ class TemplateDocument
             'sub' => function ($a, $b) {
                 return $a - $b;
             },
+            'has' => function ($a, $b) {
+                return isset($a[$b]);
+            },
             'prop' => function ($a, $b) {
                 return $a[$b];
             },

@@ -37,7 +37,7 @@
     <a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
     <a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
 </p>
-{{if:relation.referenced}}
+{{if:referenced|has(0)}}
 <br />
 <br />
 <h4>Related</h4>
