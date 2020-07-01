@@ -54,6 +54,7 @@ class Template
         return $tokens;
     }
 
+    // performance optimization possible?
     private function explode(string $separator, string $str, int $count = -1): array
     {
         $tokens = [];

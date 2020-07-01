@@ -16,6 +16,7 @@ use Tqdev\PhpCrudUi\Controller\MultiResponder;
 use Tqdev\PhpCrudUi\Record\RecordService;
 use Tqdev\PhpCrudUi\Client\LocalCaller;
 use Tqdev\PhpCrudUi\Client\CurlCaller;
+use Tqdev\PhpCrudUi\Middleware\StaticFileMiddleware;
 
 class Ui implements RequestHandlerInterface
 {
@@ -35,6 +36,13 @@ class Ui implements RequestHandlerInterface
         $definition = new SpecificationService($api, $cache, $config->getCacheTime());
         $responder = new MultiResponder($config->getTemplatePath());
         $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime(), $config->getDebug());
+        foreach ($config->getMiddlewares() as $middleware => $properties) {
+            switch ($middleware) {
+                case 'staticFile':
+                    new StaticFileMiddleware($router, $responder, $properties);
+                    break;
+            }
+        }
         $responder->setVariable('base', $router->getBasePath());
         $responder->setVariable('menu', $definition->getMenu());
         $responder->setVariable('table', '');
@@ -70,6 +78,8 @@ class Ui implements RequestHandlerInterface
         $response = null;
         try {
             $response = $this->router->route($this->addParsedBody($request));
+            if ($response->getStatusCode() == 404) {
+            }
         } catch (\Throwable $e) {
             $response = $this->responder->error(ErrorCode::ERROR_NOT_FOUND, $e->getMessage());
             if ($this->debug) {

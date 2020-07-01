@@ -86,7 +86,7 @@ class SpecificationService
         $types = array();
         foreach ($properties as $field => $property) {
             $type = $property['type'];
-            $nullable = $property['nullable'];
+            $nullable = isset($property['nullable']) ? $property['nullable'] : false;
             $format = isset($property['format']) ? $property['format'] : $property['type'];
             $maxLength = isset($property['maxLength']) ? $property['maxLength'] : 0;
             $pattern = $property['pattern'];
