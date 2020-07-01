@@ -211,10 +211,12 @@ class RecordService
 
         $filters = array();
         $args = array();
-        foreach ($params['filter'] as $i => $filter) {
-            $filter = array_combine(array('field', 'operator', 'value', 'name'), explode(',', $filter, 4));
-            $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], $filter['value']));
-            $filters[] = $filter;
+        if (isset($params['filter'])) {
+            foreach ($params['filter'] as $i => $filter) {
+                $filter = array_combine(array('field', 'operator', 'value', 'name'), explode(',', $filter, 4));
+                $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], $filter['value']));
+                $filters[] = $filter;
+            }
         }
 
         $args['join'] = array_values(array_filter($references));
