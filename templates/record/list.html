@@ -35,9 +35,7 @@
     }
     function isPartiallyOffscreen(element) {
         var rect = element.getBoundingClientRect();
-        return (rect.x < 0 || rect.y < 0 ||
-            (rect.x + rect.width) > window.innerWidth - 20 ||
-            (rect.y + rect.height) > window.innerHeight);
+        return rect.x < 0 || (rect.x + rect.width) > (window.innerWidth - 20);
     }
     var timeOut = null;
     function resizeWindow() {
@@ -153,21 +151,21 @@
     </tbody>
 </table>
 {{if:maxPage|gt(1)}}
-    <div class="pagination">
-        {{if:pageNumber|gt(1)}}
-        <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="icon prev"
-            onclick="return navigatePage('{{pageNumber|sub(1)}},{{pageSize}}')">&lt;</a>
-        {{else}}
-        <a href="javascript:void(0);" class="icon prev disabled">&lt;</a>
-        {{endif}}
-        &nbsp;page {{pageNumber}}/{{maxPage}}&nbsp;
-        {{if:pageNumber|lt(maxPage)}}
-        <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="icon next"
-            onclick="return navigatePage('{{pageNumber|add(1)}},{{pageSize}}')">&gt;</a>
-        {{else}}
-        <a href="javascript:void(0);" class="icon next disabled">&gt;</a>
-        {{endif}}
-    </div>
+<div class="pagination">
+    {{if:pageNumber|gt(1)}}
+    <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="icon prev"
+        onclick="return navigatePage('{{pageNumber|sub(1)}},{{pageSize}}')">&lt;</a>
+    {{else}}
+    <a href="javascript:void(0);" class="icon prev disabled">&lt;</a>
+    {{endif}}
+    &nbsp;page {{pageNumber}}/{{maxPage}}&nbsp;
+    {{if:pageNumber|lt(maxPage)}}
+    <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="icon next"
+        onclick="return navigatePage('{{pageNumber|add(1)}},{{pageSize}}')">&gt;</a>
+    {{else}}
+    <a href="javascript:void(0);" class="icon next disabled">&gt;</a>
+    {{endif}}
+</div>
 {{endif}}
 <div class="footeractions">
     <a href="{{base}}/{{table}}/export" class="btn">Export</a>

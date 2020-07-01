@@ -16,7 +16,6 @@ class Config
         'debug' => false,
         'basePath' => '',
         'templatePath' => '.',
-        'webRootPath' => '.',
         'passwordColumnFormat' => 'string',
         'passwordColumnName' => 'password$',
         'colorColumnFormat' => 'string',
