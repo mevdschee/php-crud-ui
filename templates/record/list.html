@@ -39,12 +39,16 @@
             (rect.x + rect.width) > window.innerWidth - 20 ||
             (rect.y + rect.height) > window.innerHeight);
     }
-    // var timeOut = null;
-    // function resizeWindow() {
-    //     if (timeOut != null) clearTimeout(timeOut);
-    //     timeOut = setTimeout(hideColumns, 100);
-    // }
+    var timeOut = null;
+    function resizeWindow() {
+        if (timeOut != null) clearTimeout(timeOut);
+        timeOut = setTimeout(hideColumns, 100);
+    }
     function hideColumns() {
+        const all = document.querySelectorAll('th, td');
+        for (var i = 0; i < all.length; i++) {
+            all[i].classList.remove('hidden');
+        }
         const elements = document.querySelectorAll('th');
         var max = 0;
         for (var i = 0; i < elements.length; i++) {
@@ -53,10 +57,6 @@
                 break;
             }
         }
-        // const all = document.querySelectorAll('th, td');
-        // for (var i = 0; i < all.length; i++) {
-        //     all[i].classList.remove('hidden');
-        // }
         const headers = document.querySelectorAll('th:nth-child(n+' + (max + 1) + ')');
         for (var i = 0; i < headers.length; i++) {
             headers[i].classList.add('hidden');
@@ -80,7 +80,7 @@
         return false;
     }
     window.addEventListener('load', function () { hideColumns(); })
-    // window.addEventListener('resize', function () { resizeWindow(); })
+    window.addEventListener('resize', function () { resizeWindow(); })
 </script>
 
 <form style="display:inline">
