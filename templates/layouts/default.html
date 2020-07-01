@@ -36,11 +36,12 @@ td:last-child a {display: inline-block; margin-right: 0.5rem;}
 a {color: black;}
 label {width: 15rem; min-width: 15rem; padding-right: 2rem;}
 h1 {font-size: 2.2rem; margin-bottom: 0.5rem; margin-right: 1rem; line-height: 1;}
+h2 {font-size: 1.5rem; margin-bottom: 0.5rem;}
 table {border-collapse: collapse; margin-top: 1.5rem;}
 table tr:nth-child(even) {background: rgba(0,0,0,0.05);}
 table.read tr:nth-child(even) {background: none;}
 table.read tr:nth-child(odd) {background: rgba(0,0,0,0.05);}
-table tr th {padding: 0.3rem 1.5rem 0.3rem 0.5rem; font-weight: bold; border-bottom: 1px solid black;}
+table tr th {padding-top: 0.3rem; padding-bottom: 0.3rem; font-weight: bold; border-bottom: 1px solid black;}
 p, table {margin-bottom: 1.4rem;}
 
 .titlebar {display: flex; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap;}
@@ -65,6 +66,7 @@ input, textarea, select{
     font-family: inherit;
     font-size: inherit;
     flex-grow: 1;
+    background: white;
 }
 button, input[type="submit"], .btn {
     height: calc(2rem + 2px); 
@@ -139,10 +141,10 @@ dl + dl {margin-top: -1.4rem;}
 dl + dl dt {border-top: 1px solid transparent;}
 dl + dl dd {border-top: 1px solid silver;}
 
-ul.breadcrumb {margin-bottom: 0.3rem; font-size: 0.9rem;}
+ul.breadcrumb {margin-bottom: 0.3rem; font-size: 0.9rem; opacity: 0.45;}
 ul.breadcrumb li {display: inline; list-style: none;}
-ul.breadcrumb li + li::before {content: "/ "; color: silver;}
-ul.breadcrumb li a {color: silver; text-decoration: none;}
+ul.breadcrumb li + li::before {content: "/ ";}
+ul.breadcrumb li a {text-decoration: none;}
 
 ul.related li, ul.home li {list-style: none;}
 
@@ -187,6 +189,33 @@ ul.related li, ul.home li {list-style: none;}
 
 }
 
+/* SPOTIFY THEME */
+
+
+body {background-color: #181818; font-family: sans-serif;}
+body, a {color: #aaa;}
+.navigation {background-color: #121212; box-shadow: none;}
+a {text-decoration: none;}
+button, .btn, input[type="submit"], .icon {
+    background-color: #1ed760; 
+    border-radius: 2rem;
+    filter: invert(100%) hue-rotate(-180deg) saturate(0.6) brightness(1.8);
+}
+table tr th {border-color: #333;}
+h2, .hamburger, table tr th, h1, .pagination, a:not(.icon):not(.btn):hover, .title {color: white;}
+table tr:nth-child(even), table.read tr:nth-child(odd) {background: none;}
+ul.related li, ul.home li, table tr td {border-bottom: 1px solid #333;}
+ul.related li:last-child, ul.home li:last-child, table tr:last-child td {border: 0;}
+ul.related li, ul.home li, td, th, dl > * {padding: 0.2rem 1.5rem 0.2rem 0;}
+input, textarea, select {filter: invert(100%) contrast(0.6) brightness(1); border-color: transparent;}
+.filterbar {background:#333;}
+@media only screen and (max-width: 600px) {
+    table.read tr {display: block;}
+    form > div {padding: 0.5rem 0;}
+    table.read tr {padding: 0.7rem 0;}
+    table tr td {border: 0;}
+    table.read td:nth-child(2n+1), label {font-weight: normal; color: white;}
+}
 </style>
     </head>
     <body>
