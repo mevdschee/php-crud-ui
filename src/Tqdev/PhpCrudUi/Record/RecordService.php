@@ -53,16 +53,19 @@ class RecordService
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
         $columns = $this->definition->getColumns($table, $action);
-        foreach ($columns as $i => $column) {
+        $record = array();
+        foreach ($columns as $column) {
             $values = $this->getDropDownValues($references[$column]);
             $type = $types[$column];
-            $columns[$i] = array('name' => $column, 'values' => $values, 'type' => $type);
+            //TODO: sensible default
+            $default = '';
+            $record[$column] = array('value' => $default, 'values' => $values, 'type' => $type);
         }
 
         $variables = array(
             'table' => $table,
             'action' => $action,
-            'columns' => $columns,
+            'record' => $record,
             'primaryKey' => $primaryKey,
         );
 
@@ -138,7 +141,7 @@ class RecordService
         foreach ($record as $key => $value) {
             $values = $this->getDropDownValues($references[$key]);
             $type = $types[$key];
-            $record[$key] = array('type' => $types[$key], 'value' => $value, 'values' => $values, 'type' => $type);
+            $record[$key] = array('value' => $value, 'values' => $values, 'type' => $type);
         }
 
         $variables = array(
