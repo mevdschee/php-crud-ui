@@ -83,7 +83,7 @@ select {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background: white url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiID8+DQo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPg0KPHN2ZyB3aWR0aD0iMjA2cHQiIGhlaWdodD0iMTc0cHQiIHZpZXdCb3g9IjAgMCAyMDYgMTc0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+DQo8cGF0aCBvcGFjaXR5PSIxLjAwIiBkPSIgTSA1LjA4IDguOTcgQyA3MC41MSA5LjEzIDEzNS45NCA4Ljc4IDIwMS4zNyA5LjE1IEMgMTczLjQzIDU2LjA4IDE0NC4zNiAxMDIuMzQgMTE2LjA1IDE0OS4wNSBDIDExMS44NiAxNTUuODAgMTA3LjkxIDE2Mi43MCAxMDMuNDAgMTY5LjI1IEMgNzAuNTIgMTE1Ljg5IDM4LjAwIDYyLjMwIDUuMDggOC45NyBaIiAvPg0KPC9zdmc+') calc(100% - 0.6rem) 50% no-repeat;
+    background: white url('../img/down.svg') calc(100% - 0.6rem) 50% no-repeat;
     background-size: auto 0.5rem;
     padding-right: 1.75rem;
     max-width: calc(100% - 15rem);
