@@ -40,21 +40,20 @@ class StaticFileMiddleware extends Middleware
         $response = $handler->handle($request);
 
         if ($response->getStatusCode() == 404) {
-            $filename = $request->getUri()->getPath();
-            $contentType = $this->getContentType($filename);
-
-            $base = $this->getProperty('webRootPath', 'webroot');
-            $path = rtrim($base, '/') . $filename;
+            $path = $request->getUri()->getPath();
+            $contentType = $this->getContentType($path);
 
             global $_STATIC;
+
             if (isset($_STATIC[$path])) {
                 $content = base64_decode($_STATIC[$path]);
                 return ResponseFactory::from(ResponseFactory::OK, $contentType, $content);
             }
 
-            $filename = $this->santizeFilename($base, $filename);
+            $filename = $this->santizeFilename('.', $path);
             if ($contentType && $filename) {
-                return ResponseFactory::fromFile(ResponseFactory::OK, $contentType, $filename);
+                $content = file_get_contents($filename);
+                return ResponseFactory::from(ResponseFactory::OK, $contentType, $content);
             }
         }
         return $response;

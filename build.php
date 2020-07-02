@@ -55,7 +55,7 @@ function runDir(string $base, string $dir, array &$lines, array $ignore): int
                 $count++;
             } elseif (substr($entry, -4) == '.css' || substr($entry, -4) == '.svg') {
                 $data = base64_encode(file_get_contents($filename));
-                $id = "$dir/$entry";
+                $id = substr("$dir/$entry", 7);
                 array_push($lines, "// file: $dir/$entry");
                 array_push($lines, 'namespace {');
                 array_push($lines, "\$_STATIC['$id'] = <<<'END_OF_STATIC_FILE'");
