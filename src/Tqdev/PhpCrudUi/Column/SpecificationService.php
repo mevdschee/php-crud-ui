@@ -2,8 +2,8 @@
 
 namespace Tqdev\PhpCrudUi\Column;
 
-use Tqdev\PhpCrudUi\Client\CrudApi;
 use Tqdev\PhpCrudApi\Cache\Cache;
+use Tqdev\PhpCrudUi\Client\CrudApi;
 
 class SpecificationService
 {
@@ -212,12 +212,18 @@ class SpecificationService
 
     public function referenceText(string $table, /* object */ $record)
     {
+        if (!$record) {
+            return '';
+        }
         $displayColumn = $this->getDisplayColumn($table, 'read');
         return $record[$displayColumn];
     }
 
     public function referenceId(string $table, /* object */ $record)
     {
+        if (!$record) {
+            return null;
+        }
         $primaryKey = $this->getPrimaryKey($table, 'read');
         return $record[$primaryKey];
     }
