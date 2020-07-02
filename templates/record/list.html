@@ -31,7 +31,7 @@
     <form style="display:inline">
         <select name="field">
             {{for:column:columns}}
-            <option>{{column|humanize}}</option>
+            <option>{{column.text|humanize}}</option>
             {{endfor}}
         </select>&nbsp;
         <select name="operator">
