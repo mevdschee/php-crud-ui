@@ -5,6 +5,7 @@ namespace Tqdev\PhpCrudUi\Record;
 use Tqdev\PhpCrudUi\Client\CrudApi;
 use Tqdev\PhpCrudUi\Column\SpecificationService;
 use Tqdev\PhpCrudUi\Document\CsvDocument;
+use Tqdev\PhpCrudUi\Document\RedirectDocument;
 use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
 class RecordService
@@ -216,7 +217,6 @@ class RecordService
     {
         $types = $this->definition->getTypes($table, $action);
         $references = $this->definition->getReferences($table, $action);
-        $referenced = $this->definition->getReferenced($table, $action);
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
         $columns = $this->definition->getColumns($table, $action);
@@ -279,6 +279,14 @@ class RecordService
         );
 
         return new TemplateDocument('layouts/default', 'record/list', $variables);
+    }
+
+    public function search(string $table, string $action, array $params)
+    {
+        //die(var_dump($params));
+        $params = ['search' => 'asdas'];
+        $query = http_build_query($params);
+        return new RedirectDocument('/' . $table . '/list?' . $query, []);
     }
 
     public function export(string $table, string $action): CsvDocument

@@ -109,30 +109,49 @@ namespace {
 $_HTML['record/create'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
     <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/column/{{table}}/list">{{table|humanize}}</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h1>create {{table}}</h1>
+<h1>New item</h1>
 
 <form method="post">
-    {{for:column:columns}}
-        <div>
-            <label for="{{column.name}}">{{column.name|humanize}}</label>
-            {{if:column.values}}
-                <select id="{{column.name}}" name="{{column.name}}" class="form-control">
-                    <option value=""></option>
-                    {{for:label:value:column.values}}
-                        <option value="{{value}}">{{label}}</option>
-                    {{endfor}}
-                </select>
-            {{else}}
-                <input class="form-control" id="{{column.name}}" name="{{column.name}}" value=""{{if:column.name|eq(primaryKey)}} disabled{{endif}}/>
-            {{endif}}
-        </div>
+    {{for:value:key:record}}
+    {{if:key|neq(primaryKey)}}
+    <div>
+        <label for="{{key}}" class="col-sm-2 col-form-label" title="{{key|humanize}}">{{key|humanize}}</label>
+        {{if:value.values}}
+        <select id="{{key}}" name="{{key}}" class="form-control">
+            <option value=""></option>
+            {{for:v:k:value.values}}
+            <option value="{{k}}" {{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
+            {{endfor}}
+        </select>
+        {{else}}
+        {{if:value.type.format|eq("int32")}}
+        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("int64")}}
+        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("decimal")}}
+        <input class="form-control" id="{{key}}" type="number" step="any" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("date-time")}}
+        <input class="form-control" id="{{key}}" type="datetime-local" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("date")}}
+        <input class="form-control" id="{{key}}" type="date" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("time")}}
+        <input class="form-control" id="{{key}}" type="time" name="{{key}}" value="" />
+        {{elseif:value.type.format|eq("large-string")}}
+        <textarea class="form-control" id="{{key}}" name="{{key}}">{{value.value}}</textarea>
+        {{elseif:value.type.format|eq("boolean")}}
+        <input class="form-control" id="{{key}}" name="{{key}}" type="checkbox" {{if:value.value}} checked{{endif}} />
+        {{else}}
+        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}" />
+        {{endif}}
+        {{endif}}
+    </div>
+    {{endif}}
     {{endfor}}
     <button type="submit" class="btn btn-primary">Save</button>
 </form>
-
 END_OF_HTML;
 }
 
@@ -157,17 +176,22 @@ namespace {
 $_HTML['record/delete'] = <<<'END_OF_HTML'
 <ul class="breadcrumb">
     <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/column/{{table}}/list">{{table|humanize}}</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h1>delete {{table}}</h1>
+<h1>{{name|or("Delete item")}}</h1>
 
+{{if:name}}
+<p>Are you sure you want to delete '{{name}}'?</p>
+{{else}}
+<p>Are you sure you want to delete item #{{id}}?</p>
+{{endif}}
 <p>The action cannot be undone.</p>
 
 <form method="post">
-    <input type="hidden" name="{{primaryKey}}" value="{{id}}"/>
+    <input type="hidden" name="{{primaryKey}}" value="{{id}}" />
     <button type="submit" class="btn btn-danger">Delete</button>
-    <a href="{{base}}/{{table}}/update/{{id}}" class="btn btn-default">Cancel</a>
+    <a href="{{base}}/{{table}}/read/{{id}}" class="btn btn-default">Cancel</a>
 </form>
 END_OF_HTML;
 }
@@ -216,7 +240,6 @@ $_HTML['record/list'] = <<<'END_OF_HTML'
     <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-{{if:primaryKey}}
 <div class="titlebar">
     <h1>{{table|humanize}}</h1>
     <div>
@@ -224,10 +247,11 @@ $_HTML['record/list'] = <<<'END_OF_HTML'
             filter</a>
         <a onclick="document.querySelector('.addSearch').classList.toggle('visible');" href="#"
             class="icon search">Search</a>
+        {{if:primaryKey}}
         <a href="{{base}}/{{table}}/create" class="btn">New item</a>
+        {{endif}}
     </div>
 </div>
-{{endif}}
 
 <script src="{{base}}/js/list.js"></script>
 
@@ -258,7 +282,7 @@ $_HTML['record/list'] = <<<'END_OF_HTML'
 </div>
 
 <div class="addSearch">
-    <form style="display:inline">
+    <form style="display:inline" method="post">
         <input type="text" name="search" />&nbsp;
         <input type="submit" value="Search" />
     </form>
@@ -271,8 +295,8 @@ $_HTML['record/list'] = <<<'END_OF_HTML'
             <th>Action</th>
             {{endif}}
             {{for:column:columns}}
-            {{if:column|neq(primaryKey)}}
-            <th>{{column|humanize}}</th>
+            {{if:column.text|neq(primaryKey)}}
+            <th>{{column.text|humanize}}</th>
             {{endif}}
             {{endfor}}
         </tr>
@@ -281,13 +305,9 @@ $_HTML['record/list'] = <<<'END_OF_HTML'
         {{for:record:records}}
         <tr>
             {{for:field:name:record}}
-            {{if:primaryKey}}
             {{if:name|eq(primaryKey)}}
             <td><a href="{{base}}/{{table}}/read/{{field.value}}">view</a></td>
             {{endif}}
-            {{endif}}
-            {{endfor}}
-            {{for:field:name:record}}
             {{if:name|neq(primaryKey)}}
             {{if:field.table}}
             <td><a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a></td>
@@ -332,32 +352,34 @@ $_HTML['record/read'] = <<<'END_OF_HTML'
     <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h1>view {{table|humanize}}</h1>
+<h1>{{name|or("View item")}}</h1>
 
 <table class="table read">
     <thead>
         <tr>
-            <th>key</th>
-            <th>value</th>
+            <th>Key</th>
+            <th>Value</th>
         </tr>
     </thead>
     <tbody>
         {{for:field:name:record}}
+        {{if:name|neq(primaryKey)}}
         <tr>
             <td>{{name|humanize}}</td>
             </td>
             <td>
                 {{if:field.table}}
-                    <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
+                <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
                 {{else}}
-                    {{if:field.type.format|eq("large-string")}}
-                        <div style="white-space: pre-wrap;">{{field.text}}</div>
-                    {{else}}
-                        {{if:field.text}}{{field.text}}{{else}}<span class="mobile-only">-</span>{{endif}} 
-                    {{endif}}        
+                {{if:field.type.format|eq("large-string")}}
+                <div style="white-space: pre-wrap;">{{field.text}}</div>
+                {{else}}
+                {{if:field.text}}{{field.text}}{{else}}<span class="mobile-only">-</span>{{endif}}
+                {{endif}}
                 {{endif}}
             </td>
         </tr>
+        {{endif}}
         {{endfor}}
     </tbody>
 </table>
@@ -375,7 +397,8 @@ $_HTML['record/read'] = <<<'END_OF_HTML'
     <li><a href="{{base}}/{{relation.0}}/list?filter={{relation.1}},eq,{{id}},{{name}}">{{relation.0|humanize}}</a>
     </li>
     {{endfor}}
-{{endif}}
+    {{endif}}
+</ul>
 END_OF_HTML;
 }
 
@@ -387,45 +410,46 @@ $_HTML['record/update'] = <<<'END_OF_HTML'
     <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h1>update {{table}}</h1>
+<h1>{{name|or("Edit item")}}</h1>
 
 <form method="post">
     {{for:value:key:record}}
-        <div>
-            <label for="{{key}}" class="col-sm-2 col-form-label" title="{{key|humanize}}">{{key|humanize}}</label>
-            {{if:value.values}}
-                <select id="{{key}}" name="{{key}}" class="form-control">
-                    <option value=""></option>
-                    {{for:v:k:value.values}}
-                        <option value="{{k}}"{{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
-                    {{endfor}}
-                </select>
-            {{else}}
-                {{if:value.type.format|eq("int32")}}
-                    <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-                {{elseif:value.type.format|eq("int64")}}
-                    <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-                {{elseif:value.type.format|eq("decimal")}}
-                    <input class="form-control" id="{{key}}" type="number" step="any" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-                {{elseif:value.type.format|eq("date-time")}}
-                    <input class="form-control" id="{{key}}" type="datetime-local" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-                {{elseif:value.type.format|eq("date")}}
-                    <input class="form-control" id="{{key}}" type="date" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-                {{elseif:value.type.format|eq("time")}}
-                    <input class="form-control" id="{{key}}" type="time" name="{{key}}" value=""{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-                {{elseif:value.type.format|eq("large-string")}}
-                    <textarea class="form-control" id="{{key}}" name="{{key}}">{{value.value}}</textarea>
-                {{elseif:value.type.format|eq("boolean")}}
-                    <input class="form-control" id="{{key}}" name="{{key}}" type="checkbox" {{if:value.value}} checked{{endif}}/>
-                {{else}}
-                    <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
-                {{endif}}
-            {{endif}}
-        </div>
+    {{if:key|neq(primaryKey)}}
+    <div>
+        <label for="{{key}}" class="col-sm-2 col-form-label" title="{{key|humanize}}">{{key|humanize}}</label>
+        {{if:value.values}}
+        <select id="{{key}}" name="{{key}}" class="form-control">
+            <option value=""></option>
+            {{for:v:k:value.values}}
+            <option value="{{k}}" {{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
+            {{endfor}}
+        </select>
+        {{else}}
+        {{if:value.type.format|eq("int32")}}
+        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("int64")}}
+        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("decimal")}}
+        <input class="form-control" id="{{key}}" type="number" step="any" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("date-time")}}
+        <input class="form-control" id="{{key}}" type="datetime-local" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("date")}}
+        <input class="form-control" id="{{key}}" type="date" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("time")}}
+        <input class="form-control" id="{{key}}" type="time" name="{{key}}" value="" />
+        {{elseif:value.type.format|eq("large-string")}}
+        <textarea class="form-control" id="{{key}}" name="{{key}}">{{value.value}}</textarea>
+        {{elseif:value.type.format|eq("boolean")}}
+        <input class="form-control" id="{{key}}" name="{{key}}" type="checkbox" {{if:value.value}} checked{{endif}} />
+        {{else}}
+        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}" />
+        {{endif}}
+        {{endif}}
+    </div>
+    {{endif}}
     {{endfor}}
     <button type="submit" class="btn">Save</button>
 </form>
-
 END_OF_HTML;
 }
 
@@ -11688,6 +11712,8 @@ namespace Tqdev\PhpCrudApi {
     class ResponseFactory
     {
         const OK = 200;
+        const MOVED_PERMANENTLY = 301;
+        const FOUND = 302;
         const UNAUTHORIZED = 401;
         const FORBIDDEN = 403;
         const NOT_FOUND = 404;
@@ -12146,6 +12172,7 @@ namespace Tqdev\PhpCrudUi\Controller {
     use Tqdev\PhpCrudApi\Record\ErrorCode;
     use Tqdev\PhpCrudApi\ResponseFactory;
     use Tqdev\PhpCrudUi\Document\CsvDocument;
+    use Tqdev\PhpCrudUi\Document\RedirectDocument;
     use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
     class MultiResponder implements Responder
@@ -12183,6 +12210,10 @@ namespace Tqdev\PhpCrudUi\Controller {
                 $result->addVariables($this->variables);
                 $result->setTemplatePath($this->templatePath);
                 return ResponseFactory::fromHtml(ResponseFactory::OK, (string) $result);
+            } elseif ($result instanceof RedirectDocument) {
+                $result->addVariables($this->variables);
+                $response = ResponseFactory::fromStatus(ResponseFactory::FOUND);
+                return $response->withHeader('Location', (string) $result);
             } else {
                 throw new \Exception('Document type not supported: ' . get_class($result));
             }
@@ -12217,6 +12248,7 @@ namespace Tqdev\PhpCrudUi\Controller {
             $router->register('GET', '/*/delete/*', array($this, 'deleteForm'));
             $router->register('POST', '/*/delete/*', array($this, 'delete'));
             $router->register('GET', '/*/list', array($this, '_list'));
+            $router->register('POST', '/*/list', array($this, 'search'));
             $router->register('GET', '/*/export', array($this, 'export'));
             $this->service = $service;
             $this->responder = $responder;
@@ -12331,6 +12363,18 @@ namespace Tqdev\PhpCrudUi\Controller {
             return $this->responder->success($result);
         }
 
+        public function search(ServerRequestInterface $request): ResponseInterface
+        {
+            $table = RequestUtils::getPathSegment($request, 1);
+            $action = RequestUtils::getPathSegment($request, 2);
+            $params = RequestUtils::getParams($request);
+            if (!$this->service->hasTable($table, $action)) {
+                return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
+            }
+            $result = $this->service->search($table, $action, $params);
+            return $this->responder->success($result);
+        }
+
         public function export(ServerRequestInterface $request): ResponseInterface
         {
             $table = RequestUtils::getPathSegment($request, 1);
@@ -12366,6 +12410,32 @@ namespace Tqdev\PhpCrudUi\Document {
             }
             rewind($f);
             return stream_get_contents($f);
+        }
+    }
+}
+
+// file: src/Tqdev/PhpCrudUi/Document/RedirectDocument.php
+namespace Tqdev\PhpCrudUi\Document {
+
+    class RedirectDocument
+    {
+        private $path;
+        private $variables;
+
+        public function __construct(string $path, array $variables)
+        {
+            $this->path = $path;
+            $this->variables = $variables;
+        }
+
+        public function addVariables(array $variables) /*: void*/
+        {
+            $this->variables = array_merge($variables, $this->variables);
+        }
+
+        public function __toString(): string
+        {
+            return $this->variables['base'] . $this->path;
         }
     }
 }
@@ -12541,6 +12611,7 @@ namespace Tqdev\PhpCrudUi\Record {
     use Tqdev\PhpCrudUi\Client\CrudApi;
     use Tqdev\PhpCrudUi\Column\SpecificationService;
     use Tqdev\PhpCrudUi\Document\CsvDocument;
+    use Tqdev\PhpCrudUi\Document\RedirectDocument;
     use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
     class RecordService
@@ -12584,20 +12655,24 @@ namespace Tqdev\PhpCrudUi\Record {
 
         public function createForm(string $table, string $action): TemplateDocument
         {
+            $types = $this->definition->getTypes($table, $action);
             $references = $this->definition->getReferences($table, $action);
             $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
             $columns = $this->definition->getColumns($table, $action);
-
-            foreach ($columns as $i => $column) {
+            $record = array();
+            foreach ($columns as $column) {
                 $values = $this->getDropDownValues($references[$column]);
-                $columns[$i] = array('name' => $column, 'values' => $values);
+                $type = $types[$column];
+                //TODO: sensible default
+                $default = '';
+                $record[$column] = array('value' => $default, 'values' => $values, 'type' => $type);
             }
 
             $variables = array(
                 'table' => $table,
                 'action' => $action,
-                'columns' => $columns,
+                'record' => $record,
                 'primaryKey' => $primaryKey,
             );
 
@@ -12625,6 +12700,7 @@ namespace Tqdev\PhpCrudUi\Record {
             $types = $this->definition->getTypes($table, $action);
             $references = $this->definition->getReferences($table, $action);
             $referenced = $this->definition->getReferenced($table, $action);
+            $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
             $args = array();
             $args['join'] = array_values(array_filter($references));
@@ -12640,7 +12716,7 @@ namespace Tqdev\PhpCrudUi\Record {
                 $relatedTable = false;
                 $relatedValue = false;
                 $text = $value;
-                $type = isset($types[$key]) ? $types[$key] : null;
+                $type = $types[$key];
                 if (isset($references[$key]) && $references[$key]) {
                     $relatedTable = $references[$key];
                     $relatedValue = $this->definition->referenceId($relatedTable, $value);
@@ -12654,7 +12730,7 @@ namespace Tqdev\PhpCrudUi\Record {
                 'action' => $action,
                 'id' => $id,
                 'name' => $name,
-                'references' => $references,
+                'primaryKey' => $primaryKey,
                 'referenced' => $referenced,
                 'record' => $record,
             );
@@ -12669,16 +12745,19 @@ namespace Tqdev\PhpCrudUi\Record {
             $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
             $record = $this->api->readRecord($table, $id, []);
+            $name = $this->definition->referenceText($table, $record);
 
             foreach ($record as $key => $value) {
                 $values = $this->getDropDownValues($references[$key]);
-                $record[$key] = array('type' => $types[$key], 'value' => $value, 'values' => $values);
+                $type = $types[$key];
+                $record[$key] = array('value' => $value, 'values' => $values, 'type' => $type);
             }
 
             $variables = array(
                 'table' => $table,
                 'action' => $action,
                 'id' => $id,
+                'name' => $name,
                 'primaryKey' => $primaryKey,
                 'record' => $record,
             );
@@ -12715,6 +12794,7 @@ namespace Tqdev\PhpCrudUi\Record {
                 'table' => $table,
                 'action' => $action,
                 'id' => $id,
+                'name' => $name,
                 'primaryKey' => $primaryKey,
                 'name' => $name,
             );
@@ -12741,11 +12821,14 @@ namespace Tqdev\PhpCrudUi\Record {
 
         public function _list(string $table, string $action, array $params): TemplateDocument
         {
+            $types = $this->definition->getTypes($table, $action);
             $references = $this->definition->getReferences($table, $action);
-            $referenced = $this->definition->getReferenced($table, $action);
             $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
             $columns = $this->definition->getColumns($table, $action);
+            foreach ($columns as $i => $key) {
+                $columns[$i] = array('text' => $key, 'type' => $types[$key]);
+            }
 
             $pageParams = isset($params['page']) ? $params['page'][0] : '1,50';
             list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
@@ -12773,12 +12856,13 @@ namespace Tqdev\PhpCrudUi\Record {
                     $relatedTable = false;
                     $relatedValue = $value;
                     $text = $value;
+                    $type = $types[$key];
                     if ($references[$key]) {
                         $relatedTable = $references[$key];
                         $relatedValue = $this->definition->referenceId($relatedTable, $value);
                         $text = $this->definition->referenceText($relatedTable, $value);
                     }
-                    $data['records'][$i][$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue);
+                    $data['records'][$i][$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue, 'type' => $type);
                 }
             }
 
@@ -12792,8 +12876,6 @@ namespace Tqdev\PhpCrudUi\Record {
                 'table' => $table,
                 'action' => $action,
                 'filters' => $filters,
-                'references' => $references,
-                'referenced' => $referenced,
                 'primaryKey' => $primaryKey,
                 'columns' => $columns,
                 'records' => $data['records'],
@@ -12803,6 +12885,14 @@ namespace Tqdev\PhpCrudUi\Record {
             );
 
             return new TemplateDocument('layouts/default', 'record/list', $variables);
+        }
+
+        public function search(string $table, string $action, array $params)
+        {
+            die(var_dump($params));
+            $params = [];
+            $query = http_build_query($params);
+            return new RedirectDocument('/' . $table . '/list?' . $query, []);
         }
 
         public function export(string $table, string $action): CsvDocument
@@ -13467,7 +13557,7 @@ END_OF_STATIC_FILE;
 // file: webroot/css/style.css
 namespace {
 $_STATIC['/css/style.css'] = <<<'END_OF_STATIC_FILE'
-Cioge21hcmdpbjogMDsgcGFkZGluZzogMDsgYm94LXNpemluZzogYm9yZGVyLWJveDt9Cmh0bWwge2ZvbnQtc2l6ZTogMTZweDt9CmJvZHkge2ZvbnQtc2l6ZTogMXJlbTsgbGluZS1oZWlnaHQ6IDEuNDt9CgouY29udGVudCB7bWluLWhlaWdodDogMTAwdmg7fQoubmF2aWdhdGlvbiB7CiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTsgCiAgICBkaXNwbGF5OiBmbGV4OyAKICAgIHBvc2l0aW9uOiBmaXhlZDsgCiAgICB3aWR0aDogMTAwJTsgCiAgICBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47CiAgICBib3gtc2hhZG93OiAwcHggMHB4IDEwcHggcmdiYSgwLDAsMCwwLjI1KTsKICAgIHotaW5kZXg6IDk7Cn0KLnRpdGxlIHtwYWRkaW5nOiAwLjVyZW0gMnJlbTsgY29sb3I6IGJsYWNrOyB0ZXh0LWRlY29yYXRpb246IG5vbmU7fQoudGl0bGUgc3BhbiB7Zm9udC13ZWlnaHQ6IGJvbGQ7IGRpc3BsYXk6IGJsb2NrO30KLmJvZHkge3BhZGRpbmc6IDZyZW0gMnJlbTsgZmxleC1ncm93OiAxOyBwYWRkaW5nLWJvdHRvbTogMTByZW07fQouaGFtYnVyZ2VyIHtwYWRkaW5nOiAwIDFyZW0gMC41cmVtOyBtYXJnaW46IDAuM3JlbSAxcmVtOyBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IHRleHQtZGVjb3JhdGlvbjogbm9uZTsgY29sb3I6IGJsYWNrOyBmb250LXNpemU6IDIuMjVyZW07IGxpbmUtaGVpZ2h0OiAxLjI7IHRyYW5zZm9ybTogc2NhbGVYKDEuNSk7fQoKdGguc2VsZWN0ZWQ6OmFmdGVyIHtjb250ZW50OiAiIOKWviI7fQoKdGQsIHRoLCBkbCA+ICoge3BhZGRpbmc6IDAuMnJlbSAxLjVyZW0gMC4ycmVtIDAuNXJlbTsgdGV4dC1hbGlnbjogbGVmdDt9CnRkLCB0aCB7bWF4LXdpZHRoOiA0MHJlbTt9CnRhYmxlLmxpc3QgdGQsIHRhYmxlLmxpc3QgdGgge3RleHQtb3ZlcmZsb3c6IGVsbGlwc2lzOyB3aGl0ZS1zcGFjZTogbm93cmFwOyBvdmVyZmxvdzogaGlkZGVuOyBtYXgtd2lkdGg6IDI1cmVtO30KdGFibGUucmVhZCB0aGVhZCB7ZGlzcGxheTogbm9uZTt9CmxhYmVsIHtwYWRkaW5nOiBjYWxjKDAuMnJlbSArIDFweCkgMS41cmVtIGNhbGMoMC4ycmVtICsgMXB4KSAwOyB0ZXh0LW92ZXJmbG93OiBlbGxpcHNpczsgd2hpdGUtc3BhY2U6IG5vd3JhcDsgb3ZlcmZsb3c6IGhpZGRlbjt9CnRkOmxhc3QtY2hpbGQgYSB7ZGlzcGxheTogaW5saW5lLWJsb2NrOyBtYXJnaW4tcmlnaHQ6IDAuNXJlbTt9Ci5sb2dvIGltZyB7aGVpZ2h0OiAycmVtOyB2ZXJ0aWNhbC1hbGlnbjogbWlkZGxlO30KYSB7Y29sb3I6IGJsYWNrO30KbGFiZWwge3dpZHRoOiAxNXJlbTsgbWluLXdpZHRoOiAxNXJlbTsgcGFkZGluZy1yaWdodDogMnJlbTt9CmgxIHtmb250LXNpemU6IDIuMnJlbTsgbWFyZ2luLWJvdHRvbTogMC41cmVtOyBtYXJnaW4tcmlnaHQ6IDFyZW07IGxpbmUtaGVpZ2h0OiAxO30KaDIge2ZvbnQtc2l6ZTogMS41cmVtOyBtYXJnaW4tYm90dG9tOiAwLjVyZW07fQp0YWJsZSB7Ym9yZGVyLWNvbGxhcHNlOiBjb2xsYXBzZTsgbWFyZ2luLXRvcDogMS41cmVtO30KdGFibGUgdHI6bnRoLWNoaWxkKGV2ZW4pIHtiYWNrZ3JvdW5kOiByZ2JhKDAsMCwwLDAuMDUpO30KdGFibGUucmVhZCB0cjpudGgtY2hpbGQoZXZlbikge2JhY2tncm91bmQ6IG5vbmU7fQp0YWJsZS5yZWFkIHRyOm50aC1jaGlsZChvZGQpIHtiYWNrZ3JvdW5kOiByZ2JhKDAsMCwwLDAuMDUpO30KdGFibGUgdHIgdGgge3BhZGRpbmctdG9wOiAwLjNyZW07IHBhZGRpbmctYm90dG9tOiAwLjNyZW07IGZvbnQtd2VpZ2h0OiBib2xkOyBib3JkZXItYm90dG9tOiAxcHggc29saWQgYmxhY2s7fQpwLCB0YWJsZSB7bWFyZ2luLWJvdHRvbTogMS40cmVtO30KCi50aXRsZWJhciB7ZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IGNlbnRlcjsgbWFyZ2luLWJvdHRvbTogMC41cmVtOyBmbGV4LXdyYXA6IHdyYXA7fQoudGl0bGViYXIgPiBkaXYge21hcmdpbi1ib3R0b206IDAuNXJlbTt9CgouY29scyB7Y29sdW1uLXdpZHRoOiA3MDBweDsgbWFyZ2luLXRvcDogLTJlbTt9Ci5jb2wgewogICAgLXdlYmtpdC1jb2x1bW4tYnJlYWstaW5zaWRlOiBhdm9pZDsgLyogQ2hyb21lLCBTYWZhcmkgKi8KICAgIHBhZ2UtYnJlYWstaW5zaWRlOiBhdm9pZDsgICAgICAgICAgIC8qIFRoZW9yZXRpY2FsbHkgRkYgMjArICovCiAgICBicmVhay1pbnNpZGU6IGF2b2lkLWNvbHVtbjsgICAgICAgICAvKiBJRSAxMSAqLwogICAgZGlzcGxheTp0YWJsZTsgICAgICAgICAgICAgICAgICAgICAgLyogQWN0dWFsbHkgRkYgMjArICovCn0KCmlucHV0LCB0ZXh0YXJlYSwgc2VsZWN0ewogICAgaGVpZ2h0OiBjYWxjKDJyZW0gKyAycHgpOyAKICAgIGxpbmUtaGVpZ2h0OiAxLjRyZW07IAogICAgdGV4dC1kZWNvcmF0aW9uOiBub25lOyAKICAgIGJvcmRlcjogMXB4IHNvbGlkIGJsYWNrOyAKICAgIHBhZGRpbmc6IDAgMC41cmVtOyAKICAgIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50OwogICAgY29sb3I6IGJsYWNrOwogICAgZm9udC1mYW1pbHk6IGluaGVyaXQ7CiAgICBmb250LXNpemU6IGluaGVyaXQ7CiAgICBmbGV4LWdyb3c6IDE7CiAgICBiYWNrZ3JvdW5kOiB3aGl0ZTsKfQpidXR0b24sIGlucHV0W3R5cGU9InN1Ym1pdCJdLCAuYnRuIHsKICAgIGhlaWdodDogY2FsYygycmVtICsgMnB4KTsgCiAgICBsaW5lLWhlaWdodDogMnJlbTsgCiAgICBib3JkZXI6IDFweCBzb2xpZCB0cmFuc3BhcmVudDsgCiAgICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IAogICAgdGV4dC1kZWNvcmF0aW9uOiBub25lOyAKICAgIHBhZGRpbmc6IDAgMXJlbTsgCiAgICBiYWNrZ3JvdW5kOiB0cmFuc3BhcmVudDsKICAgIGNvbG9yOiBibGFjazsKICAgIGZvbnQtZmFtaWx5OiBpbmhlcml0OwogICAgZm9udC1zaXplOiBpbmhlcml0OwogICAgYmFja2dyb3VuZC1jb2xvcjogcmdiKDIyMiwgMjIyLCAyMjIpOwogICAgY3Vyc29yOiBwb2ludGVyOwogICAgYm9yZGVyLXJhZGl1czogMC4xNXJlbTsKfQpidXR0b246Zm9jdXMsIGlucHV0W3R5cGU9InN1Ym1pdCJdOmZvY3VzLCAuYnRuOmZvY3VzLCAuaWNvbjpmb2N1cyB7Ym9yZGVyLWNvbG9yOiBibGFjazt9CnNlbGVjdDo6LW1zLWV4cGFuZCB7ZGlzcGxheTogbm9uZTt9CnNlbGVjdCB7CiAgICAtd2Via2l0LWFwcGVhcmFuY2U6IG5vbmU7CiAgICAtbW96LWFwcGVhcmFuY2U6IG5vbmU7CiAgICBhcHBlYXJhbmNlOiBub25lOwogICAgYmFja2dyb3VuZDogd2hpdGUgdXJsKCcuLi9pbWcvZG93bi5zdmcnKSBjYWxjKDEwMCUgLSAwLjZyZW0pIDUwJSBuby1yZXBlYXQ7CiAgICBiYWNrZ3JvdW5kLXNpemU6IGF1dG8gMC41cmVtOwogICAgcGFkZGluZy1yaWdodDogMS43NXJlbTsKICAgIG1heC13aWR0aDogY2FsYygxMDAlIC0gMTVyZW0pOwp9CmlucHV0W3R5cGU9InJhZGlvIl0sIGlucHV0W3R5cGU9ImNoZWNrYm94Il0sIGlucHV0W3R5cGU9ImZpbGUiXSB7Ym9yZGVyOiAwOyBoZWlnaHQ6IGF1dG87IGxpbmUtaGVpZ2h0OiBhdXRvOyBtYXJnaW4tcmlnaHQ6IDAuNHJlbTsgdmVydGljYWwtYWxpZ246IG1pZGRsZTsgcG9zaXRpb246IHJlbGF0aXZlOyBib3R0b206IDAuMXJlbTt9CmlucHV0W3R5cGU9ImZpbGUiXSB7cGFkZGluZzogMDsgbWFyZ2luOiAwOyBib3R0b206IDA7fQppbnB1dFt0eXBlPSdudW1iZXInXSB7LW1vei1hcHBlYXJhbmNlOiB0ZXh0ZmllbGQ7fQppbnB1dDo6LXdlYmtpdC1vdXRlci1zcGluLWJ1dHRvbiwgaW5wdXQ6Oi13ZWJraXQtaW5uZXItc3Bpbi1idXR0b24gey13ZWJraXQtYXBwZWFyYW5jZTogbm9uZTt9CmlucHV0W3R5cGU9Im51bWJlciJdIHstbW96LWFwcGVhcmFuY2U6IHRleHRmaWVsZDt9CmlucHV0Ojotd2Via2l0LW91dGVyLXNwaW4tYnV0dG9uLCAKaW5wdXQ6Oi13ZWJraXQtaW5uZXItc3Bpbi1idXR0b24gey13ZWJraXQtYXBwZWFyYW5jZTogbm9uZTt9CnRleHRhcmVhIHttaW4taGVpZ2h0OiAxMHJlbTsgcGFkZGluZzogMC4zNXJlbSAwLjVyZW07IH0KCi5pY29uIHsKICAgIGRpc3BsYXk6IGlubGluZS1ibG9jazsgCiAgICB0ZXh0LWRlY29yYXRpb246IG5vbmU7IAogICAgd2lkdGg6IDA7IAogICAgaGVpZ2h0OiAwOyAKICAgIG92ZXJmbG93OiBoaWRkZW47IAogICAgcGFkZGluZy10b3A6IDJyZW07IAogICAgcGFkZGluZy1sZWZ0OiAycmVtOyAKICAgIHBvc2l0aW9uOiByZWxhdGl2ZTsKICAgIGJhY2tncm91bmQtY29sb3I6IHJnYigyMjIsIDIyMiwgMjIyKTsKICAgIGN1cnNvcjogcG9pbnRlcjsKICAgIGJvcmRlci1yYWRpdXM6IDAuMTVyZW07CiAgICBib3JkZXI6IDFweCBzb2xpZCB0cmFuc3BhcmVudDsKICAgIHZlcnRpY2FsLWFsaWduOiBib3R0b207Cn0KLmljb246OmJlZm9yZSB7Y29udGVudDogJyc7IHBvc2l0aW9uOiBhYnNvbHV0ZTsgd2lkdGg6IDJyZW07IGhlaWdodDogMnJlbTsgbGVmdDogMDsgdG9wOiAwO30KLmljb24uZmlsdGVyOjpiZWZvcmUgewogICAgYmFja2dyb3VuZDogdXJsKCcuLi9pbWcvZmlsdGVyLnN2ZycpIGNlbnRlciBjZW50ZXIgLyBhdXRvIDQ1JSBuby1yZXBlYXQ7fQouaWNvbi5zZWFyY2g6OmJlZm9yZSB7CiAgICBiYWNrZ3JvdW5kOiB1cmwoJy4uL2ltZy9zZWFyY2guc3ZnJykgY2VudGVyIGNlbnRlciAvIGF1dG8gNTclIG5vLXJlcGVhdDt9Ci5pY29uLnByZXY6OmJlZm9yZSB7CiAgICBiYWNrZ3JvdW5kOiB1cmwoJy4uL2ltZy9wcmV2LnN2ZycpIGNlbnRlciA0OCUgLyBhdXRvIDQwJSBuby1yZXBlYXQ7fQouaWNvbi5uZXh0OjpiZWZvcmUgewogICAgYmFja2dyb3VuZDogdXJsKCcuLi9pbWcvbmV4dC5zdmcnKSBjZW50ZXIgNDglIC8gYXV0byA0MCUgbm8tcmVwZWF0O30KZm9ybSB7bWFyZ2luLXRvcDogMS41cmVtO30KZm9ybSwgZGwge3dpZHRoOiAxMDAlOyBtYXgtd2lkdGg6IDQwcmVtO30KZm9ybSA+IGRpdiB7ZGlzcGxheTogZmxleDsgbWFyZ2luLWJvdHRvbTogMC4yNXJlbTt9CmZvcm0gPiBkaXYgPiAqOm50aC1jaGlsZCgyKSB7ZmxleC1ncm93OiAxO30KZm9ybSA+IGRpdiA+ICo6bnRoLWNoaWxkKDMpIHttYXJnaW4tbGVmdDogMC4yNXJlbTt9CmZvcm0gPiBidXR0b24ge21hcmdpbi10b3A6IDEuNXJlbTt9CgpkbCB7ZGlzcGxheTogZmxleDsgbWFyZ2luLWJvdHRvbTogMS40cmVtO30KZHQge3dpZHRoOiAxMXJlbTsgbWluLXdpZHRoOiAxMXJlbTsgcGFkZGluZy1yaWdodDogMnJlbTt9CmRkIHtmbGV4LWdyb3c6IDE7fQpkbCArIGRsIHttYXJnaW4tdG9wOiAtMS40cmVtO30KZGwgKyBkbCBkdCB7Ym9yZGVyLXRvcDogMXB4IHNvbGlkIHRyYW5zcGFyZW50O30KZGwgKyBkbCBkZCB7Ym9yZGVyLXRvcDogMXB4IHNvbGlkIHNpbHZlcjt9Cgp1bC5icmVhZGNydW1iIHttYXJnaW4tYm90dG9tOiAwLjNyZW07IGZvbnQtc2l6ZTogMC45cmVtOyBvcGFjaXR5OiAwLjQ1O30KdWwuYnJlYWRjcnVtYiBsaSB7ZGlzcGxheTogaW5saW5lOyBsaXN0LXN0eWxlOiBub25lO30KdWwuYnJlYWRjcnVtYiBsaSArIGxpOjpiZWZvcmUge2NvbnRlbnQ6ICIvICI7fQp1bC5icmVhZGNydW1iIGxpIGEge3RleHQtZGVjb3JhdGlvbjogbm9uZTt9Cgp1bC5yZWxhdGVkIGxpLCB1bC5ob21lIGxpIHtsaXN0LXN0eWxlOiBub25lO30KCgouZmlsdGVyYmFyIHtwYWRkaW5nOiAwLjVyZW0gMC43cmVtOyBiYWNrZ3JvdW5kOiByZ2JhKDAsMCwwLDAuMDUpOyBkaXNwbGF5OiBmbGV4OyBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47IGFsaWduLWl0ZW1zOiBjZW50ZXI7IG1hcmdpbi1ib3R0b206IDAuNXJlbTt9CgouY2xvc2U6OmJlZm9yZXtjb250ZW50OiAiKyI7IHRleHQtZGVjb3JhdGlvbjogbm9uZTsgdHJhbnNmb3JtOiByb3RhdGUoNDVkZWcpOyBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7fQoKLmFkZEZpbHRlciB7bWFyZ2luLWJvdHRvbTogMC41cmVtOyBkaXNwbGF5OiBub25lO30KLmFkZEZpbHRlci52aXNpYmxlIHtkaXNwbGF5OiBibG9jazt9Ci5hZGRTZWFyY2gge21hcmdpbi1ib3R0b206IDAuNXJlbTsgZGlzcGxheTogbm9uZTt9Ci5hZGRTZWFyY2gudmlzaWJsZSB7ZGlzcGxheTogYmxvY2s7fQouZm9vdGVyYWN0aW9ucyB7bWFyZ2luLXRvcDogMS41cmVtO30KCi5wYWdpbmF0aW9uIHtkaXNwbGF5OiBmbGV4OyBhbGlnbi1pdGVtczogY2VudGVyOyBmb250LXNpemU6IDAuOXJlbTt9Ci5wYWdpbmF0aW9uIC5pY29uIHttYXJnaW4tcmlnaHQ6IDAuMjVyZW07fQouZGlzYWJsZWQge29wYWNpdHk6IDAuNDsgY3Vyc29yOiBkZWZhdWx0O30KLnBhZ2luYXRpb24gLmljb246bGFzdC1jaGlsZCB7bWFyZ2luLXJpZ2h0OiAwOyBtYXJnaW4tbGVmdDogMC4yNXJlbTt9Ci5oaWRkZW4ge2Rpc3BsYXk6IG5vbmU7fQoKQG1lZGlhIG9ubHkgc2NyZWVuIGFuZCAobWluLXdpZHRoOiAxNTAwcHgpIHsKICAgIC5jb250ZW50IHtkaXNwbGF5OiBibG9jazt9CiAgICAudGl0bGUge3Bvc2l0aW9uOiBhYnNvbHV0ZTsgYm90dG9tOiAxLjVyZW07fQogICAgLm5hdmlnYXRpb24ge2Rpc3BsYXk6IGJsb2NrOyB3aWR0aDogMTVyZW07IGhlaWdodDogMTAwdmg7fQogICAgLmJvZHkge3BhZGRpbmctdG9wOiAzcmVtOyBtYXJnaW4tbGVmdDogMTVyZW07IHBhZGRpbmctbGVmdDogNXJlbTt9CiAgICAuaGFtYnVyZ2VyIHtmb250LXNpemU6IDIuNXJlbTsgbGluZS1oZWlnaHQ6IDEuMjsgbWFyZ2luLWxlZnQ6IDEuM3JlbTsgbWFyZ2luLXRvcDogMXJlbTt9Cn0KCi5tb2JpbGUtb25seSB7ZGlzcGxheTogbm9uZTt9CkBtZWRpYSBvbmx5IHNjcmVlbiBhbmQgKG1heC13aWR0aDogNjAwcHgpIHsKCiAgICB1bC5yZWxhdGVkIGxpIGEsIHVsLmhvbWUgbGkgYSAge2Rpc3BsYXk6IGlubGluZS1ibG9jazsgcGFkZGluZzogMC4ycmVtIDA7fQoKICAgIHRhYmxlLnJlYWQgdHIge2Rpc3BsYXk6IGJsb2NrOyBwYWRkaW5nOiAwLjdyZW0gMC41cmVtO30KICAgIHRhYmxlLnJlYWQgdHIgdGQge2Rpc3BsYXk6IGJsb2NrOyBwYWRkaW5nOiAwO30KICAgIHRhYmxlLnJlYWQgdGQ6bnRoLWNoaWxkKG9kZCkge2ZvbnQtd2VpZ2h0OiBib2xkO30KICAgIAogICAgLm1vYmlsZS1vbmx5IHtkaXNwbGF5OiBpbml0aWFsO30KICAgIAogICAgZm9ybSA+IGRpdiB7ZmxleC1kaXJlY3Rpb246IGNvbHVtbjt9CiAgICBzZWxlY3Qge21heC13aWR0aDogMTAwJTt9Cgp9Cg==
+Cioge21hcmdpbjogMDsgcGFkZGluZzogMDsgYm94LXNpemluZzogYm9yZGVyLWJveDt9Cmh0bWwge2ZvbnQtc2l6ZTogMTZweDt9CmJvZHkge2ZvbnQtc2l6ZTogMXJlbTsgbGluZS1oZWlnaHQ6IDEuNDt9CgouY29udGVudCB7bWluLWhlaWdodDogMTAwdmg7fQoubmF2aWdhdGlvbiB7CiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTsgCiAgICBkaXNwbGF5OiBmbGV4OyAKICAgIHBvc2l0aW9uOiBmaXhlZDsgCiAgICB3aWR0aDogMTAwJTsgCiAgICBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47CiAgICBib3gtc2hhZG93OiAwcHggMHB4IDEwcHggcmdiYSgwLDAsMCwwLjI1KTsKICAgIHotaW5kZXg6IDk7Cn0KLnRpdGxlIHtwYWRkaW5nOiAwLjVyZW0gMnJlbTsgY29sb3I6IGJsYWNrOyB0ZXh0LWRlY29yYXRpb246IG5vbmU7fQoudGl0bGUgc3BhbiB7Zm9udC13ZWlnaHQ6IGJvbGQ7IGRpc3BsYXk6IGJsb2NrO30KLmJvZHkge3BhZGRpbmc6IDZyZW0gMnJlbTsgZmxleC1ncm93OiAxOyBwYWRkaW5nLWJvdHRvbTogMTByZW07fQouaGFtYnVyZ2VyIHtwYWRkaW5nOiAwIDFyZW0gMC41cmVtOyBtYXJnaW46IDAuM3JlbSAxcmVtOyBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IHRleHQtZGVjb3JhdGlvbjogbm9uZTsgY29sb3I6IGJsYWNrOyBmb250LXNpemU6IDIuMjVyZW07IGxpbmUtaGVpZ2h0OiAxLjI7IHRyYW5zZm9ybTogc2NhbGVYKDEuNSk7fQoKdGguc2VsZWN0ZWQ6OmFmdGVyIHtjb250ZW50OiAiIOKWviI7fQoKdGQsIHRoLCBkbCA+ICoge3BhZGRpbmc6IDAuMnJlbSAxLjVyZW0gMC4ycmVtIDAuNXJlbTsgdGV4dC1hbGlnbjogbGVmdDt9CnRkLCB0aCB7bWF4LXdpZHRoOiA0MHJlbTt9CnRhYmxlLmxpc3QgdGQsIHRhYmxlLmxpc3QgdGgge3RleHQtb3ZlcmZsb3c6IGVsbGlwc2lzOyB3aGl0ZS1zcGFjZTogbm93cmFwOyBvdmVyZmxvdzogaGlkZGVuOyBtYXgtd2lkdGg6IDI1cmVtO30KbGFiZWwge3BhZGRpbmc6IGNhbGMoMC4ycmVtICsgMXB4KSAxLjVyZW0gY2FsYygwLjJyZW0gKyAxcHgpIDA7IHRleHQtb3ZlcmZsb3c6IGVsbGlwc2lzOyB3aGl0ZS1zcGFjZTogbm93cmFwOyBvdmVyZmxvdzogaGlkZGVuO30KdGQ6bGFzdC1jaGlsZCBhIHtkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IG1hcmdpbi1yaWdodDogMC41cmVtO30KLmxvZ28gaW1nIHtoZWlnaHQ6IDJyZW07IHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7fQphIHtjb2xvcjogYmxhY2s7fQpsYWJlbCB7d2lkdGg6IDE1cmVtOyBtaW4td2lkdGg6IDE1cmVtOyBwYWRkaW5nLXJpZ2h0OiAycmVtO30KaDEge2ZvbnQtc2l6ZTogMi4ycmVtOyBtYXJnaW4tYm90dG9tOiAwLjVyZW07IG1hcmdpbi1yaWdodDogMXJlbTsgbGluZS1oZWlnaHQ6IDE7fQpoMiB7Zm9udC1zaXplOiAxLjVyZW07IG1hcmdpbi1ib3R0b206IDAuNXJlbTt9CnRhYmxlIHtib3JkZXItY29sbGFwc2U6IGNvbGxhcHNlOyBtYXJnaW4tdG9wOiAxLjVyZW07fQp0YWJsZSB0cjpudGgtY2hpbGQoZXZlbikge2JhY2tncm91bmQ6IHJnYmEoMCwwLDAsMC4wNSk7fQp0YWJsZSB0ciB0aCB7cGFkZGluZy10b3A6IDAuM3JlbTsgcGFkZGluZy1ib3R0b206IDAuM3JlbTsgZm9udC13ZWlnaHQ6IGJvbGQ7IGJvcmRlci1ib3R0b206IDFweCBzb2xpZCBibGFjazt9CnAsIHRhYmxlIHttYXJnaW4tYm90dG9tOiAxLjRyZW07fQoKLnRpdGxlYmFyIHtkaXNwbGF5OiBmbGV4OyBhbGlnbi1pdGVtczogY2VudGVyOyBtYXJnaW4tYm90dG9tOiAwLjVyZW07IGZsZXgtd3JhcDogd3JhcDt9Ci50aXRsZWJhciA+IGRpdiB7bWFyZ2luLWJvdHRvbTogMC41cmVtO30KCi5jb2xzIHtjb2x1bW4td2lkdGg6IDcwMHB4OyBtYXJnaW4tdG9wOiAtMmVtO30KLmNvbCB7CiAgICAtd2Via2l0LWNvbHVtbi1icmVhay1pbnNpZGU6IGF2b2lkOyAvKiBDaHJvbWUsIFNhZmFyaSAqLwogICAgcGFnZS1icmVhay1pbnNpZGU6IGF2b2lkOyAgICAgICAgICAgLyogVGhlb3JldGljYWxseSBGRiAyMCsgKi8KICAgIGJyZWFrLWluc2lkZTogYXZvaWQtY29sdW1uOyAgICAgICAgIC8qIElFIDExICovCiAgICBkaXNwbGF5OnRhYmxlOyAgICAgICAgICAgICAgICAgICAgICAvKiBBY3R1YWxseSBGRiAyMCsgKi8KfQoKaW5wdXQsIHRleHRhcmVhLCBzZWxlY3R7CiAgICBoZWlnaHQ6IGNhbGMoMnJlbSArIDJweCk7IAogICAgbGluZS1oZWlnaHQ6IDEuNHJlbTsgCiAgICB0ZXh0LWRlY29yYXRpb246IG5vbmU7IAogICAgYm9yZGVyOiAxcHggc29saWQgYmxhY2s7IAogICAgcGFkZGluZzogMCAwLjVyZW07IAogICAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7CiAgICBjb2xvcjogYmxhY2s7CiAgICBmb250LWZhbWlseTogaW5oZXJpdDsKICAgIGZvbnQtc2l6ZTogaW5oZXJpdDsKICAgIGZsZXgtZ3JvdzogMTsKICAgIGJhY2tncm91bmQ6IHdoaXRlOwp9CmJ1dHRvbiwgaW5wdXRbdHlwZT0ic3VibWl0Il0sIC5idG4gewogICAgaGVpZ2h0OiBjYWxjKDJyZW0gKyAycHgpOyAKICAgIGxpbmUtaGVpZ2h0OiAycmVtOyAKICAgIGJvcmRlcjogMXB4IHNvbGlkIHRyYW5zcGFyZW50OyAKICAgIGRpc3BsYXk6IGlubGluZS1ibG9jazsgCiAgICB0ZXh0LWRlY29yYXRpb246IG5vbmU7IAogICAgcGFkZGluZzogMCAxcmVtOyAKICAgIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50OwogICAgY29sb3I6IGJsYWNrOwogICAgZm9udC1mYW1pbHk6IGluaGVyaXQ7CiAgICBmb250LXNpemU6IGluaGVyaXQ7CiAgICBiYWNrZ3JvdW5kLWNvbG9yOiByZ2IoMjIyLCAyMjIsIDIyMik7CiAgICBjdXJzb3I6IHBvaW50ZXI7CiAgICBib3JkZXItcmFkaXVzOiAwLjE1cmVtOwp9CmJ1dHRvbjpmb2N1cywgaW5wdXRbdHlwZT0ic3VibWl0Il06Zm9jdXMsIC5idG46Zm9jdXMsIC5pY29uOmZvY3VzIHtib3JkZXItY29sb3I6IGJsYWNrO30Kc2VsZWN0OjotbXMtZXhwYW5kIHtkaXNwbGF5OiBub25lO30Kc2VsZWN0IHsKICAgIC13ZWJraXQtYXBwZWFyYW5jZTogbm9uZTsKICAgIC1tb3otYXBwZWFyYW5jZTogbm9uZTsKICAgIGFwcGVhcmFuY2U6IG5vbmU7CiAgICBiYWNrZ3JvdW5kOiB3aGl0ZSB1cmwoJy4uL2ltZy9kb3duLnN2ZycpIGNhbGMoMTAwJSAtIDAuNnJlbSkgNTAlIG5vLXJlcGVhdDsKICAgIGJhY2tncm91bmQtc2l6ZTogYXV0byAwLjVyZW07CiAgICBwYWRkaW5nLXJpZ2h0OiAxLjc1cmVtOwogICAgbWF4LXdpZHRoOiBjYWxjKDEwMCUgLSAxNXJlbSk7Cn0KaW5wdXRbdHlwZT0icmFkaW8iXSwgaW5wdXRbdHlwZT0iY2hlY2tib3giXSwgaW5wdXRbdHlwZT0iZmlsZSJdIHtib3JkZXI6IDA7IGhlaWdodDogYXV0bzsgbGluZS1oZWlnaHQ6IGF1dG87IG1hcmdpbi1yaWdodDogMC40cmVtOyB2ZXJ0aWNhbC1hbGlnbjogbWlkZGxlOyBwb3NpdGlvbjogcmVsYXRpdmU7IGJvdHRvbTogMC4xcmVtO30KaW5wdXRbdHlwZT0iZmlsZSJdIHtwYWRkaW5nOiAwOyBtYXJnaW46IDA7IGJvdHRvbTogMDt9CmlucHV0W3R5cGU9J251bWJlciddIHstbW96LWFwcGVhcmFuY2U6IHRleHRmaWVsZDt9CmlucHV0Ojotd2Via2l0LW91dGVyLXNwaW4tYnV0dG9uLCBpbnB1dDo6LXdlYmtpdC1pbm5lci1zcGluLWJ1dHRvbiB7LXdlYmtpdC1hcHBlYXJhbmNlOiBub25lO30KaW5wdXRbdHlwZT0ibnVtYmVyIl0gey1tb3otYXBwZWFyYW5jZTogdGV4dGZpZWxkO30KaW5wdXQ6Oi13ZWJraXQtb3V0ZXItc3Bpbi1idXR0b24sIAppbnB1dDo6LXdlYmtpdC1pbm5lci1zcGluLWJ1dHRvbiB7LXdlYmtpdC1hcHBlYXJhbmNlOiBub25lO30KdGV4dGFyZWEge21pbi1oZWlnaHQ6IDEwcmVtOyBwYWRkaW5nOiAwLjM1cmVtIDAuNXJlbTsgfQoKLmljb24gewogICAgZGlzcGxheTogaW5saW5lLWJsb2NrOyAKICAgIHRleHQtZGVjb3JhdGlvbjogbm9uZTsgCiAgICB3aWR0aDogMDsgCiAgICBoZWlnaHQ6IDA7IAogICAgb3ZlcmZsb3c6IGhpZGRlbjsgCiAgICBwYWRkaW5nLXRvcDogMnJlbTsgCiAgICBwYWRkaW5nLWxlZnQ6IDJyZW07IAogICAgcG9zaXRpb246IHJlbGF0aXZlOwogICAgYmFja2dyb3VuZC1jb2xvcjogcmdiKDIyMiwgMjIyLCAyMjIpOwogICAgY3Vyc29yOiBwb2ludGVyOwogICAgYm9yZGVyLXJhZGl1czogMC4xNXJlbTsKICAgIGJvcmRlcjogMXB4IHNvbGlkIHRyYW5zcGFyZW50OwogICAgdmVydGljYWwtYWxpZ246IGJvdHRvbTsKfQouaWNvbjo6YmVmb3JlIHtjb250ZW50OiAnJzsgcG9zaXRpb246IGFic29sdXRlOyB3aWR0aDogMnJlbTsgaGVpZ2h0OiAycmVtOyBsZWZ0OiAwOyB0b3A6IDA7fQouaWNvbi5maWx0ZXI6OmJlZm9yZSB7CiAgICBiYWNrZ3JvdW5kOiB1cmwoJy4uL2ltZy9maWx0ZXIuc3ZnJykgY2VudGVyIGNlbnRlciAvIGF1dG8gNDUlIG5vLXJlcGVhdDt9Ci5pY29uLnNlYXJjaDo6YmVmb3JlIHsKICAgIGJhY2tncm91bmQ6IHVybCgnLi4vaW1nL3NlYXJjaC5zdmcnKSBjZW50ZXIgY2VudGVyIC8gYXV0byA1NyUgbm8tcmVwZWF0O30KLmljb24ucHJldjo6YmVmb3JlIHsKICAgIGJhY2tncm91bmQ6IHVybCgnLi4vaW1nL3ByZXYuc3ZnJykgY2VudGVyIDQ4JSAvIGF1dG8gNDAlIG5vLXJlcGVhdDt9Ci5pY29uLm5leHQ6OmJlZm9yZSB7CiAgICBiYWNrZ3JvdW5kOiB1cmwoJy4uL2ltZy9uZXh0LnN2ZycpIGNlbnRlciA0OCUgLyBhdXRvIDQwJSBuby1yZXBlYXQ7fQpmb3JtIHttYXJnaW4tdG9wOiAxLjVyZW07fQpmb3JtLCBkbCB7d2lkdGg6IDEwMCU7IG1heC13aWR0aDogNDByZW07fQpmb3JtID4gZGl2IHtkaXNwbGF5OiBmbGV4OyBtYXJnaW4tYm90dG9tOiAwLjI1cmVtO30KZm9ybSA+IGRpdiA+ICo6bnRoLWNoaWxkKDIpIHtmbGV4LWdyb3c6IDE7fQpmb3JtID4gZGl2ID4gKjpudGgtY2hpbGQoMykge21hcmdpbi1sZWZ0OiAwLjI1cmVtO30KZm9ybSA+IGJ1dHRvbiB7bWFyZ2luLXRvcDogMS41cmVtO30KCmRsIHtkaXNwbGF5OiBmbGV4OyBtYXJnaW4tYm90dG9tOiAxLjRyZW07fQpkdCB7d2lkdGg6IDExcmVtOyBtaW4td2lkdGg6IDExcmVtOyBwYWRkaW5nLXJpZ2h0OiAycmVtO30KZGQge2ZsZXgtZ3JvdzogMTt9CmRsICsgZGwge21hcmdpbi10b3A6IC0xLjRyZW07fQpkbCArIGRsIGR0IHtib3JkZXItdG9wOiAxcHggc29saWQgdHJhbnNwYXJlbnQ7fQpkbCArIGRsIGRkIHtib3JkZXItdG9wOiAxcHggc29saWQgc2lsdmVyO30KCnVsLmJyZWFkY3J1bWIge21hcmdpbi1ib3R0b206IDAuM3JlbTsgZm9udC1zaXplOiAwLjlyZW07IG9wYWNpdHk6IDAuNDU7fQp1bC5icmVhZGNydW1iIGxpIHtkaXNwbGF5OiBpbmxpbmU7IGxpc3Qtc3R5bGU6IG5vbmU7fQp1bC5icmVhZGNydW1iIGxpICsgbGk6OmJlZm9yZSB7Y29udGVudDogIi8gIjt9CnVsLmJyZWFkY3J1bWIgbGkgYSB7dGV4dC1kZWNvcmF0aW9uOiBub25lO30KCnVsLnJlbGF0ZWQgbGksIHVsLmhvbWUgbGkge2xpc3Qtc3R5bGU6IG5vbmU7fQoKCi5maWx0ZXJiYXIge3BhZGRpbmc6IDAuNXJlbSAwLjdyZW07IGJhY2tncm91bmQ6IHJnYmEoMCwwLDAsMC4wNSk7IGRpc3BsYXk6IGZsZXg7IGp1c3RpZnktY29udGVudDogc3BhY2UtYmV0d2VlbjsgYWxpZ24taXRlbXM6IGNlbnRlcjsgbWFyZ2luLWJvdHRvbTogMC41cmVtO30KCi5jbG9zZTo6YmVmb3Jle2NvbnRlbnQ6ICIrIjsgdGV4dC1kZWNvcmF0aW9uOiBub25lOyB0cmFuc2Zvcm06IHJvdGF0ZSg0NWRlZyk7IGRpc3BsYXk6IGlubGluZS1ibG9jazt9CgouYWRkRmlsdGVyIHttYXJnaW4tYm90dG9tOiAwLjVyZW07IGRpc3BsYXk6IG5vbmU7fQouYWRkRmlsdGVyLnZpc2libGUge2Rpc3BsYXk6IGJsb2NrO30KLmFkZFNlYXJjaCB7bWFyZ2luLWJvdHRvbTogMC41cmVtOyBkaXNwbGF5OiBub25lO30KLmFkZFNlYXJjaC52aXNpYmxlIHtkaXNwbGF5OiBibG9jazt9Ci5mb290ZXJhY3Rpb25zIHttYXJnaW4tdG9wOiAxLjVyZW07fQoKLnBhZ2luYXRpb24ge2Rpc3BsYXk6IGZsZXg7IGFsaWduLWl0ZW1zOiBjZW50ZXI7IGZvbnQtc2l6ZTogMC45cmVtO30KLnBhZ2luYXRpb24gLmljb24ge21hcmdpbi1yaWdodDogMC4yNXJlbTt9Ci5kaXNhYmxlZCB7b3BhY2l0eTogMC40OyBjdXJzb3I6IGRlZmF1bHQ7fQoucGFnaW5hdGlvbiAuaWNvbjpsYXN0LWNoaWxkIHttYXJnaW4tcmlnaHQ6IDA7IG1hcmdpbi1sZWZ0OiAwLjI1cmVtO30KLmhpZGRlbiB7ZGlzcGxheTogbm9uZTt9CgpAbWVkaWEgb25seSBzY3JlZW4gYW5kIChtaW4td2lkdGg6IDE1MDBweCkgewogICAgLmNvbnRlbnQge2Rpc3BsYXk6IGJsb2NrO30KICAgIC50aXRsZSB7cG9zaXRpb246IGFic29sdXRlOyBib3R0b206IDEuNXJlbTt9CiAgICAubmF2aWdhdGlvbiB7ZGlzcGxheTogYmxvY2s7IHdpZHRoOiAxNXJlbTsgaGVpZ2h0OiAxMDB2aDt9CiAgICAuYm9keSB7cGFkZGluZy10b3A6IDNyZW07IG1hcmdpbi1sZWZ0OiAxNXJlbTsgcGFkZGluZy1sZWZ0OiA1cmVtO30KICAgIC5oYW1idXJnZXIge2ZvbnQtc2l6ZTogMi41cmVtOyBsaW5lLWhlaWdodDogMS4yOyBtYXJnaW4tbGVmdDogMS4zcmVtOyBtYXJnaW4tdG9wOiAxcmVtO30KfQoKLm1vYmlsZS1vbmx5IHtkaXNwbGF5OiBub25lO30KQG1lZGlhIG9ubHkgc2NyZWVuIGFuZCAobWF4LXdpZHRoOiA2MDBweCkgewoKICAgIHVsLnJlbGF0ZWQgbGkgYSwgdWwuaG9tZSBsaSBhICB7ZGlzcGxheTogaW5saW5lLWJsb2NrOyBwYWRkaW5nOiAwLjJyZW0gMDt9CgogICAgdGFibGUucmVhZCB0aGVhZCB7ZGlzcGxheTogbm9uZTt9CiAgICB0YWJsZS5yZWFkIHRyIHtkaXNwbGF5OiBibG9jazsgcGFkZGluZzogMC43cmVtIDAuNXJlbTt9CiAgICB0YWJsZS5yZWFkIHRyIHRkIHtkaXNwbGF5OiBibG9jazsgcGFkZGluZzogMDt9CiAgICB0YWJsZS5yZWFkIHRkOm50aC1jaGlsZChvZGQpIHtmb250LXdlaWdodDogYm9sZDt9CiAgICAKICAgIC5tb2JpbGUtb25seSB7ZGlzcGxheTogaW5pdGlhbDt9CiAgICAKICAgIGZvcm0gPiBkaXYge2ZsZXgtZGlyZWN0aW9uOiBjb2x1bW47fQogICAgc2VsZWN0IHttYXgtd2lkdGg6IDEwMCU7fQoKfQo=
 END_OF_STATIC_FILE;
 }
 
