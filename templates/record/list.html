@@ -59,7 +59,7 @@
             {{endif}}
             {{for:column:columns}}
             {{if:column|neq(primaryKey)}}
-            <th>{{column|humanize}}</th>
+            <th>{{column.text|humanize}}</th>
             {{endif}}
             {{endfor}}
         </tr>
@@ -67,13 +67,9 @@
     <tbody>
         {{for:record:records}}
         <tr>
-            {{for:field:name:record}}
             {{if:primaryKey}}
-            {{if:name|eq(primaryKey)}}
             <td><a href="{{base}}/{{table}}/read/{{field.value}}">view</a></td>
             {{endif}}
-            {{endif}}
-            {{endfor}}
             {{for:field:name:record}}
             {{if:name|neq(primaryKey)}}
             {{if:field.table}}
