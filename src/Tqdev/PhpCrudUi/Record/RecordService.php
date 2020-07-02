@@ -137,6 +137,7 @@ class RecordService
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
         $record = $this->api->readRecord($table, $id, []);
+        $name = $this->definition->referenceText($table, $record);
 
         foreach ($record as $key => $value) {
             $values = $this->getDropDownValues($references[$key]);
@@ -148,6 +149,7 @@ class RecordService
             'table' => $table,
             'action' => $action,
             'id' => $id,
+            'name' => $name,
             'primaryKey' => $primaryKey,
             'record' => $record,
         );
