@@ -97,15 +97,20 @@ class RecordService
         $name = $this->definition->referenceText($table, $record);
 
         foreach ($record as $key => $value) {
+            if (!isset($references[$key])) {
+                unset($record[$key]);
+                continue;
+            }
             $relatedTable = false;
             $relatedValue = false;
             $text = $value;
+            $type = isset($types[$key]) ? $types[$key] : null;
             if (isset($references[$key]) && $references[$key]) {
                 $relatedTable = $references[$key];
                 $relatedValue = $this->definition->referenceId($relatedTable, $value);
                 $text = $this->definition->referenceText($relatedTable, $value);
             }
-            $record[$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue, 'type' => $types[$key]);
+            $record[$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue, 'type' => $type);
         }
 
         $variables = array(
