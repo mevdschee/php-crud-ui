@@ -11,6 +11,18 @@ use Tqdev\PhpCrudApi\ResponseFactory;
 class StaticFileMiddleware extends Middleware
 {
 
+    private function getContentType(string $filename): string
+    {
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        switch ($extension) {
+            case 'css':
+                return 'text/css';
+            case 'svg':
+                return 'image/svg+xml';
+        }
+        return '';
+    }
+
     private function santizeFilename(string $filename): string
     {
         $realBase = realpath($this->getProperty('webRootPath', '.'));
@@ -19,6 +31,7 @@ class StaticFileMiddleware extends Middleware
         if ($realUserPath === false || strpos($realUserPath, $realBase) !== 0) {
             return '';
         }
+
         return $realUserPath;
     }
 
@@ -29,8 +42,9 @@ class StaticFileMiddleware extends Middleware
         if ($response->getStatusCode() == 404) {
             $filename = $request->getUri()->getPath();
             $filename = $this->santizeFilename($filename);
-            if ($filename) {
-                return ResponseFactory::fromFile(ResponseFactory::OK, $filename);
+            $contentType = $this->getContentType($filename);
+            if ($contentType && $filename) {
+                return ResponseFactory::fromFile(ResponseFactory::OK, $contentType, $filename);
             }
         }
         return $response;
