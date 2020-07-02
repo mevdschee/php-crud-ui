@@ -3,32 +3,39 @@
     <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h1>view {{table|humanize}}</h1>
+<h1>{{name|or("View item")}}</h1>
 
 <table class="table read">
     <thead>
         <tr>
-            <th>key</th>
-            <th>value</th>
+            <th>Key</th>
+            <th>Value</th>
         </tr>
     </thead>
     <tbody>
         {{for:field:name:record}}
+        {{if:name|neq(primaryKey)}}
         <tr>
             <td>{{name|humanize}}</td>
             </td>
             <td>
+<<<<<<< HEAD
                 {{if:field.table|and(field.text)}}
                     <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
+=======
+                {{if:field.table}}
+                <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
+>>>>>>> e05e30d176d5c9d9c8ad0e5a3129907a68235423
                 {{else}}
-                    {{if:field.type.format|eq("large-string")}}
-                        <div style="white-space: pre-wrap;">{{field.text}}</div>
-                    {{else}}
-                        {{if:field.text}}{{field.text}}{{else}}<span class="mobile-only">-</span>{{endif}} 
-                    {{endif}}        
+                {{if:field.type.format|eq("large-string")}}
+                <div style="white-space: pre-wrap;">{{field.text}}</div>
+                {{else}}
+                {{if:field.text}}{{field.text}}{{else}}<span class="mobile-only">-</span>{{endif}}
+                {{endif}}
                 {{endif}}
             </td>
         </tr>
+        {{endif}}
         {{endfor}}
     </tbody>
 </table>
@@ -46,4 +53,5 @@
     <li><a href="{{base}}/{{relation.0}}/list?filter={{relation.1}},eq,{{id}},{{name}}">{{relation.0|humanize}}</a>
     </li>
     {{endfor}}
-{{endif}}
+    {{endif}}
+</ul>

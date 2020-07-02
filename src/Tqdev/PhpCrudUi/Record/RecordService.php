@@ -48,20 +48,24 @@ class RecordService
 
     public function createForm(string $table, string $action): TemplateDocument
     {
+        $types = $this->definition->getTypes($table, $action);
         $references = $this->definition->getReferences($table, $action);
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
         $columns = $this->definition->getColumns($table, $action);
-
-        foreach ($columns as $i => $column) {
+        $record = array();
+        foreach ($columns as $column) {
             $values = $this->getDropDownValues($references[$column]);
-            $columns[$i] = array('name' => $column, 'values' => $values);
+            $type = $types[$column];
+            //TODO: sensible default
+            $default = '';
+            $record[$column] = array('value' => $default, 'values' => $values, 'type' => $type);
         }
 
         $variables = array(
             'table' => $table,
             'action' => $action,
-            'columns' => $columns,
+            'record' => $record,
             'primaryKey' => $primaryKey,
         );
 
@@ -89,6 +93,7 @@ class RecordService
         $types = $this->definition->getTypes($table, $action);
         $references = $this->definition->getReferences($table, $action);
         $referenced = $this->definition->getReferenced($table, $action);
+        $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
         $args = array();
         $args['join'] = array_values(array_filter($references));
@@ -104,7 +109,7 @@ class RecordService
             $relatedTable = false;
             $relatedValue = false;
             $text = $value;
-            $type = isset($types[$key]) ? $types[$key] : null;
+            $type = $types[$key];
             if (isset($references[$key]) && $references[$key]) {
                 $relatedTable = $references[$key];
                 $relatedValue = $this->definition->referenceId($relatedTable, $value);
@@ -118,7 +123,7 @@ class RecordService
             'action' => $action,
             'id' => $id,
             'name' => $name,
-            'references' => $references,
+            'primaryKey' => $primaryKey,
             'referenced' => $referenced,
             'record' => $record,
         );
@@ -133,16 +138,19 @@ class RecordService
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
         $record = $this->api->readRecord($table, $id, []);
+        $name = $this->definition->referenceText($table, $record);
 
         foreach ($record as $key => $value) {
             $values = $this->getDropDownValues($references[$key]);
-            $record[$key] = array('type' => $types[$key], 'value' => $value, 'values' => $values);
+            $type = $types[$key];
+            $record[$key] = array('value' => $value, 'values' => $values, 'type' => $type);
         }
 
         $variables = array(
             'table' => $table,
             'action' => $action,
             'id' => $id,
+            'name' => $name,
             'primaryKey' => $primaryKey,
             'record' => $record,
         );
@@ -179,6 +187,7 @@ class RecordService
             'table' => $table,
             'action' => $action,
             'id' => $id,
+            'name' => $name,
             'primaryKey' => $primaryKey,
             'name' => $name,
         );
@@ -205,11 +214,15 @@ class RecordService
 
     public function _list(string $table, string $action, array $params): TemplateDocument
     {
+        $types = $this->definition->getTypes($table, $action);
         $references = $this->definition->getReferences($table, $action);
         $referenced = $this->definition->getReferenced($table, $action);
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
         $columns = $this->definition->getColumns($table, $action);
+        foreach ($columns as $i => $key) {
+            $columns[$i] = array('text' => $key, 'type' => $types[$key]);
+        }
 
         $pageParams = isset($params['page']) ? $params['page'][0] : '1,50';
         list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
@@ -237,12 +250,13 @@ class RecordService
                 $relatedTable = false;
                 $relatedValue = $value;
                 $text = $value;
+                $type = $types[$key];
                 if ($references[$key]) {
                     $relatedTable = $references[$key];
                     $relatedValue = $this->definition->referenceId($relatedTable, $value);
                     $text = $this->definition->referenceText($relatedTable, $value);
                 }
-                $data['records'][$i][$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue);
+                $data['records'][$i][$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue, 'type' => $type);
             }
         }
 
@@ -256,8 +270,6 @@ class RecordService
             'table' => $table,
             'action' => $action,
             'filters' => $filters,
-            'references' => $references,
-            'referenced' => $referenced,
             'primaryKey' => $primaryKey,
             'columns' => $columns,
             'records' => $data['records'],

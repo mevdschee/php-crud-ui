@@ -26,8 +26,9 @@ function runDir(string $base, string $dir, array &$lines, array $ignore): int
     }
     foreach ($entries as $entry) {
         $filename = "$base/$dir/$entry";
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
         if (is_file($filename)) {
-            if (substr($entry, -4) == '.php') {
+            if ($extension == 'php') {
                 $data = file_get_contents($filename);
                 $data = preg_replace('/\s*<\?php\s+/s', '', $data, 1);
                 $data = preg_replace('/^.*?(vendor\/autoload|declare\s*\(\s*strict_types\s*=\s*1).*?$/m', '', $data);
@@ -42,7 +43,7 @@ function runDir(string $base, string $dir, array &$lines, array $ignore): int
                 array_push($lines, '}');
                 array_push($lines, '');
                 $count++;
-            } elseif (substr($entry, -5) == '.html') {
+            } elseif ($extension == 'html') {
                 $data = file_get_contents($filename);
                 $id = explode('.', explode('/', "$dir/$entry", 2)[1], 2)[0];
                 array_push($lines, "// file: $dir/$entry");
@@ -53,7 +54,7 @@ function runDir(string $base, string $dir, array &$lines, array $ignore): int
                 }
                 array_push($lines, 'END_OF_HTML;', '}', '');
                 $count++;
-            } elseif (substr($entry, -4) == '.css' || substr($entry, -4) == '.svg') {
+            } elseif (in_array($extension, ['css', 'svg', 'js'])) {
                 $data = base64_encode(file_get_contents($filename));
                 $id = substr("$dir/$entry", 7);
                 array_push($lines, "// file: $dir/$entry");
