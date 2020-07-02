@@ -93,6 +93,7 @@ class RecordService
         $types = $this->definition->getTypes($table, $action);
         $references = $this->definition->getReferences($table, $action);
         $referenced = $this->definition->getReferenced($table, $action);
+        $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
         $args = array();
         $args['join'] = array_values(array_filter($references));
@@ -122,7 +123,7 @@ class RecordService
             'action' => $action,
             'id' => $id,
             'name' => $name,
-            'references' => $references,
+            'primaryKey' => $primaryKey,
             'referenced' => $referenced,
             'record' => $record,
         );
@@ -269,8 +270,6 @@ class RecordService
             'table' => $table,
             'action' => $action,
             'filters' => $filters,
-            'references' => $references,
-            'referenced' => $referenced,
             'primaryKey' => $primaryKey,
             'columns' => $columns,
             'records' => $data['records'],

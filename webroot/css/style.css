@@ -23,7 +23,6 @@ th.selected::after {content: " ▾";}
 td, th, dl > * {padding: 0.2rem 1.5rem 0.2rem 0.5rem; text-align: left;}
 td, th {max-width: 40rem;}
 table.list td, table.list th {text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: 25rem;}
-table.read thead {display: none;}
 label {padding: calc(0.2rem + 1px) 1.5rem calc(0.2rem + 1px) 0; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
 td:last-child a {display: inline-block; margin-right: 0.5rem;}
 .logo img {height: 2rem; vertical-align: middle;}
@@ -33,8 +32,6 @@ h1 {font-size: 2.2rem; margin-bottom: 0.5rem; margin-right: 1rem; line-height: 1
 h2 {font-size: 1.5rem; margin-bottom: 0.5rem;}
 table {border-collapse: collapse; margin-top: 1.5rem;}
 table tr:nth-child(even) {background: rgba(0,0,0,0.05);}
-table.read tr:nth-child(even) {background: none;}
-table.read tr:nth-child(odd) {background: rgba(0,0,0,0.05);}
 table tr th {padding-top: 0.3rem; padding-bottom: 0.3rem; font-weight: bold; border-bottom: 1px solid black;}
 p, table {margin-bottom: 1.4rem;}
 

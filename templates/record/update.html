@@ -7,6 +7,7 @@
 
 <form method="post">
     {{for:value:key:record}}
+    {{if:key|neq(primaryKey)}}
     <div>
         <label for="{{key}}" class="col-sm-2 col-form-label" title="{{key|humanize}}">{{key|humanize}}</label>
         {{if:value.values}}
@@ -18,33 +19,27 @@
         </select>
         {{else}}
         {{if:value.type.format|eq("int32")}}
-        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}"
-            {{if:key|eq(primaryKey)}} disabled{{endif}} />
+        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
         {{elseif:value.type.format|eq("int64")}}
-        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}"
-            {{if:key|eq(primaryKey)}} disabled{{endif}} />
+        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
         {{elseif:value.type.format|eq("decimal")}}
-        <input class="form-control" id="{{key}}" type="number" step="any" name="{{key}}" value="{{value.value}}"
-            {{if:key|eq(primaryKey)}} disabled{{endif}} />
+        <input class="form-control" id="{{key}}" type="number" step="any" name="{{key}}" value="{{value.value}}" />
         {{elseif:value.type.format|eq("date-time")}}
-        <input class="form-control" id="{{key}}" type="datetime-local" name="{{key}}" value="{{value.value}}"
-            {{if:key|eq(primaryKey)}} disabled{{endif}} />
+        <input class="form-control" id="{{key}}" type="datetime-local" name="{{key}}" value="{{value.value}}" />
         {{elseif:value.type.format|eq("date")}}
-        <input class="form-control" id="{{key}}" type="date" name="{{key}}" value="{{value.value}}"
-            {{if:key|eq(primaryKey)}} disabled{{endif}} />
+        <input class="form-control" id="{{key}}" type="date" name="{{key}}" value="{{value.value}}" />
         {{elseif:value.type.format|eq("time")}}
-        <input class="form-control" id="{{key}}" type="time" name="{{key}}" value="" {{if:key|eq(primaryKey)}}
-            disabled{{endif}} />
+        <input class="form-control" id="{{key}}" type="time" name="{{key}}" value="" />
         {{elseif:value.type.format|eq("large-string")}}
         <textarea class="form-control" id="{{key}}" name="{{key}}">{{value.value}}</textarea>
         {{elseif:value.type.format|eq("boolean")}}
         <input class="form-control" id="{{key}}" name="{{key}}" type="checkbox" {{if:value.value}} checked{{endif}} />
         {{else}}
-        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}" {{if:key|eq(primaryKey)}}
-            disabled{{endif}} />
+        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}" />
         {{endif}}
         {{endif}}
     </div>
+    {{endif}}
     {{endfor}}
     <button type="submit" class="btn">Save</button>
 </form>
