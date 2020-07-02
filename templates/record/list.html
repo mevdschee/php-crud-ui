@@ -58,7 +58,7 @@
             <th>Action</th>
             {{endif}}
             {{for:column:columns}}
-            {{if:column|neq(primaryKey)}}
+            {{if:column.text|neq(primaryKey)}}
             <th>{{column.text|humanize}}</th>
             {{endif}}
             {{endfor}}
