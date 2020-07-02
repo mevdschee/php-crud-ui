@@ -19,13 +19,13 @@
             </td>
             <td>
                 {{if:field.table}}
-                    <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
+                <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
                 {{else}}
-                    {{if:field.type.format|eq("large-string")}}
-                        <div style="white-space: pre-wrap;">{{field.text}}</div>
-                    {{else}}
-                        {{if:field.text}}{{field.text}}{{else}}<span class="mobile-only">-</span>{{endif}} 
-                    {{endif}}        
+                {{if:field.type.format|eq("large-string")}}
+                <div style="white-space: pre-wrap;">{{field.text}}</div>
+                {{else}}
+                {{if:field.text}}{{field.text}}{{else}}<span class="mobile-only">-</span>{{endif}}
+                {{endif}}
                 {{endif}}
             </td>
         </tr>
@@ -46,4 +46,5 @@
     <li><a href="{{base}}/{{relation.0}}/list?filter={{relation.1}},eq,{{id}},{{name}}">{{relation.0|humanize}}</a>
     </li>
     {{endfor}}
-{{endif}}
+    {{endif}}
+</ul>
