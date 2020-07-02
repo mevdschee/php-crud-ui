@@ -15,7 +15,6 @@ $config = new Config([
         'password' => 'masterlist',
         'database' => 'masterlist',
     ],
-    'staticFile.webRootPath' => '../webroot',
     'templatePath' => '../templates',
 ]);
 $request = RequestFactory::fromGlobals();
