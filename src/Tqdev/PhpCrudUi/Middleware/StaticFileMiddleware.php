@@ -45,15 +45,17 @@ class StaticFileMiddleware extends Middleware
 
             global $_STATIC;
 
-            if (isset($_STATIC[$path])) {
-                $content = base64_decode($_STATIC[$path]);
-                return ResponseFactory::from(ResponseFactory::OK, $contentType, $content);
-            }
-
-            $filename = $this->santizeFilename('.', $path);
-            if ($contentType && $filename) {
-                $content = file_get_contents($filename);
-                return ResponseFactory::from(ResponseFactory::OK, $contentType, $content);
+            if ($_STATIC) {
+                if ($contentType && isset($_STATIC[$path])) {
+                    $content = base64_decode($_STATIC[$path]);
+                    return ResponseFactory::from(ResponseFactory::OK, $contentType, $content);
+                }
+            } else {
+                $filename = $this->santizeFilename('.', $path);
+                if ($contentType && $filename) {
+                    $content = file_get_contents($filename);
+                    return ResponseFactory::from(ResponseFactory::OK, $contentType, $content);
+                }
             }
         }
         return $response;
