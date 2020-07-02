@@ -17,8 +17,12 @@
                     {{endfor}}
                 </select>
             {{else}}
-                {{if:value.type.format|eq("decimal")}}
-                    <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
+                {{if:value.type.format|eq("int32")}}
+                    <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
+                {{elseif:value.type.format|eq("int64")}}
+                    <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
+                {{elseif:value.type.format|eq("decimal")}}
+                    <input class="form-control" id="{{key}}" type="number" step="any" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
                 {{elseif:value.type.format|eq("date-time")}}
                     <input class="form-control" id="{{key}}" type="datetime-local" name="{{key}}" value="{{value.value}}"{{if:key|eq(primaryKey)}} disabled{{endif}}/>
                 {{elseif:value.type.format|eq("date")}}
