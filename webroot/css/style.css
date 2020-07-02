@@ -169,6 +169,7 @@ ul.related li, ul.home li {list-style: none;}
 
     ul.related li a, ul.home li a  {display: inline-block; padding: 0.2rem 0;}
 
+    table.read thead {display: none;}
     table.read tr {display: block; padding: 0.7rem 0.5rem;}
     table.read tr td {display: block; padding: 0;}
     table.read td:nth-child(odd) {font-weight: bold;}
