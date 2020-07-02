@@ -107,8 +107,10 @@ class RecordService
             $type = isset($types[$key]) ? $types[$key] : null;
             if (isset($references[$key]) && $references[$key]) {
                 $relatedTable = $references[$key];
-                $relatedValue = $this->definition->referenceId($relatedTable, $value);
-                $text = $this->definition->referenceText($relatedTable, $value);
+                if ($value) {
+                    $relatedValue = $this->definition->referenceId($relatedTable, $value);
+                    $text = $this->definition->referenceText($relatedTable, $value);
+                }
             }
             $record[$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue, 'type' => $type);
         }
@@ -239,8 +241,10 @@ class RecordService
                 $text = $value;
                 if ($references[$key]) {
                     $relatedTable = $references[$key];
-                    $relatedValue = $this->definition->referenceId($relatedTable, $value);
-                    $text = $this->definition->referenceText($relatedTable, $value);
+                    if ($value) {
+                        $relatedValue = $this->definition->referenceId($relatedTable, $value);
+                        $text = $this->definition->referenceText($relatedTable, $value);
+                    }
                 }
                 $data['records'][$i][$key] = array('text' => $text, 'table' => $relatedTable, 'value' => $relatedValue);
             }
