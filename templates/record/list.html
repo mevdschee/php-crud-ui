@@ -151,7 +151,7 @@
     </tbody>
 </table>
 {{if:maxPage|gt(1)}}
-<div class="pagination">
+<div class="pagination" data-page="{{pageNumber}},{{pageSize}}">
     {{if:pageNumber|gt(1)}}
     <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="icon prev"
         onclick="return navigatePage('{{pageNumber|sub(1)}},{{pageSize}}')">&lt;</a>
