@@ -186,6 +186,7 @@ class RecordService
             'table' => $table,
             'action' => $action,
             'id' => $id,
+            'name' => $name,
             'primaryKey' => $primaryKey,
             'name' => $name,
         );

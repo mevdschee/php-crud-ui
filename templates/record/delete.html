@@ -3,12 +3,17 @@
     <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-<h1>delete {{table}}</h1>
+<h1>{{name|or("Delete item")}}</h1>
 
+{{if:name}}
+<p>Are you sure you want to delete '{{name}}'?</p>
+{{else}}
+<p>Are you sure you want to delete item #{{id}}?</p>
+{{endif}}
 <p>The action cannot be undone.</p>
 
 <form method="post">
     <input type="hidden" name="{{primaryKey}}" value="{{id}}" />
     <button type="submit" class="btn btn-danger">Delete</button>
-    <a href="{{base}}/{{table}}/update/{{id}}" class="btn btn-default">Cancel</a>
+    <a href="{{base}}/{{table}}/read/{{id}}" class="btn btn-default">Cancel</a>
 </form>
