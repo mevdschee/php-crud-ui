@@ -19,6 +19,8 @@ class StaticFileMiddleware extends Middleware
                 return 'text/css';
             case 'svg':
                 return 'image/svg+xml';
+            case 'js':
+                return 'application/javascript';
         }
         return '';
     }
