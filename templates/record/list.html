@@ -3,7 +3,6 @@
     <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
 </ul>
 
-{{if:primaryKey}}
 <div class="titlebar">
     <h1>{{table|humanize}}</h1>
     <div>
@@ -11,10 +10,11 @@
             filter</a>
         <a onclick="document.querySelector('.addSearch').classList.toggle('visible');" href="#"
             class="icon search">Search</a>
+        {{if:primaryKey}}
         <a href="{{base}}/{{table}}/create" class="btn">New item</a>
+        {{endif}}
     </div>
 </div>
-{{endif}}
 
 <script src="{{base}}/js/list.js"></script>
 
