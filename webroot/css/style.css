@@ -114,13 +114,13 @@ textarea {min-height: 10rem; padding: 0.35rem 0.5rem; }
 }
 .icon::before {content: ''; position: absolute; width: 2rem; height: 2rem; left: 0; top: 0;}
 .icon.filter::before {
-    background: url('img/filter.svg') center center / auto 45% no-repeat;}
+    background: url('../img/filter.svg') center center / auto 45% no-repeat;}
 .icon.search::before {
-    background: url('img/search.svg') center center / auto 57% no-repeat;}
+    background: url('../img/search.svg') center center / auto 57% no-repeat;}
 .icon.prev::before {
-    background: url('img/prev.svg') center 48% / auto 40% no-repeat;}
+    background: url('../img/prev.svg') center 48% / auto 40% no-repeat;}
 .icon.next::before {
-    background: url('img/next.svg') center 48% / auto 40% no-repeat;}
+    background: url('../img/next.svg') center 48% / auto 40% no-repeat;}
 form {margin-top: 1.5rem;}
 form, dl {width: 100%; max-width: 40rem;}
 form > div {display: flex; margin-bottom: 0.25rem;}

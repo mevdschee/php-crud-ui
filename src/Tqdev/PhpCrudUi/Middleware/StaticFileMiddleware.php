@@ -23,9 +23,9 @@ class StaticFileMiddleware extends Middleware
         return '';
     }
 
-    private function santizeFilename(string $filename): string
+    private function santizeFilename(string $base, string $filename): string
     {
-        $realBase = realpath($this->getProperty('webRootPath', '.'));
+        $realBase = realpath($base);
         $realUserPath = realpath($realBase . $filename);
 
         if ($realUserPath === false || strpos($realUserPath, $realBase) !== 0) {
@@ -41,8 +41,18 @@ class StaticFileMiddleware extends Middleware
 
         if ($response->getStatusCode() == 404) {
             $filename = $request->getUri()->getPath();
-            $filename = $this->santizeFilename($filename);
             $contentType = $this->getContentType($filename);
+
+            $base = $this->getProperty('webRootPath', 'webroot');
+            $path = rtrim($base, '/') . $filename;
+
+            global $_STATIC;
+            if (isset($_STATIC[$path])) {
+                $content = base64_decode($_STATIC[$path]);
+                return ResponseFactory::from(ResponseFactory::OK, $contentType, $content);
+            }
+
+            $filename = $this->santizeFilename($base, $filename);
             if ($contentType && $filename) {
                 return ResponseFactory::fromFile(ResponseFactory::OK, $contentType, $filename);
             }

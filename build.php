@@ -53,6 +53,17 @@ function runDir(string $base, string $dir, array &$lines, array $ignore): int
                 }
                 array_push($lines, 'END_OF_HTML;', '}', '');
                 $count++;
+            } elseif (substr($entry, -4) == '.css' || substr($entry, -4) == '.svg') {
+                $data = base64_encode(file_get_contents($filename));
+                $id = "$dir/$entry";
+                array_push($lines, "// file: $dir/$entry");
+                array_push($lines, 'namespace {');
+                array_push($lines, "\$_STATIC['$id'] = <<<'END_OF_STATIC_FILE'");
+                foreach (explode("\n", $data) as $line) {
+                    array_push($lines, $line);
+                }
+                array_push($lines, 'END_OF_STATIC_FILE;', '}', '');
+                $count++;
             }
         }
     }
@@ -78,6 +89,9 @@ function addHeader(array &$lines)
 namespace {
     global $_HTML;
     $_HTML = array();
+
+    global $_STATIC;
+    $_STATIC = array();
 }
 
 EOF;
