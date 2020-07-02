@@ -1,0 +1,28 @@
+/* SPOTIFY THEME */
+
+body {background-color: #181818; font-family: sans-serif;}
+body, a {color: #aaa;}
+.navigation {background-color: #121212; box-shadow: none;}
+a {text-decoration: none;}
+ul:not(.breadcrumb) a::after, td a::after {content: " ‣"}
+button, .btn, input[type="submit"], .icon {
+    background-color: #1ed760; 
+    border-radius: 2rem;
+    filter: invert(100%) hue-rotate(-180deg) saturate(0.6) brightness(1.8);
+}
+table tr th {border-color: #333;}
+h2, .hamburger, table tr th, h1, .pagination, a:not(.icon):not(.btn):hover, .title {color: white;}
+table tr:nth-child(even), table.read tr:nth-child(odd) {background: none;}
+ul.related, ul.home {display: inline-block;}
+ul.related li, ul.home li, table tr td {border-bottom: 1px solid #333;}
+ul.related li:last-child, ul.home li:last-child, table tr:last-child td {border: 0;}
+ul.related li, ul.home li, td, th, dl > * {padding: 0.2rem 1.5rem 0.2rem 0;}
+input, textarea, select {filter: invert(100%) contrast(0.6) brightness(1); border-color: transparent;}
+.filterbar {background:#333;}
+@media only screen and (max-width: 600px) {
+    table.read tr {display: block;}
+    form > div {padding: 0.5rem 0;}
+    table.read tr {padding: 0.7rem 0;}
+    table tr td {border: 0;}
+    table.read td:nth-child(2n+1), label {font-weight: normal; color: white;}
+}
