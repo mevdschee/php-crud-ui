@@ -410,7 +410,7 @@ $_HTML['record/read'] = <<<'END_OF_HTML'
             <td>{{name|humanize}}</td>
             </td>
             <td>
-                {{if:field.table}}
+                {{if:field.table|and(field.text)}}
                     <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
                 {{else}}
                     {{if:field.type.format|eq("large-string")}}
@@ -2203,7 +2203,7 @@ namespace Nyholm\Psr7 {
             return $new;
         }
 
-        private function setHeaders(array $headers): void
+        private function setHeaders(array $headers) /*:void*/
         {
             foreach ($headers as $header => $value) {
                 if (\is_int($header)) {
@@ -2408,7 +2408,7 @@ namespace Nyholm\Psr7 {
             return $new;
         }
 
-        private function updateHostFromUri(): void
+        private function updateHostFromUri() /*:void*/
         {
             if ('' === $host = $this->uri->getHost()) {
                 return;
@@ -2446,7 +2446,7 @@ namespace Nyholm\Psr7 {
         use MessageTrait;
 
         /** @var array Map of standard HTTP status code/reason phrases */
-        private const PHRASES = [
+        /*private*/ const PHRASES = [
             100 => 'Continue', 101 => 'Switching Protocols', 102 => 'Processing',
             200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content', 207 => 'Multi-status', 208 => 'Already Reported',
             300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 306 => 'Switch Proxy', 307 => 'Temporary Redirect',
@@ -2712,7 +2712,7 @@ namespace Nyholm\Psr7 {
         private $size;
 
         /** @var array Hash of readable and writable stream types */
-        private const READ_WRITE_HASH = [
+        /*private*/ const READ_WRITE_HASH = [
             'read' => [
                 'r' => true, 'w+' => true, 'r+' => true, 'x+' => true, 'c+' => true,
                 'rb' => true, 'w+b' => true, 'r+b' => true, 'x+b' => true,
@@ -2802,7 +2802,7 @@ namespace Nyholm\Psr7 {
             }
         }
 
-        public function close(): void
+        public function close() /*:void*/
         {
             if (isset($this->stream)) {
                 if (\is_resource($this->stream)) {
@@ -2826,7 +2826,7 @@ namespace Nyholm\Psr7 {
             return $result;
         }
 
-        public function getSize(): ?int
+        public function getSize() /*:?int*/
         {
             if (null !== $this->size) {
                 return $this->size;
@@ -2870,7 +2870,7 @@ namespace Nyholm\Psr7 {
             return $this->seekable;
         }
 
-        public function seek($offset, $whence = \SEEK_SET): void
+        public function seek($offset, $whence = \SEEK_SET) /*:void*/
         {
             if (!$this->seekable) {
                 throw new \RuntimeException('Stream is not seekable');
@@ -2881,7 +2881,7 @@ namespace Nyholm\Psr7 {
             }
         }
 
-        public function rewind(): void
+        public function rewind() /*:void*/
         {
             $this->seek(0);
         }
@@ -2964,7 +2964,7 @@ namespace Nyholm\Psr7 {
     final class UploadedFile implements UploadedFileInterface
     {
         /** @var array */
-        private const ERRORS = [
+        /*private*/ const ERRORS = [
             \UPLOAD_ERR_OK => 1,
             \UPLOAD_ERR_INI_SIZE => 1,
             \UPLOAD_ERR_FORM_SIZE => 1,
@@ -3043,7 +3043,7 @@ namespace Nyholm\Psr7 {
         /**
          * @throws \RuntimeException if is moved or not ok
          */
-        private function validateActive(): void
+        private function validateActive() /*:void*/
         {
             if (\UPLOAD_ERR_OK !== $this->error) {
                 throw new \RuntimeException('Cannot retrieve stream due to upload error');
@@ -3067,7 +3067,7 @@ namespace Nyholm\Psr7 {
             return Stream::create($resource);
         }
 
-        public function moveTo($targetPath): void
+        public function moveTo($targetPath) /*:void*/
         {
             $this->validateActive();
 
@@ -3109,12 +3109,12 @@ namespace Nyholm\Psr7 {
             return $this->error;
         }
 
-        public function getClientFilename(): ?string
+        public function getClientFilename() /*:?string*/
         {
             return $this->clientFilename;
         }
 
-        public function getClientMediaType(): ?string
+        public function getClientMediaType() /*:?string*/
         {
             return $this->clientMediaType;
         }
@@ -3139,11 +3139,11 @@ namespace Nyholm\Psr7 {
     {
         use LowercaseTrait;
 
-        private const SCHEMES = ['http' => 80, 'https' => 443];
+        /*private*/ const SCHEMES = ['http' => 80, 'https' => 443];
 
-        private const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
+        /*private*/ const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
 
-        private const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
+        /*private*/ const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
 
         /** @var string Uri scheme. */
         private $scheme = '';
@@ -3225,7 +3225,7 @@ namespace Nyholm\Psr7 {
             return $this->host;
         }
 
-        public function getPort(): ?int
+        public function getPort() /*:?int*/
         {
             return $this->port;
         }
@@ -3393,7 +3393,7 @@ namespace Nyholm\Psr7 {
             return !isset(self::SCHEMES[$scheme]) || $port !== self::SCHEMES[$scheme];
         }
 
-        private function filterPort($port): ?int
+        private function filterPort($port) /*:?int*/
         {
             if (null === $port) {
                 return null;
@@ -3505,7 +3505,7 @@ namespace Nyholm\Psr7Server {
         /**
          * {@inheritdoc}
          */
-        public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], ?array $post = null, array $files = [], $body = null): ServerRequestInterface
+        public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], /*?array*/ $post = null, array $files = [], $body = null): ServerRequestInterface
         {
             $method = $this->getMethodFromEnv($server);
             $uri = $this->getUriFromEnvWithHTTP($server);
@@ -3770,8 +3770,7 @@ namespace Nyholm\Psr7Server {
             array $server,
             array $headers = [],
             array $cookie = [],
-            array $get = [],
-            ?array $post = null,
+            array $get = [], /*?array*/ $post = null,
             array $files = [],
             $body = null
         ): ServerRequestInterface;
@@ -11788,6 +11787,7 @@ namespace Tqdev\PhpCrudApi {
             $stream->rewind();
             $response = $response->withBody($stream);
             $response = $response->withHeader('Content-Type', $contentType . '; charset=utf-8');
+            $response = $response->withHeader('Content-Length', strlen($content));
             return $response;
         }
 
@@ -11972,8 +11972,8 @@ namespace Tqdev\PhpCrudUi\Client {
 // file: src/Tqdev/PhpCrudUi/Column/SpecificationService.php
 namespace Tqdev\PhpCrudUi\Column {
 
-    use Tqdev\PhpCrudUi\Client\CrudApi;
     use Tqdev\PhpCrudApi\Cache\Cache;
+    use Tqdev\PhpCrudUi\Client\CrudApi;
 
     class SpecificationService
     {
@@ -12182,12 +12182,18 @@ namespace Tqdev\PhpCrudUi\Column {
 
         public function referenceText(string $table, /* object */ $record)
         {
+            if (!$record) {
+                return '';
+            }
             $displayColumn = $this->getDisplayColumn($table, 'read');
             return $record[$displayColumn];
         }
 
         public function referenceId(string $table, /* object */ $record)
         {
+            if (!$record) {
+                return null;
+            }
             $primaryKey = $this->getPrimaryKey($table, 'read');
             return $record[$primaryKey];
         }
@@ -12485,6 +12491,9 @@ namespace Tqdev\PhpCrudUi\Document {
                 'bool' => function ($a, $b, $c) {
                     return $a ? $b : $c;
                 },
+                'and' => function ($a, $b) {
+                    return $a && $b;
+                },
                 'or' => function ($a, $b) {
                     return $a ?: $b;
                 },
@@ -12572,15 +12581,17 @@ namespace Tqdev\PhpCrudUi\Middleware {
 
                 global $_STATIC;
 
-                if (isset($_STATIC[$path])) {
-                    $content = base64_decode($_STATIC[$path]);
-                    return ResponseFactory::from(ResponseFactory::OK, $contentType, $content);
-                }
-
-                $filename = $this->santizeFilename('.', $path);
-                if ($contentType && $filename) {
-                    $content = file_get_contents($filename);
-                    return ResponseFactory::from(ResponseFactory::OK, $contentType, $content);
+                if ($_STATIC) {
+                    if ($contentType && isset($_STATIC[$path])) {
+                        $content = base64_decode($_STATIC[$path]);
+                        return ResponseFactory::from(ResponseFactory::OK, $contentType, $content);
+                    }
+                } else {
+                    $filename = $this->santizeFilename('.', $path);
+                    if ($contentType && $filename) {
+                        $content = file_get_contents($filename);
+                        return ResponseFactory::from(ResponseFactory::OK, $contentType, $content);
+                    }
                 }
             }
             return $response;

@@ -18,7 +18,7 @@
             <td>{{name|humanize}}</td>
             </td>
             <td>
-                {{if:field.table}}
+                {{if:field.table|and(field.text)}}
                     <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
                 {{else}}
                     {{if:field.type.format|eq("large-string")}}

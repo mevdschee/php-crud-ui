@@ -57,6 +57,9 @@ class TemplateDocument
             'bool' => function ($a, $b, $c) {
                 return $a ? $b : $c;
             },
+            'and' => function ($a, $b) {
+                return $a && $b;
+            },
             'or' => function ($a, $b) {
                 return $a ?: $b;
             },
