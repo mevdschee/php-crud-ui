@@ -48,7 +48,7 @@
             all[i].classList.remove('hidden');
         }
         const elements = document.querySelectorAll('th');
-        var max = elements.length - 1;
+        var max = elements.length;
         for (var i = 0; i < elements.length; i++) {
             if (isPartiallyOffscreen(elements[i])) {
                 max = i;
