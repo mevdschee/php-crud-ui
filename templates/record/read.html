@@ -19,8 +19,13 @@
             <td>{{name|humanize}}</td>
             </td>
             <td>
+<<<<<<< HEAD
+                {{if:field.table|and(field.text)}}
+                    <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
+=======
                 {{if:field.table}}
                 <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
+>>>>>>> e05e30d176d5c9d9c8ad0e5a3129907a68235423
                 {{else}}
                 {{if:field.type.format|eq("large-string")}}
                 <div style="white-space: pre-wrap;">{{field.text}}</div>
