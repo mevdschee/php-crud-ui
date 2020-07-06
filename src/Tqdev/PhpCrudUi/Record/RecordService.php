@@ -213,15 +213,15 @@ class RecordService
         return new TemplateDocument('layouts/default', 'record/deleted', $variables);
     }
 
-    private function getArguments(string $primaryKey, array $types, array $filters): array
+    private function getArguments(string $primaryKey, array $references, array $filters): array
     {
         $args = array();
         $i = 0;
         foreach ($filters as $filter) {
             if ($filter['type'] == 'search') {
                 $j = 0;
-                foreach ($types as $column => $type) {
-                    if ($column != $primaryKey) {
+                foreach ($references as $column => $reference) {
+                    if (!$reference && $column != $primaryKey) {
                         $args["filter${j}[0]"] = implode(',', array($column, $filter['operator'], $filter['value']));
                         $j++;
                     }
@@ -287,7 +287,7 @@ class RecordService
         list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
 
         $filters = $this->getFilters($references, $params);
-        $args = $this->getArguments($primaryKey, $types, $filters);
+        $args = $this->getArguments($primaryKey, $references, $filters);
 
         $args['join'] = array_values(array_filter($references));
         $args['page'] = "$pageNumber,$pageSize";
@@ -353,8 +353,8 @@ class RecordService
             if (isset($references[$body['field']]) && $references[$body['field']]) {
                 $otherTable = $references[$body['field']];
                 $otherKey = $this->definition->getPrimaryKey($otherTable, $action);
-                $otherTypes = $this->definition->getTypes($otherTable, $action);
-                $args = $this->getArguments($otherKey, $otherTypes, [['type' => 'search', 'field' => '*any*', 'operator' => 'cs', 'value' => $body['value']]]);
+                $otherReferences = $this->definition->getReferences($otherTable, $action);
+                $args = $this->getArguments($otherKey, $otherReferences, [['type' => 'search', 'field' => '*any*', 'operator' => 'cs', 'value' => $body['value']]]);
                 $args['include'] = $otherKey;
                 $records = $this->api->listRecords($otherTable, $args);
                 $values = array_map(function ($a) use ($otherKey) {return $a[$otherKey];}, $records['records']);
