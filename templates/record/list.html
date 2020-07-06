@@ -36,7 +36,9 @@
     <form style="display:inline" method="post">
         <select name="field">
             {{for:column:columns}}
+            {{if:column|neq(primaryKey)}}
             <option value="{{column}}">{{column|humanize}}</option>
+            {{endif}}
             {{endfor}}
         </select>&nbsp;
         <input type="text" name="value" />&nbsp;
