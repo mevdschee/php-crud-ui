@@ -146,10 +146,11 @@ class RecordController
         $table = RequestUtils::getPathSegment($request, 1);
         $action = RequestUtils::getPathSegment($request, 2);
         $params = RequestUtils::getParams($request);
+        $body = $request->getParsedBody();
         if (!$this->service->hasTable($table, $action)) {
             return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
         }
-        $result = $this->service->search($table, $action, $params);
+        $result = $this->service->search($table, $body, $params);
         return $this->responder->success($result);
     }
 

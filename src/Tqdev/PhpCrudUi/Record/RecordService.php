@@ -213,6 +213,70 @@ class RecordService
         return new TemplateDocument('layouts/default', 'record/deleted', $variables);
     }
 
+    private function getArguments(array $types, array $filters): array
+    {
+        $args = array();
+        $i = 0;
+        foreach ($filters as $filter) {
+            if ($filter['type'] == 'search') {
+                $j = 0;
+                foreach ($types as $column => $type) {
+                    switch ($type['type']) {
+                        case 'string':
+                            $args["filter${j}[0]"] = implode(',', array($column, $filter['operator'], $filter['value']));
+                            $j++;
+                            break;
+                    }
+                }
+            } elseif ($filter['type'] == 'value') {
+                $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], $filter['value']));
+                $i++;
+            } elseif ($filter['type'] == 'reference') {
+                $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], implode('|', explode(',', $filter['value']))));
+                $i++;
+            }
+        }
+        return $args;
+    }
+
+    private function getFilters(array $references, array $params): array
+    {
+        $filters = array();
+        if (isset($params['filter'])) {
+            foreach ($params['filter'] as $filter) {
+                $type = substr($filter, 0, strpos($filter, ','));
+                if ($type == 'search') {
+                    $filter = array_combine(array('type', 'operator', 'value'), explode(',', $filter, 3));
+                    $filter['field'] = '*any*';
+                } elseif ($type == 'value') {
+                    $filter = array_combine(array('type', 'field', 'operator', 'value'), explode(',', $filter, 4));
+                    $filter['text'] = $filter['value'];
+                } elseif ($type == 'reference') {
+                    $filter = array_combine(array('type', 'field', 'operator', 'value', 'text'), explode(',', $filter, 5));
+                    $filter['value'] = implode(',', explode('|', $filter['value']));
+                }
+                $filters[] = $filter;
+            }
+        }
+        return $filters;
+    }
+
+    private function getParams(array $references, array $filters): array
+    {
+        $params = ['filter' => []];
+        foreach ($filters as $filter) {
+            if ($filter['type'] == 'search') {
+                $param = $filter['type'] . ',' . $filter['operator'] . ',' . $filter['value'];
+            } elseif ($filter['type'] == 'value') {
+                $param = $filter['type'] . ',' . $filter['field'] . ',' . $filter['operator'] . ',' . $filter['value'];
+            } elseif ($filter['type'] == 'reference') {
+                $param = $filter['type'] . ',' . $filter['field'] . ',' . $filter['operator'] . ',' . implode('|', explode(',', $filter['value'])) . ',' . $filter['text'];
+            }
+            $params['filter'][] = $param;
+        }
+        return $params;
+    }
+
     public function _list(string $table, string $action, array $params): TemplateDocument
     {
         $types = $this->definition->getTypes($table, $action);
@@ -220,22 +284,12 @@ class RecordService
         $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
         $columns = $this->definition->getColumns($table, $action);
-        foreach ($columns as $i => $key) {
-            $columns[$i] = array('text' => $key, 'type' => $types[$key]);
-        }
 
         $pageParams = isset($params['page']) ? $params['page'][0] : '1,50';
         list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
 
-        $filters = array();
-        $args = array();
-        if (isset($params['filter'])) {
-            foreach ($params['filter'] as $i => $filter) {
-                $filter = array_combine(array('field', 'operator', 'value', 'name'), explode(',', $filter, 4));
-                $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], $filter['value']));
-                $filters[] = $filter;
-            }
-        }
+        $filters = $this->getFilters($references, $params);
+        $args = $this->getArguments($types, $filters);
 
         $args['join'] = array_values(array_filter($references));
         $args['page'] = "$pageNumber,$pageSize";
@@ -281,10 +335,37 @@ class RecordService
         return new TemplateDocument('layouts/default', 'record/list', $variables);
     }
 
-    public function search(string $table, string $action, array $params)
+    public function search(string $table, array $body, array $params)
     {
-        //die(var_dump($params));
-        $params = ['search' => 'asdas'];
+        $action = 'list';
+        $references = $this->definition->getReferences($table, $action);
+
+        $filters = $this->getFilters($references, $params);
+
+        if (isset($body['search'])) {
+            foreach ($filters as $i => $filter) {
+                if ($filter['type'] == 'search') {
+                    unset($filters[$i]);
+                }
+            }
+            $filters = array_values($filters);
+            $filters[] = ['type' => 'search', 'field' => '*any*', 'operator' => 'cs', 'value' => $body['search']];
+        }
+        if (isset($body['value'])) {
+            if (isset($references[$body['field']]) && $references[$body['field']]) {
+                $otherTable = $references[$body['field']];
+                $otherKey = $this->definition->getPrimaryKey($otherTable, $action);
+                $otherTypes = $this->definition->getTypes($otherTable, $action);
+                $args = $this->getArguments($otherTypes, [['type' => 'search', 'field' => '*any*', 'operator' => 'cs', 'value' => $body['value']]]);
+                $args['include'] = $otherKey;
+                $records = $this->api->listRecords($otherTable, $args);
+                $values = array_map(function ($a) use ($otherKey) {return $a[$otherKey];}, $records['records']);
+                $filters[] = ['type' => 'reference', 'field' => $body['field'], 'operator' => 'in', 'value' => implode(',', $values), 'text' => $body['value']];
+            } else {
+                $filters[] = ['type' => 'value', 'field' => $body['field'], 'operator' => 'cs', 'value' => $body['value']];
+            }
+        }
+        $params = $this->getParams($references, $filters);
         $query = http_build_query($params);
         return new RedirectDocument('/' . $table . '/list?' . $query, []);
     }

@@ -20,24 +20,24 @@
 
 {{for:filter:i:filters}}
 <div class="filterbar" data-index="{{i}}"
-    data-filter="{{filter.field}},{{filter.operator}},{{filter.value}},{{filter.name}}">
-    <div>{{filter.field|humanize}} = '{{filter.name}}'</div>
-
+    data-filter="{{filter.type}},{{filter.field}},{{filter.operator}},{{filter.value}},{{filter.text}}">
+    {{if:filter.type|eq("search")}}
+    <div>Search '{{filter.value}}'</div>
+    {{elseif:filter.operator|eq("eq")}}
+    <div>{{filter.field|humanize}} = '{{filter.text}}'</div>
+    {{else}}
+    <div>{{filter.field|humanize}} ~ '{{filter.text}}'</div>
+    {{endif}}
     <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
 </div>
 {{endfor}}
 
 <div class="addFilter">
-    <form style="display:inline">
+    <form style="display:inline" method="post">
         <select name="field">
             {{for:column:columns}}
-            <option>{{column.text|humanize}}</option>
+            <option value="{{column}}">{{column|humanize}}</option>
             {{endfor}}
-        </select>&nbsp;
-        <select name="operator">
-            <option>=</option>
-            <option>&lt;</option>
-            <option>&gt;</option>
         </select>&nbsp;
         <input type="text" name="value" />&nbsp;
         <input type="submit" value="Filter" />
@@ -58,8 +58,8 @@
             <th>Action</th>
             {{endif}}
             {{for:column:columns}}
-            {{if:column.text|neq(primaryKey)}}
-            <th>{{column.text|humanize}}</th>
+            {{if:column|neq(primaryKey)}}
+            <th>{{column|humanize}}</th>
             {{endif}}
             {{endfor}}
         </tr>
