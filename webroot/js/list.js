@@ -16,15 +16,15 @@ function ajaxGet(url, callback) {
     xmlhttp.open("GET", url, true);
     xmlhttp.send();
 }
-function sortSelectOptions(lb) { 
-    arr = new Array(); 
-    for(i = 0; i < lb.length; i++) { 
-        arr[i] = lb.options[i]; 
-    } 
-    arr.sort(function(a,b) {
-        return (a.text > b.text)? 1 : ((a.text < b.text)? -1 : 0);
+function sortSelectOptions(lb) {
+    arr = new Array();
+    for (i = 0; i < lb.length; i++) {
+        arr[i] = lb.options[i];
+    }
+    arr.sort(function (a, b) {
+        return (a.text > b.text) ? 1 : ((a.text < b.text) ? -1 : 0);
     });
-    for(i = 0; i < lb.length; i++) { 
+    for (i = 0; i < lb.length; i++) {
         lb.options[i] = arr[i];
     }
 }
@@ -124,6 +124,9 @@ function hideColumns() {
     const all = document.querySelectorAll('th, td');
     for (var i = 0; i < all.length; i++) {
         all[i].classList.remove('hidden');
+    }
+    if (window.innerWidth >= 1500) {
+        return;
     }
     const elements = document.querySelectorAll('th');
     var max = elements.length;
