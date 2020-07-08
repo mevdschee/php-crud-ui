@@ -5,6 +5,7 @@ namespace Tqdev\PhpCrudUi\Record;
 use Tqdev\PhpCrudUi\Client\CrudApi;
 use Tqdev\PhpCrudUi\Column\SpecificationService;
 use Tqdev\PhpCrudUi\Document\CsvDocument;
+use Tqdev\PhpCrudUi\Document\JsonDocument;
 use Tqdev\PhpCrudUi\Document\RedirectDocument;
 use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
@@ -230,7 +231,7 @@ class RecordService
                 $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], $filter['value']));
                 $i++;
             } elseif ($filter['type'] == 'reference') {
-                $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], implode('|', explode(',', $filter['value']))));
+                $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], $filter['value']));
                 $i++;
             }
         }
@@ -273,6 +274,37 @@ class RecordService
             $params['filter'][] = $param;
         }
         return $params;
+    }
+
+    public function values(string $table, string $action, string $column, array $params): JsonDocument
+    {
+        $references = $this->definition->getReferences($table, $action);
+        $primaryKey = $this->definition->getPrimaryKey($table, $action);
+
+        $pageParams = isset($params['page']) ? $params['page'][0] : '1,50';
+        list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
+
+        $filters = $this->getFilters($references, $params);
+        $args = $this->getArguments($primaryKey, $references, $filters);
+
+        $args['join'] = array_values(array_filter($references));
+        $args['page'] = "$pageNumber,$pageSize";
+
+        $result = [];
+
+        if ($references[$column]) {
+            $otherTable = $references[$column];
+            $data = $this->api->listRecords($otherTable, $args);
+            foreach ($data['records'] as $record) {
+                $id = $this->definition->referenceId($otherTable, $record);
+                $text = $this->definition->referenceText($otherTable, $record);
+                $result[$id] = $text;
+            }
+        }
+
+        asort($result);
+
+        return new JsonDocument(['records' => $result]);
     }
 
     public function _list(string $table, string $action, array $params): TemplateDocument
@@ -322,6 +354,8 @@ class RecordService
             'table' => $table,
             'action' => $action,
             'filters' => $filters,
+            'types' => $types,
+            'references' => $references,
             'primaryKey' => $primaryKey,
             'columns' => $columns,
             'records' => $data['records'],
@@ -348,19 +382,30 @@ class RecordService
             }
             $filters = array_values($filters);
             $filters[] = ['type' => 'search', 'field' => '*any*', 'operator' => 'cs', 'value' => $body['search']];
+
+            // loop over columns and search in referenced fields in text
+
+            /*if (isset($body['value'])) {
+        if (isset($references[$body['field']]) && $references[$body['field']]) {
+        $otherTable = $references[$body['field']];
+        $otherKey = $this->definition->getPrimaryKey($otherTable, $action);
+        $otherReferences = $this->definition->getReferences($otherTable, $action);
+        $args = $this->getArguments($otherKey, $otherReferences, [['type' => 'search', 'field' => '*any*', 'operator' => 'cs', 'value' => $body['value']]]);
+        $args['include'] = $otherKey;
+        $records = $this->api->listRecords($otherTable, $args);
+        $values = array_map(function ($a) use ($otherKey) {return $a[$otherKey];}, $records['records']);
+        $filters[] = ['type' => 'reference', 'field' => $body['field'], 'operator' => 'in', 'value' => implode(',', $values), 'text' => $body['value']];
+        } else {
+        $filters[] = ['type' => 'value', 'field' => $body['field'], 'operator' => 'cs', 'value' => $body['value']];
         }
+        }*/
+        }
+
         if (isset($body['value'])) {
             if (isset($references[$body['field']]) && $references[$body['field']]) {
-                $otherTable = $references[$body['field']];
-                $otherKey = $this->definition->getPrimaryKey($otherTable, $action);
-                $otherReferences = $this->definition->getReferences($otherTable, $action);
-                $args = $this->getArguments($otherKey, $otherReferences, [['type' => 'search', 'field' => '*any*', 'operator' => 'cs', 'value' => $body['value']]]);
-                $args['include'] = $otherKey;
-                $records = $this->api->listRecords($otherTable, $args);
-                $values = array_map(function ($a) use ($otherKey) {return $a[$otherKey];}, $records['records']);
-                $filters[] = ['type' => 'reference', 'field' => $body['field'], 'operator' => 'in', 'value' => implode(',', $values), 'text' => $body['value']];
+                $filters[] = ['type' => 'reference', 'field' => $body['field'], 'operator' => 'in', 'value' => $body['value'], 'text' => $body['text']];
             } else {
-                $filters[] = ['type' => 'value', 'field' => $body['field'], 'operator' => 'cs', 'value' => $body['value']];
+                $filters[] = ['type' => 'value', 'field' => $body['field'], 'operator' => $body['operator'], 'value' => $body['value']];
             }
         }
         $params = $this->getParams($references, $filters);

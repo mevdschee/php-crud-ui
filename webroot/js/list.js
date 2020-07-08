@@ -1,3 +1,62 @@
+function ajaxGet(url, callback) {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            console.log('responseText:' + xmlhttp.responseText);
+            try {
+                var data = JSON.parse(xmlhttp.responseText);
+            } catch (err) {
+                console.log(err.message + " in " + xmlhttp.responseText);
+                return;
+            }
+            callback(data);
+        }
+    };
+
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+}
+function updateAddFilter() {
+    const field = document.querySelector('.addFilter [name="field"]');
+    const operator = document.querySelector('.addFilter [name="operator"]');
+    const value = document.querySelector('.addFilter [name="value"]');
+    const values = document.querySelector('.addFilter [name="values"]');
+    if (field.options[field.selectedIndex].dataset.references) {
+        operator.style.display = 'none';
+        value.type = 'hidden';
+        values.style.display = 'inline';
+        ajaxGet('values/' + field.value, function (data) {
+            values.innerHTML = '';
+            Object.keys(data).forEach(function (item) {
+                var option = document.createElement('option');
+                option.value = item;
+                option.innerHTML = data[item];
+                values.appendChild(option);
+            });
+        });
+    } else {
+        operator.style.display = 'inline';
+        value.type = 'text';
+        values.style.display = 'none';
+    }
+}
+function updateTextAndValue() {
+    const text = document.querySelector('.addFilter [name="text"]');
+    const value = document.querySelector('.addFilter [name="value"]');
+    const values = document.querySelector('.addFilter [name="values"]');
+    textArray = [];
+    valueArray = [];
+    for (var i = 0; i < values.options.length; i++) {
+        const item = values.options[i];
+        if (item.selected) {
+            textArray.push(item.text);
+            valueArray.push(item.value);
+        }
+    }
+    text.value = textArray.join(', ');
+    value.value = valueArray.join(',');
+}
+
 function closeFilter(index) {
     const elements = document.querySelectorAll('.filterbar');
     for (var i = 0; i < elements.length; i++) {
@@ -6,6 +65,31 @@ function closeFilter(index) {
         }
     }
     return reloadQuery();
+}
+function editFilter(index) {
+    const elements = document.querySelectorAll('.filterbar');
+    var type = '';
+    for (var i = 0; i < elements.length; i++) {
+        if (elements[i].dataset.index == index) {
+            var filter = elements[i].dataset.filter;
+            type = filter.substr(0, filter.indexOf(","));
+            elements[i].parentNode.removeChild(elements[i]);
+        }
+    }
+    if (type == "search") {
+        // hide all
+        // show search
+        // fill form
+    } else if (type == "value") {
+        // hide all
+        // show filter
+        // fill form
+    } else if (type == "reference") {
+        // hide all
+        // show filter
+        // fill form
+    }
+    return false;
 }
 function navigatePage(page) {
     const element = document.querySelector('.pagination');
@@ -58,5 +142,5 @@ function reloadQuery() {
     document.location.href = '?' + params.join('&');
     return false;
 }
-window.addEventListener('load', function () { hideColumns(); })
-window.addEventListener('resize', function () { resizeWindow(); })
+window.addEventListener('load', function () { hideColumns(); updateAddFilter(); });
+window.addEventListener('resize', function () { resizeWindow(); });
