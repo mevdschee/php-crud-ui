@@ -16,6 +16,18 @@ function ajaxGet(url, callback) {
     xmlhttp.open("GET", url, true);
     xmlhttp.send();
 }
+function sortSelectOptions(lb) { 
+    arr = new Array(); 
+    for(i = 0; i < lb.length; i++) { 
+        arr[i] = lb.options[i]; 
+    } 
+    arr.sort(function(a,b) {
+        return (a.text > b.text)? 1 : ((a.text < b.text)? -1 : 0);
+    });
+    for(i = 0; i < lb.length; i++) { 
+        lb.options[i] = arr[i];
+    }
+}
 function updateAddFilter() {
     const field = document.querySelector('.addFilter [name="field"]');
     const operator = document.querySelector('.addFilter [name="operator"]');
@@ -33,6 +45,7 @@ function updateAddFilter() {
                 option.innerHTML = data[item];
                 values.appendChild(option);
             });
+            sortSelectOptions(values);
         });
     } else {
         operator.style.display = 'inline';
