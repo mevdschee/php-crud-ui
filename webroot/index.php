@@ -11,9 +11,9 @@ require '../vendor/autoload.php';
 
 $config = new Config([
     'api' => [
-        'username' => 'masterlist',
-        'password' => 'masterlist',
-        'database' => 'masterlist',
+        'username' => 'php-crud-api',
+        'password' => 'php-crud-api',
+        'database' => 'php-crud-api',
     ],
     'templatePath' => '../templates',
 ]);
