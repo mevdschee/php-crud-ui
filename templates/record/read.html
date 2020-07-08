@@ -46,7 +46,7 @@
 <ul class="related">
     {{for:relation:referenced}}
     <li>
-        <a href="{{base}}/{{relation.0}}/list?filter=reference,{{relation.1}},eq,{{id}},{{name}}">
+        <a href="{{base}}/{{relation.0}}/list?filter=reference,{{relation.1}},in,{{id}},{{name}}">
             {{relation.0|humanize}}
         </a>
     </li>
