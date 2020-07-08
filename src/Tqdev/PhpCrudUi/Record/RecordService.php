@@ -302,8 +302,6 @@ class RecordService
             }
         }
 
-        asort($result);
-
         return new JsonDocument(['records' => $result]);
     }
 
