@@ -256,34 +256,72 @@ $_HTML['record/list'] = <<<'END_OF_HTML'
 <script src="{{base}}/js/list.js"></script>
 
 {{for:filter:i:filters}}
-<div class="filterbar" data-index="{{i}}"
-    data-filter="{{filter.field}},{{filter.operator}},{{filter.value}},{{filter.name}}">
-    <div>{{filter.field|humanize}} = '{{filter.name}}'</div>
-
+{{if:filter.type|eq("search")}}
+<div class="filterbar" data-index="{{i}}" data-filter="{{filter.type}},{{filter.operator}},{{filter.value}}">
+    <div>
+        <a href="{{base}}/{{table}}/list" title="Edit filter" onclick="return editFilter('{{i}}');">
+            Search '{{filter.value}}'
+        </a>
+    </div>
     <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
 </div>
+{{elseif:filter.type|eq("value")}}
+<div class="filterbar" data-index="{{i}}"
+    data-filter="{{filter.type}},{{filter.field}},{{filter.operator}},{{filter.value}}">
+    <div>
+        <a href="{{base}}/{{table}}/list" title="Edit filter" onclick="return editFilter('{{i}}');">
+            {{filter.field|humanize}}
+            {{if:filter.operator|eq("cs")}}~
+            {{elseif:filter.operator|eq("eq")}}=
+            {{elseif:filter.operator|eq("lt")}}&lt;
+            {{elseif:filter.operator|eq("gt")}}&gt;
+            {{else}}{{filter.operator}}{{endif}}
+            '{{filter.value}}'
+        </a>
+    </div>
+    <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
+</div>
+{{elseif:filter.type|eq("reference")}}
+<div class="filterbar" data-index="{{i}}"
+    data-filter="{{filter.type}},{{filter.field}},{{filter.operator}},{{filter.value}},{{filter.text}}">
+    <div>
+        <a href="{{base}}/{{table}}/list" title="Edit filter" onclick="return editFilter('{{i}}');">
+            {{filter.field|humanize}} {{if:filter.operator|eq("in")}}={{else}}~{{endif}} '{{filter.text}}'
+        </a>
+    </div>
+    <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
+</div>
+{{endif}}
 {{endfor}}
 
 <div class="addFilter">
-    <form style="display:inline">
-        <select name="field">
+    <form style="display:inline" method="post">
+        <select name="field" onchange="updateAddFilter();">
             {{for:column:columns}}
-            <option>{{column|humanize}}</option>
+            {{if:column|neq(primaryKey)}}
+            <option value="{{column}}" data-references="{{references|prop(column)}}"
+                data-format="{{types|prop(column)|prop("format")}}">
+                {{column|humanize}}
+            </option>
+            {{endif}}
             {{endfor}}
-        </select>&nbsp;
+        </select>
         <select name="operator">
-            <option>=</option>
-            <option>&lt;</option>
-            <option>&gt;</option>
-        </select>&nbsp;
-        <input type="text" name="value" />&nbsp;
+            <option value="cs">~</option>
+            <option value="eq">=</option>
+            <option value="lt">&lt;</option>
+            <option value="gt">&gt;</option>
+        </select>
+        <input type="hidden" name="value" />
+        <select name="values" onchange="updateTextAndValue();" multiple style="height: 5rem;"></select>
+        <input type="hidden" name="text" />
         <input type="submit" value="Filter" />
     </form>
 </div>
 
 <div class="addSearch">
     <form style="display:inline" method="post">
-        <input type="text" name="search" />&nbsp;
+        <input type="text" name="search" />
         <input type="submit" value="Search" />
     </form>
 </div>
@@ -295,8 +333,8 @@ $_HTML['record/list'] = <<<'END_OF_HTML'
             <th>Action</th>
             {{endif}}
             {{for:column:columns}}
-            {{if:column.text|neq(primaryKey)}}
-            <th>{{column.text|humanize}}</th>
+            {{if:column|neq(primaryKey)}}
+            <th>{{column|humanize}}</th>
             {{endif}}
             {{endfor}}
         </tr>
@@ -368,7 +406,7 @@ $_HTML['record/read'] = <<<'END_OF_HTML'
             <td>{{name|humanize}}</td>
             </td>
             <td>
-                {{if:field.table}}
+                {{if:field.table|and(field.text)}}
                 <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
                 {{else}}
                 {{if:field.type.format|eq("large-string")}}
@@ -394,7 +432,10 @@ $_HTML['record/read'] = <<<'END_OF_HTML'
 <h2>Related</h2>
 <ul class="related">
     {{for:relation:referenced}}
-    <li><a href="{{base}}/{{relation.0}}/list?filter={{relation.1}},eq,{{id}},{{name}}">{{relation.0|humanize}}</a>
+    <li>
+        <a href="{{base}}/{{relation.0}}/list?filter=reference,{{relation.1}},in,{{id}},{{name}}">
+            {{relation.0|humanize}}
+        </a>
     </li>
     {{endfor}}
     {{endif}}
@@ -5130,9 +5171,6 @@ namespace Tqdev\PhpCrudApi\Controller {
             if (!$this->service->hasTable($table)) {
                 return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
             }
-            if ($this->service->getType($table) != 'table') {
-                return $this->responder->error(ErrorCode::OPERATION_NOT_SUPPORTED, __FUNCTION__);
-            }
             $id = RequestUtils::getPathSegment($request, 3);
             $params = RequestUtils::getParams($request);
             if (strpos($id, ',') !== false) {
@@ -9587,9 +9625,9 @@ namespace Tqdev\PhpCrudApi\OpenApi {
 namespace Tqdev\PhpCrudApi\OpenApi {
 
     use Tqdev\PhpCrudApi\Column\ReflectionService;
+    use Tqdev\PhpCrudApi\Column\Reflection\ReflectedColumn;
     use Tqdev\PhpCrudApi\Middleware\Communication\VariableStore;
     use Tqdev\PhpCrudApi\OpenApi\OpenApiDefinition;
-    use Tqdev\PhpCrudApi\Column\Reflection\ReflectedColumn;
 
     class OpenApiRecordsBuilder
     {
@@ -9607,16 +9645,16 @@ namespace Tqdev\PhpCrudApi\OpenApi {
             'integer' => ['type' => 'integer', 'format' => 'int32'],
             'bigint' => ['type' => 'integer', 'format' => 'int64'],
             'varchar' => ['type' => 'string'],
-            'clob' => ['type' => 'string', 'format' => 'large-string'],   //custom format
+            'clob' => ['type' => 'string', 'format' => 'large-string'], //custom format
             'varbinary' => ['type' => 'string', 'format' => 'byte'],
-            'blob' => ['type' => 'string', 'format' => 'large-byte'],     //custom format
-            'decimal' => ['type' => 'string', 'format' => 'decimal'],     //custom format
+            'blob' => ['type' => 'string', 'format' => 'large-byte'], //custom format
+            'decimal' => ['type' => 'string', 'format' => 'decimal'], //custom format
             'float' => ['type' => 'number', 'format' => 'float'],
             'double' => ['type' => 'number', 'format' => 'double'],
             'date' => ['type' => 'string', 'format' => 'date'],
-            'time' => ['type' => 'string', 'format' => 'time'],           //custom format
+            'time' => ['type' => 'string', 'format' => 'time'], //custom format
             'timestamp' => ['type' => 'string', 'format' => 'date-time'],
-            'geometry' => ['type' => 'string', 'format' => 'geometry'],   //custom format
+            'geometry' => ['type' => 'string', 'format' => 'geometry'], //custom format
             'boolean' => ['type' => 'boolean'],
         ];
 
@@ -9806,7 +9844,10 @@ namespace Tqdev\PhpCrudApi\OpenApi {
                 if (!$pkName && $operation != 'list') {
                     continue;
                 }
-                if ($type != 'table' && $operation != 'list') {
+                if ($type == 'view' && !in_array($operation, array('read', 'list'))) {
+                    continue;
+                }
+                if ($type == 'view' && !$pkName && $operation == 'read') {
                     continue;
                 }
                 if ($operation == 'delete') {
@@ -11751,6 +11792,7 @@ namespace Tqdev\PhpCrudApi {
             $stream->rewind();
             $response = $response->withBody($stream);
             $response = $response->withHeader('Content-Type', $contentType . '; charset=utf-8');
+            $response = $response->withHeader('Content-Length', strlen($content));
             return $response;
         }
 
@@ -12172,6 +12214,7 @@ namespace Tqdev\PhpCrudUi\Controller {
     use Tqdev\PhpCrudApi\Record\ErrorCode;
     use Tqdev\PhpCrudApi\ResponseFactory;
     use Tqdev\PhpCrudUi\Document\CsvDocument;
+    use Tqdev\PhpCrudUi\Document\JsonDocument;
     use Tqdev\PhpCrudUi\Document\RedirectDocument;
     use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
@@ -12206,6 +12249,8 @@ namespace Tqdev\PhpCrudUi\Controller {
         {
             if ($result instanceof CsvDocument) {
                 return ResponseFactory::fromCsv(ResponseFactory::OK, (string) $result);
+            } elseif ($result instanceof JsonDocument) {
+                return ResponseFactory::fromObject(ResponseFactory::OK, json_decode((string) $result));
             } elseif ($result instanceof TemplateDocument) {
                 $result->addVariables($this->variables);
                 $result->setTemplatePath($this->templatePath);
@@ -12248,6 +12293,7 @@ namespace Tqdev\PhpCrudUi\Controller {
             $router->register('GET', '/*/delete/*', array($this, 'deleteForm'));
             $router->register('POST', '/*/delete/*', array($this, 'delete'));
             $router->register('GET', '/*/list', array($this, '_list'));
+            $router->register('GET', '/*/values/*', array($this, 'values'));
             $router->register('POST', '/*/list', array($this, 'search'));
             $router->register('GET', '/*/export', array($this, 'export'));
             $this->service = $service;
@@ -12363,15 +12409,28 @@ namespace Tqdev\PhpCrudUi\Controller {
             return $this->responder->success($result);
         }
 
+        public function values(ServerRequestInterface $request): ResponseInterface
+        {
+            $table = RequestUtils::getPathSegment($request, 1);
+            $column = RequestUtils::getPathSegment($request, 3);
+            $params = RequestUtils::getParams($request);
+            if (!$this->service->hasTable($table, 'list')) {
+                return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
+            }
+            $result = $this->service->values($table, 'list', $column, $params);
+            return $this->responder->success($result);
+        }
+
         public function search(ServerRequestInterface $request): ResponseInterface
         {
             $table = RequestUtils::getPathSegment($request, 1);
             $action = RequestUtils::getPathSegment($request, 2);
             $params = RequestUtils::getParams($request);
+            $body = $request->getParsedBody();
             if (!$this->service->hasTable($table, $action)) {
                 return $this->responder->error(ErrorCode::TABLE_NOT_FOUND, $table);
             }
-            $result = $this->service->search($table, $action, $params);
+            $result = $this->service->search($table, $body, $params);
             return $this->responder->success($result);
         }
 
@@ -12410,6 +12469,25 @@ namespace Tqdev\PhpCrudUi\Document {
             }
             rewind($f);
             return stream_get_contents($f);
+        }
+    }
+}
+
+// file: src/Tqdev/PhpCrudUi/Document/JsonDocument.php
+namespace Tqdev\PhpCrudUi\Document {
+
+    class JsonDocument
+    {
+        private $variables;
+
+        public function __construct(array $variables)
+        {
+            $this->variables = $variables;
+        }
+
+        public function __toString(): string
+        {
+            return json_encode($this->variables['records']);
         }
     }
 }
@@ -12497,6 +12575,9 @@ namespace Tqdev\PhpCrudUi\Document {
                 },
                 'bool' => function ($a, $b, $c) {
                     return $a ? $b : $c;
+                },
+                'and' => function ($a, $b) {
+                    return $a && $b;
                 },
                 'or' => function ($a, $b) {
                     return $a ?: $b;
@@ -12611,6 +12692,7 @@ namespace Tqdev\PhpCrudUi\Record {
     use Tqdev\PhpCrudUi\Client\CrudApi;
     use Tqdev\PhpCrudUi\Column\SpecificationService;
     use Tqdev\PhpCrudUi\Document\CsvDocument;
+    use Tqdev\PhpCrudUi\Document\JsonDocument;
     use Tqdev\PhpCrudUi\Document\RedirectDocument;
     use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
@@ -12819,6 +12901,97 @@ namespace Tqdev\PhpCrudUi\Record {
             return new TemplateDocument('layouts/default', 'record/deleted', $variables);
         }
 
+        private function getArguments(string $primaryKey, array $references, array $filters): array
+        {
+            $args = array();
+            $i = 0;
+            foreach ($filters as $filter) {
+                if ($filter['type'] == 'search') {
+                    $j = 0;
+                    foreach ($references as $column => $reference) {
+                        if (!$reference && $column != $primaryKey) {
+                            $args["filter${j}[0]"] = implode(',', array($column, $filter['operator'], $filter['value']));
+                            $j++;
+                        }
+                    }
+                } elseif ($filter['type'] == 'value') {
+                    $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], $filter['value']));
+                    $i++;
+                } elseif ($filter['type'] == 'reference') {
+                    $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], $filter['value']));
+                    $i++;
+                }
+            }
+            return $args;
+        }
+
+        private function getFilters(array $references, array $params): array
+        {
+            $filters = array();
+            if (isset($params['filter'])) {
+                foreach ($params['filter'] as $filter) {
+                    $type = substr($filter, 0, strpos($filter, ','));
+                    if ($type == 'search') {
+                        $filter = array_combine(array('type', 'operator', 'value'), explode(',', $filter, 3));
+                        $filter['field'] = '*any*';
+                    } elseif ($type == 'value') {
+                        $filter = array_combine(array('type', 'field', 'operator', 'value'), explode(',', $filter, 4));
+                        $filter['text'] = $filter['value'];
+                    } elseif ($type == 'reference') {
+                        $filter = array_combine(array('type', 'field', 'operator', 'value', 'text'), explode(',', $filter, 5));
+                        $filter['value'] = implode(',', explode('|', $filter['value']));
+                    }
+                    $filters[] = $filter;
+                }
+            }
+            return $filters;
+        }
+
+        private function getParams(array $references, array $filters): array
+        {
+            $params = ['filter' => []];
+            foreach ($filters as $filter) {
+                if ($filter['type'] == 'search') {
+                    $param = $filter['type'] . ',' . $filter['operator'] . ',' . $filter['value'];
+                } elseif ($filter['type'] == 'value') {
+                    $param = $filter['type'] . ',' . $filter['field'] . ',' . $filter['operator'] . ',' . $filter['value'];
+                } elseif ($filter['type'] == 'reference') {
+                    $param = $filter['type'] . ',' . $filter['field'] . ',' . $filter['operator'] . ',' . implode('|', explode(',', $filter['value'])) . ',' . $filter['text'];
+                }
+                $params['filter'][] = $param;
+            }
+            return $params;
+        }
+
+        public function values(string $table, string $action, string $column, array $params): JsonDocument
+        {
+            $references = $this->definition->getReferences($table, $action);
+            $primaryKey = $this->definition->getPrimaryKey($table, $action);
+
+            $pageParams = isset($params['page']) ? $params['page'][0] : '1,50';
+            list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
+
+            $filters = $this->getFilters($references, $params);
+            $args = $this->getArguments($primaryKey, $references, $filters);
+
+            $args['join'] = array_values(array_filter($references));
+            $args['page'] = "$pageNumber,$pageSize";
+
+            $result = [];
+
+            if ($references[$column]) {
+                $otherTable = $references[$column];
+                $data = $this->api->listRecords($otherTable, $args);
+                foreach ($data['records'] as $record) {
+                    $id = $this->definition->referenceId($otherTable, $record);
+                    $text = $this->definition->referenceText($otherTable, $record);
+                    $result[$id] = $text;
+                }
+            }
+
+            return new JsonDocument(['records' => $result]);
+        }
+
         public function _list(string $table, string $action, array $params): TemplateDocument
         {
             $types = $this->definition->getTypes($table, $action);
@@ -12826,22 +12999,12 @@ namespace Tqdev\PhpCrudUi\Record {
             $primaryKey = $this->definition->getPrimaryKey($table, $action);
 
             $columns = $this->definition->getColumns($table, $action);
-            foreach ($columns as $i => $key) {
-                $columns[$i] = array('text' => $key, 'type' => $types[$key]);
-            }
 
             $pageParams = isset($params['page']) ? $params['page'][0] : '1,50';
             list($pageNumber, $pageSize) = explode(',', $pageParams, 2);
 
-            $filters = array();
-            $args = array();
-            if (isset($params['filter'])) {
-                foreach ($params['filter'] as $i => $filter) {
-                    $filter = array_combine(array('field', 'operator', 'value', 'name'), explode(',', $filter, 4));
-                    $args["filter[$i]"] = implode(',', array($filter['field'], $filter['operator'], $filter['value']));
-                    $filters[] = $filter;
-                }
-            }
+            $filters = $this->getFilters($references, $params);
+            $args = $this->getArguments($primaryKey, $references, $filters);
 
             $args['join'] = array_values(array_filter($references));
             $args['page'] = "$pageNumber,$pageSize";
@@ -12876,6 +13039,8 @@ namespace Tqdev\PhpCrudUi\Record {
                 'table' => $table,
                 'action' => $action,
                 'filters' => $filters,
+                'types' => $types,
+                'references' => $references,
                 'primaryKey' => $primaryKey,
                 'columns' => $columns,
                 'records' => $data['records'],
@@ -12887,10 +13052,48 @@ namespace Tqdev\PhpCrudUi\Record {
             return new TemplateDocument('layouts/default', 'record/list', $variables);
         }
 
-        public function search(string $table, string $action, array $params)
+        public function search(string $table, array $body, array $params)
         {
-            die(var_dump($params));
-            $params = [];
+            $action = 'list';
+            $references = $this->definition->getReferences($table, $action);
+
+            $filters = $this->getFilters($references, $params);
+
+            if (isset($body['search'])) {
+                foreach ($filters as $i => $filter) {
+                    if ($filter['type'] == 'search') {
+                        unset($filters[$i]);
+                    }
+                }
+                $filters = array_values($filters);
+                $filters[] = ['type' => 'search', 'field' => '*any*', 'operator' => 'cs', 'value' => $body['search']];
+
+                // loop over columns and search in referenced fields in text
+
+                /*if (isset($body['value'])) {
+            if (isset($references[$body['field']]) && $references[$body['field']]) {
+            $otherTable = $references[$body['field']];
+            $otherKey = $this->definition->getPrimaryKey($otherTable, $action);
+            $otherReferences = $this->definition->getReferences($otherTable, $action);
+            $args = $this->getArguments($otherKey, $otherReferences, [['type' => 'search', 'field' => '*any*', 'operator' => 'cs', 'value' => $body['value']]]);
+            $args['include'] = $otherKey;
+            $records = $this->api->listRecords($otherTable, $args);
+            $values = array_map(function ($a) use ($otherKey) {return $a[$otherKey];}, $records['records']);
+            $filters[] = ['type' => 'reference', 'field' => $body['field'], 'operator' => 'in', 'value' => implode(',', $values), 'text' => $body['value']];
+            } else {
+            $filters[] = ['type' => 'value', 'field' => $body['field'], 'operator' => 'cs', 'value' => $body['value']];
+            }
+            }*/
+            }
+
+            if (isset($body['value'])) {
+                if (isset($references[$body['field']]) && $references[$body['field']]) {
+                    $filters[] = ['type' => 'reference', 'field' => $body['field'], 'operator' => 'in', 'value' => $body['value'], 'text' => $body['text']];
+                } else {
+                    $filters[] = ['type' => 'value', 'field' => $body['field'], 'operator' => $body['operator'], 'value' => $body['value']];
+                }
+            }
+            $params = $this->getParams($references, $filters);
             $query = http_build_query($params);
             return new RedirectDocument('/' . $table . '/list?' . $query, []);
         }
@@ -13599,7 +13802,7 @@ END_OF_STATIC_FILE;
 // file: webroot/js/list.js
 namespace {
 $_STATIC['/js/list.js'] = <<<'END_OF_STATIC_FILE'
-ZnVuY3Rpb24gY2xvc2VGaWx0ZXIoaW5kZXgpIHsKICAgIGNvbnN0IGVsZW1lbnRzID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvckFsbCgnLmZpbHRlcmJhcicpOwogICAgZm9yICh2YXIgaSA9IDA7IGkgPCBlbGVtZW50cy5sZW5ndGg7IGkrKykgewogICAgICAgIGlmIChlbGVtZW50c1tpXS5kYXRhc2V0LmluZGV4ID09IGluZGV4KSB7CiAgICAgICAgICAgIGVsZW1lbnRzW2ldLnBhcmVudE5vZGUucmVtb3ZlQ2hpbGQoZWxlbWVudHNbaV0pOwogICAgICAgIH0KICAgIH0KICAgIHJldHVybiByZWxvYWRRdWVyeSgpOwp9CmZ1bmN0aW9uIG5hdmlnYXRlUGFnZShwYWdlKSB7CiAgICBjb25zdCBlbGVtZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvcignLnBhZ2luYXRpb24nKTsKICAgIGlmIChlbGVtZW50KSB7CiAgICAgICAgZWxlbWVudC5kYXRhc2V0LnBhZ2UgPSBwYWdlOwogICAgfQogICAgcmV0dXJuIHJlbG9hZFF1ZXJ5KCk7Cn0KZnVuY3Rpb24gaXNQYXJ0aWFsbHlPZmZzY3JlZW4oZWxlbWVudCkgewogICAgdmFyIHJlY3QgPSBlbGVtZW50LmdldEJvdW5kaW5nQ2xpZW50UmVjdCgpOwogICAgcmV0dXJuIHJlY3QueCA8IDAgfHwgKHJlY3QueCArIHJlY3Qud2lkdGgpID4gKHdpbmRvdy5pbm5lcldpZHRoIC0gMjApOwp9CnZhciB0aW1lT3V0ID0gbnVsbDsKZnVuY3Rpb24gcmVzaXplV2luZG93KCkgewogICAgaWYgKHRpbWVPdXQgIT0gbnVsbCkgY2xlYXJUaW1lb3V0KHRpbWVPdXQpOwogICAgdGltZU91dCA9IHNldFRpbWVvdXQoaGlkZUNvbHVtbnMsIDEwMCk7Cn0KZnVuY3Rpb24gaGlkZUNvbHVtbnMoKSB7CiAgICBjb25zdCBhbGwgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCd0aCwgdGQnKTsKICAgIGZvciAodmFyIGkgPSAwOyBpIDwgYWxsLmxlbmd0aDsgaSsrKSB7CiAgICAgICAgYWxsW2ldLmNsYXNzTGlzdC5yZW1vdmUoJ2hpZGRlbicpOwogICAgfQogICAgY29uc3QgZWxlbWVudHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCd0aCcpOwogICAgdmFyIG1heCA9IGVsZW1lbnRzLmxlbmd0aDsKICAgIGZvciAodmFyIGkgPSAwOyBpIDwgZWxlbWVudHMubGVuZ3RoOyBpKyspIHsKICAgICAgICBpZiAoaXNQYXJ0aWFsbHlPZmZzY3JlZW4oZWxlbWVudHNbaV0pKSB7CiAgICAgICAgICAgIG1heCA9IGk7CiAgICAgICAgICAgIGJyZWFrOwogICAgICAgIH0KICAgIH0KICAgIGNvbnN0IGhlYWRlcnMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCd0aDpudGgtY2hpbGQobisnICsgKG1heCArIDEpICsgJyknKTsKICAgIGZvciAodmFyIGkgPSAwOyBpIDwgaGVhZGVycy5sZW5ndGg7IGkrKykgewogICAgICAgIGhlYWRlcnNbaV0uY2xhc3NMaXN0LmFkZCgnaGlkZGVuJyk7CiAgICB9CiAgICBjb25zdCBjZWxscyA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJ3RkOm50aC1jaGlsZChuKycgKyAobWF4ICsgMSkgKyAnKScpOwogICAgZm9yICh2YXIgaSA9IDA7IGkgPCBjZWxscy5sZW5ndGg7IGkrKykgewogICAgICAgIGNlbGxzW2ldLmNsYXNzTGlzdC5hZGQoJ2hpZGRlbicpOwogICAgfQp9CmZ1bmN0aW9uIHJlbG9hZFF1ZXJ5KCkgewogICAgY29uc3QgZWxlbWVudHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCcuZmlsdGVyYmFyJyk7CiAgICB2YXIgcGFyYW1zID0gW107CiAgICBmb3IgKHZhciBpID0gMDsgaSA8IGVsZW1lbnRzLmxlbmd0aDsgaSsrKSB7CiAgICAgICAgcGFyYW1zLnB1c2goJ2ZpbHRlcj0nICsgZW5jb2RlVVJJQ29tcG9uZW50KGVsZW1lbnRzW2ldLmRhdGFzZXQuZmlsdGVyKSk7CiAgICB9CiAgICBjb25zdCBlbGVtZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvcignLnBhZ2luYXRpb24nKTsKICAgIGlmIChlbGVtZW50KSB7CiAgICAgICAgcGFyYW1zLnB1c2goJ3BhZ2U9JyArIGVuY29kZVVSSUNvbXBvbmVudChlbGVtZW50LmRhdGFzZXQucGFnZSkpOwogICAgfQogICAgZG9jdW1lbnQubG9jYXRpb24uaHJlZiA9ICc/JyArIHBhcmFtcy5qb2luKCcmJyk7CiAgICByZXR1cm4gZmFsc2U7Cn0Kd2luZG93LmFkZEV2ZW50TGlzdGVuZXIoJ2xvYWQnLCBmdW5jdGlvbiAoKSB7IGhpZGVDb2x1bW5zKCk7IH0pCndpbmRvdy5hZGRFdmVudExpc3RlbmVyKCdyZXNpemUnLCBmdW5jdGlvbiAoKSB7IHJlc2l6ZVdpbmRvdygpOyB9KQo=
+ZnVuY3Rpb24gYWpheEdldCh1cmwsIGNhbGxiYWNrKSB7CiAgICB2YXIgeG1saHR0cCA9IG5ldyBYTUxIdHRwUmVxdWVzdCgpOwogICAgeG1saHR0cC5vbnJlYWR5c3RhdGVjaGFuZ2UgPSBmdW5jdGlvbiAoKSB7CiAgICAgICAgaWYgKHhtbGh0dHAucmVhZHlTdGF0ZSA9PSA0ICYmIHhtbGh0dHAuc3RhdHVzID09IDIwMCkgewogICAgICAgICAgICBjb25zb2xlLmxvZygncmVzcG9uc2VUZXh0OicgKyB4bWxodHRwLnJlc3BvbnNlVGV4dCk7CiAgICAgICAgICAgIHRyeSB7CiAgICAgICAgICAgICAgICB2YXIgZGF0YSA9IEpTT04ucGFyc2UoeG1saHR0cC5yZXNwb25zZVRleHQpOwogICAgICAgICAgICB9IGNhdGNoIChlcnIpIHsKICAgICAgICAgICAgICAgIGNvbnNvbGUubG9nKGVyci5tZXNzYWdlICsgIiBpbiAiICsgeG1saHR0cC5yZXNwb25zZVRleHQpOwogICAgICAgICAgICAgICAgcmV0dXJuOwogICAgICAgICAgICB9CiAgICAgICAgICAgIGNhbGxiYWNrKGRhdGEpOwogICAgICAgIH0KICAgIH07CgogICAgeG1saHR0cC5vcGVuKCJHRVQiLCB1cmwsIHRydWUpOwogICAgeG1saHR0cC5zZW5kKCk7Cn0KZnVuY3Rpb24gc29ydFNlbGVjdE9wdGlvbnMobGIpIHsKICAgIGFyciA9IG5ldyBBcnJheSgpOwogICAgZm9yIChpID0gMDsgaSA8IGxiLmxlbmd0aDsgaSsrKSB7CiAgICAgICAgYXJyW2ldID0gbGIub3B0aW9uc1tpXTsKICAgIH0KICAgIGFyci5zb3J0KGZ1bmN0aW9uIChhLCBiKSB7CiAgICAgICAgcmV0dXJuIChhLnRleHQgPiBiLnRleHQpID8gMSA6ICgoYS50ZXh0IDwgYi50ZXh0KSA/IC0xIDogMCk7CiAgICB9KTsKICAgIGZvciAoaSA9IDA7IGkgPCBsYi5sZW5ndGg7IGkrKykgewogICAgICAgIGxiLm9wdGlvbnNbaV0gPSBhcnJbaV07CiAgICB9Cn0KZnVuY3Rpb24gdXBkYXRlQWRkRmlsdGVyKCkgewogICAgY29uc3QgZmllbGQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKCcuYWRkRmlsdGVyIFtuYW1lPSJmaWVsZCJdJyk7CiAgICBjb25zdCBvcGVyYXRvciA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoJy5hZGRGaWx0ZXIgW25hbWU9Im9wZXJhdG9yIl0nKTsKICAgIGNvbnN0IHZhbHVlID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvcignLmFkZEZpbHRlciBbbmFtZT0idmFsdWUiXScpOwogICAgY29uc3QgdmFsdWVzID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvcignLmFkZEZpbHRlciBbbmFtZT0idmFsdWVzIl0nKTsKICAgIGlmIChmaWVsZC5vcHRpb25zW2ZpZWxkLnNlbGVjdGVkSW5kZXhdLmRhdGFzZXQucmVmZXJlbmNlcykgewogICAgICAgIG9wZXJhdG9yLnN0eWxlLmRpc3BsYXkgPSAnbm9uZSc7CiAgICAgICAgdmFsdWUudHlwZSA9ICdoaWRkZW4nOwogICAgICAgIHZhbHVlcy5zdHlsZS5kaXNwbGF5ID0gJ2lubGluZSc7CiAgICAgICAgYWpheEdldCgndmFsdWVzLycgKyBmaWVsZC52YWx1ZSwgZnVuY3Rpb24gKGRhdGEpIHsKICAgICAgICAgICAgdmFsdWVzLmlubmVySFRNTCA9ICcnOwogICAgICAgICAgICBPYmplY3Qua2V5cyhkYXRhKS5mb3JFYWNoKGZ1bmN0aW9uIChpdGVtKSB7CiAgICAgICAgICAgICAgICB2YXIgb3B0aW9uID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnb3B0aW9uJyk7CiAgICAgICAgICAgICAgICBvcHRpb24udmFsdWUgPSBpdGVtOwogICAgICAgICAgICAgICAgb3B0aW9uLmlubmVySFRNTCA9IGRhdGFbaXRlbV07CiAgICAgICAgICAgICAgICB2YWx1ZXMuYXBwZW5kQ2hpbGQob3B0aW9uKTsKICAgICAgICAgICAgfSk7CiAgICAgICAgICAgIHNvcnRTZWxlY3RPcHRpb25zKHZhbHVlcyk7CiAgICAgICAgfSk7CiAgICB9IGVsc2UgewogICAgICAgIG9wZXJhdG9yLnN0eWxlLmRpc3BsYXkgPSAnaW5saW5lJzsKICAgICAgICB2YWx1ZS50eXBlID0gJ3RleHQnOwogICAgICAgIHZhbHVlcy5zdHlsZS5kaXNwbGF5ID0gJ25vbmUnOwogICAgfQp9CmZ1bmN0aW9uIHVwZGF0ZVRleHRBbmRWYWx1ZSgpIHsKICAgIGNvbnN0IHRleHQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKCcuYWRkRmlsdGVyIFtuYW1lPSJ0ZXh0Il0nKTsKICAgIGNvbnN0IHZhbHVlID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvcignLmFkZEZpbHRlciBbbmFtZT0idmFsdWUiXScpOwogICAgY29uc3QgdmFsdWVzID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvcignLmFkZEZpbHRlciBbbmFtZT0idmFsdWVzIl0nKTsKICAgIHRleHRBcnJheSA9IFtdOwogICAgdmFsdWVBcnJheSA9IFtdOwogICAgZm9yICh2YXIgaSA9IDA7IGkgPCB2YWx1ZXMub3B0aW9ucy5sZW5ndGg7IGkrKykgewogICAgICAgIGNvbnN0IGl0ZW0gPSB2YWx1ZXMub3B0aW9uc1tpXTsKICAgICAgICBpZiAoaXRlbS5zZWxlY3RlZCkgewogICAgICAgICAgICB0ZXh0QXJyYXkucHVzaChpdGVtLnRleHQpOwogICAgICAgICAgICB2YWx1ZUFycmF5LnB1c2goaXRlbS52YWx1ZSk7CiAgICAgICAgfQogICAgfQogICAgdGV4dC52YWx1ZSA9IHRleHRBcnJheS5qb2luKCcsICcpOwogICAgdmFsdWUudmFsdWUgPSB2YWx1ZUFycmF5LmpvaW4oJywnKTsKfQoKZnVuY3Rpb24gY2xvc2VGaWx0ZXIoaW5kZXgpIHsKICAgIGNvbnN0IGVsZW1lbnRzID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvckFsbCgnLmZpbHRlcmJhcicpOwogICAgZm9yICh2YXIgaSA9IDA7IGkgPCBlbGVtZW50cy5sZW5ndGg7IGkrKykgewogICAgICAgIGlmIChlbGVtZW50c1tpXS5kYXRhc2V0LmluZGV4ID09IGluZGV4KSB7CiAgICAgICAgICAgIGVsZW1lbnRzW2ldLnBhcmVudE5vZGUucmVtb3ZlQ2hpbGQoZWxlbWVudHNbaV0pOwogICAgICAgIH0KICAgIH0KICAgIHJldHVybiByZWxvYWRRdWVyeSgpOwp9CmZ1bmN0aW9uIGVkaXRGaWx0ZXIoaW5kZXgpIHsKICAgIGNvbnN0IGVsZW1lbnRzID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvckFsbCgnLmZpbHRlcmJhcicpOwogICAgdmFyIHR5cGUgPSAnJzsKICAgIGZvciAodmFyIGkgPSAwOyBpIDwgZWxlbWVudHMubGVuZ3RoOyBpKyspIHsKICAgICAgICBpZiAoZWxlbWVudHNbaV0uZGF0YXNldC5pbmRleCA9PSBpbmRleCkgewogICAgICAgICAgICB2YXIgZmlsdGVyID0gZWxlbWVudHNbaV0uZGF0YXNldC5maWx0ZXI7CiAgICAgICAgICAgIHR5cGUgPSBmaWx0ZXIuc3Vic3RyKDAsIGZpbHRlci5pbmRleE9mKCIsIikpOwogICAgICAgICAgICBlbGVtZW50c1tpXS5wYXJlbnROb2RlLnJlbW92ZUNoaWxkKGVsZW1lbnRzW2ldKTsKICAgICAgICB9CiAgICB9CiAgICBpZiAodHlwZSA9PSAic2VhcmNoIikgewogICAgICAgIC8vIGhpZGUgYWxsCiAgICAgICAgLy8gc2hvdyBzZWFyY2gKICAgICAgICAvLyBmaWxsIGZvcm0KICAgIH0gZWxzZSBpZiAodHlwZSA9PSAidmFsdWUiKSB7CiAgICAgICAgLy8gaGlkZSBhbGwKICAgICAgICAvLyBzaG93IGZpbHRlcgogICAgICAgIC8vIGZpbGwgZm9ybQogICAgfSBlbHNlIGlmICh0eXBlID09ICJyZWZlcmVuY2UiKSB7CiAgICAgICAgLy8gaGlkZSBhbGwKICAgICAgICAvLyBzaG93IGZpbHRlcgogICAgICAgIC8vIGZpbGwgZm9ybQogICAgfQogICAgcmV0dXJuIGZhbHNlOwp9CmZ1bmN0aW9uIG5hdmlnYXRlUGFnZShwYWdlKSB7CiAgICBjb25zdCBlbGVtZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvcignLnBhZ2luYXRpb24nKTsKICAgIGlmIChlbGVtZW50KSB7CiAgICAgICAgZWxlbWVudC5kYXRhc2V0LnBhZ2UgPSBwYWdlOwogICAgfQogICAgcmV0dXJuIHJlbG9hZFF1ZXJ5KCk7Cn0KZnVuY3Rpb24gaXNQYXJ0aWFsbHlPZmZzY3JlZW4oZWxlbWVudCkgewogICAgdmFyIHJlY3QgPSBlbGVtZW50LmdldEJvdW5kaW5nQ2xpZW50UmVjdCgpOwogICAgcmV0dXJuIHJlY3QueCA8IDAgfHwgKHJlY3QueCArIHJlY3Qud2lkdGgpID4gKHdpbmRvdy5pbm5lcldpZHRoIC0gMjApOwp9CnZhciB0aW1lT3V0ID0gbnVsbDsKZnVuY3Rpb24gcmVzaXplV2luZG93KCkgewogICAgaWYgKHRpbWVPdXQgIT0gbnVsbCkgY2xlYXJUaW1lb3V0KHRpbWVPdXQpOwogICAgdGltZU91dCA9IHNldFRpbWVvdXQoaGlkZUNvbHVtbnMsIDEwMCk7Cn0KZnVuY3Rpb24gaGlkZUNvbHVtbnMoKSB7CiAgICBjb25zdCBhbGwgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCd0aCwgdGQnKTsKICAgIGZvciAodmFyIGkgPSAwOyBpIDwgYWxsLmxlbmd0aDsgaSsrKSB7CiAgICAgICAgYWxsW2ldLmNsYXNzTGlzdC5yZW1vdmUoJ2hpZGRlbicpOwogICAgfQogICAgaWYgKHdpbmRvdy5pbm5lcldpZHRoID49IDE1MDApIHsKICAgICAgICByZXR1cm47CiAgICB9CiAgICBjb25zdCBlbGVtZW50cyA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJ3RoJyk7CiAgICB2YXIgbWF4ID0gZWxlbWVudHMubGVuZ3RoOwogICAgZm9yICh2YXIgaSA9IDA7IGkgPCBlbGVtZW50cy5sZW5ndGg7IGkrKykgewogICAgICAgIGlmIChpc1BhcnRpYWxseU9mZnNjcmVlbihlbGVtZW50c1tpXSkpIHsKICAgICAgICAgICAgbWF4ID0gaTsKICAgICAgICAgICAgYnJlYWs7CiAgICAgICAgfQogICAgfQogICAgY29uc3QgaGVhZGVycyA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJ3RoOm50aC1jaGlsZChuKycgKyAobWF4ICsgMSkgKyAnKScpOwogICAgZm9yICh2YXIgaSA9IDA7IGkgPCBoZWFkZXJzLmxlbmd0aDsgaSsrKSB7CiAgICAgICAgaGVhZGVyc1tpXS5jbGFzc0xpc3QuYWRkKCdoaWRkZW4nKTsKICAgIH0KICAgIGNvbnN0IGNlbGxzID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvckFsbCgndGQ6bnRoLWNoaWxkKG4rJyArIChtYXggKyAxKSArICcpJyk7CiAgICBmb3IgKHZhciBpID0gMDsgaSA8IGNlbGxzLmxlbmd0aDsgaSsrKSB7CiAgICAgICAgY2VsbHNbaV0uY2xhc3NMaXN0LmFkZCgnaGlkZGVuJyk7CiAgICB9Cn0KZnVuY3Rpb24gcmVsb2FkUXVlcnkoKSB7CiAgICBjb25zdCBlbGVtZW50cyA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJy5maWx0ZXJiYXInKTsKICAgIHZhciBwYXJhbXMgPSBbXTsKICAgIGZvciAodmFyIGkgPSAwOyBpIDwgZWxlbWVudHMubGVuZ3RoOyBpKyspIHsKICAgICAgICBwYXJhbXMucHVzaCgnZmlsdGVyPScgKyBlbmNvZGVVUklDb21wb25lbnQoZWxlbWVudHNbaV0uZGF0YXNldC5maWx0ZXIpKTsKICAgIH0KICAgIGNvbnN0IGVsZW1lbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKCcucGFnaW5hdGlvbicpOwogICAgaWYgKGVsZW1lbnQpIHsKICAgICAgICBwYXJhbXMucHVzaCgncGFnZT0nICsgZW5jb2RlVVJJQ29tcG9uZW50KGVsZW1lbnQuZGF0YXNldC5wYWdlKSk7CiAgICB9CiAgICBkb2N1bWVudC5sb2NhdGlvbi5ocmVmID0gJz8nICsgcGFyYW1zLmpvaW4oJyYnKTsKICAgIHJldHVybiBmYWxzZTsKfQp3aW5kb3cuYWRkRXZlbnRMaXN0ZW5lcignbG9hZCcsIGZ1bmN0aW9uICgpIHsgaGlkZUNvbHVtbnMoKTsgdXBkYXRlQWRkRmlsdGVyKCk7IH0pOwp3aW5kb3cuYWRkRXZlbnRMaXN0ZW5lcigncmVzaXplJywgZnVuY3Rpb24gKCkgeyByZXNpemVXaW5kb3coKTsgfSk7Cg==
 END_OF_STATIC_FILE;
 }
 
