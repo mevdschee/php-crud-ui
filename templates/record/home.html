@@ -2,12 +2,12 @@
     <li><a href="{{base}}/">Home</a></li>
 </ul>
 
-<h1>Projectnaam</h1>
+<h1>{{info.title}}</h1>
 <br />
 <ul class="home">
     {{for:item:menu}}
-        <li>
-            <a href="{{base}}/{{item}}/list">{{item|humanize}}</a>
-        </li>
+    <li>
+        <a href="{{base}}/{{item}}/list">{{item|humanize}}</a>
+    </li>
     {{endfor}}
 </ul>

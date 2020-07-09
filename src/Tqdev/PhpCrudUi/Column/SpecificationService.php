@@ -199,6 +199,21 @@ class SpecificationService
         return array_keys($properties);
     }
 
+    public function getInfo()
+    {
+        $info = array();
+        if (isset($this->definition['info'])) {
+            $info = $this->definition['info'];
+            if (!isset($info['title'])) {
+                $info['title'] = 'PHP-CRUD-UI';
+            }
+            if (!isset($info['x-subtitle'])) {
+                $info['x-subtitle'] = 'by TQdev.com';
+            }
+        }
+        return $info;
+    }
+
     public function getMenu()
     {
         $items = array();
