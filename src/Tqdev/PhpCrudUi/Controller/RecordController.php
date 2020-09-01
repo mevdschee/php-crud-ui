@@ -18,6 +18,7 @@ class RecordController
     public function __construct(Router $router, Responder $responder, RecordService $service)
     {
         $router->register('GET', '/', array($this, 'home'));
+        $router->register('GET', '/menu', array($this, 'menu'));
         $router->register('GET', '/*/create', array($this, 'createForm'));
         $router->register('POST', '/*/create', array($this, 'create'));
         $router->register('GET', '/*/read/*', array($this, 'read'));
@@ -36,6 +37,12 @@ class RecordController
     public function home(ServerRequestInterface $request): ResponseInterface
     {
         $result = $this->service->home();
+        return $this->responder->success($result);
+    }
+
+    public function menu(ServerRequestInterface $request): ResponseInterface
+    {
+        $result = $this->service->menu();
         return $this->responder->success($result);
     }
 
