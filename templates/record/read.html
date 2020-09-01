@@ -19,7 +19,11 @@
             <td>{{name|humanize}}</td>
             </td>
             <td>
+<<<<<<< HEAD
                 {{if:field.table}}
+=======
+                {{if:field.table|and(field.text)}}
+>>>>>>> 63d889bbdc8c05197bb23c0b006ba152eb6a62b9
                 <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
                 {{else}}
                 {{if:field.type.format|eq("large-string")}}
@@ -45,7 +49,10 @@
 <h2>Related</h2>
 <ul class="related">
     {{for:relation:referenced}}
-    <li><a href="{{base}}/{{relation.0}}/list?filter={{relation.1}},eq,{{id}},{{name}}">{{relation.0|humanize}}</a>
+    <li>
+        <a href="{{base}}/{{relation.0}}/list?filter=reference,{{relation.1}},in,{{id}},{{name}}">
+            {{relation.0|humanize}}
+        </a>
     </li>
     {{endfor}}
     {{endif}}

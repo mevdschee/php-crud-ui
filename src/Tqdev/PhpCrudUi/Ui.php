@@ -10,13 +10,13 @@ use Tqdev\PhpCrudApi\Middleware\Router\SimpleRouter;
 use Tqdev\PhpCrudApi\Record\ErrorCode;
 use Tqdev\PhpCrudApi\ResponseUtils;
 use Tqdev\PhpCrudUi\Client\CrudApi;
-use Tqdev\PhpCrudUi\Column\SpecificationService;
-use Tqdev\PhpCrudUi\Controller\RecordController;
-use Tqdev\PhpCrudUi\Controller\MultiResponder;
-use Tqdev\PhpCrudUi\Record\RecordService;
-use Tqdev\PhpCrudUi\Client\LocalCaller;
 use Tqdev\PhpCrudUi\Client\CurlCaller;
+use Tqdev\PhpCrudUi\Client\LocalCaller;
+use Tqdev\PhpCrudUi\Column\SpecificationService;
+use Tqdev\PhpCrudUi\Controller\MultiResponder;
+use Tqdev\PhpCrudUi\Controller\RecordController;
 use Tqdev\PhpCrudUi\Middleware\StaticFileMiddleware;
+use Tqdev\PhpCrudUi\Record\RecordService;
 
 class Ui implements RequestHandlerInterface
 {
@@ -43,6 +43,7 @@ class Ui implements RequestHandlerInterface
                     break;
             }
         }
+        $responder->setVariable('info', $definition->getInfo());
         $responder->setVariable('base', $router->getBasePath());
         $responder->setVariable('menu', $definition->getMenu());
         $responder->setVariable('table', '');

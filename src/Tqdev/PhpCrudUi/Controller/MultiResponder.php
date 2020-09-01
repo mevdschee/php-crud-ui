@@ -8,6 +8,8 @@ use Tqdev\PhpCrudApi\Record\Document\ErrorDocument;
 use Tqdev\PhpCrudApi\Record\ErrorCode;
 use Tqdev\PhpCrudApi\ResponseFactory;
 use Tqdev\PhpCrudUi\Document\CsvDocument;
+use Tqdev\PhpCrudUi\Document\JsonDocument;
+use Tqdev\PhpCrudUi\Document\RedirectDocument;
 use Tqdev\PhpCrudUi\Document\TemplateDocument;
 
 class MultiResponder implements Responder
@@ -41,10 +43,16 @@ class MultiResponder implements Responder
     {
         if ($result instanceof CsvDocument) {
             return ResponseFactory::fromCsv(ResponseFactory::OK, (string) $result);
+        } elseif ($result instanceof JsonDocument) {
+            return ResponseFactory::fromObject(ResponseFactory::OK, json_decode((string) $result));
         } elseif ($result instanceof TemplateDocument) {
             $result->addVariables($this->variables);
             $result->setTemplatePath($this->templatePath);
             return ResponseFactory::fromHtml(ResponseFactory::OK, (string) $result);
+        } elseif ($result instanceof RedirectDocument) {
+            $result->addVariables($this->variables);
+            $response = ResponseFactory::fromStatus(ResponseFactory::FOUND);
+            return $response->withHeader('Location', (string) $result);
         } else {
             throw new \Exception('Document type not supported: ' . get_class($result));
         }

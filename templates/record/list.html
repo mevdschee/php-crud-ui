@@ -19,34 +19,72 @@
 <script src="{{base}}/js/list.js"></script>
 
 {{for:filter:i:filters}}
-<div class="filterbar" data-index="{{i}}"
-    data-filter="{{filter.field}},{{filter.operator}},{{filter.value}},{{filter.name}}">
-    <div>{{filter.field|humanize}} = '{{filter.name}}'</div>
-
+{{if:filter.type|eq("search")}}
+<div class="filterbar" data-index="{{i}}" data-filter="{{filter.type}},{{filter.operator}},{{filter.value}}">
+    <div>
+        <a href="{{base}}/{{table}}/list" title="Edit filter" onclick="return editFilter('{{i}}');">
+            Search '{{filter.value}}'
+        </a>
+    </div>
     <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
 </div>
+{{elseif:filter.type|eq("value")}}
+<div class="filterbar" data-index="{{i}}"
+    data-filter="{{filter.type}},{{filter.field}},{{filter.operator}},{{filter.value}}">
+    <div>
+        <a href="{{base}}/{{table}}/list" title="Edit filter" onclick="return editFilter('{{i}}');">
+            {{filter.field|humanize}}
+            {{if:filter.operator|eq("cs")}}~
+            {{elseif:filter.operator|eq("eq")}}=
+            {{elseif:filter.operator|eq("lt")}}&lt;
+            {{elseif:filter.operator|eq("gt")}}&gt;
+            {{else}}{{filter.operator}}{{endif}}
+            '{{filter.value}}'
+        </a>
+    </div>
+    <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
+</div>
+{{elseif:filter.type|eq("reference")}}
+<div class="filterbar" data-index="{{i}}"
+    data-filter="{{filter.type}},{{filter.field}},{{filter.operator}},{{filter.value}},{{filter.text}}">
+    <div>
+        <a href="{{base}}/{{table}}/list" title="Edit filter" onclick="return editFilter('{{i}}');">
+            {{filter.field|humanize}} {{if:filter.operator|eq("in")}}={{else}}~{{endif}} '{{filter.text}}'
+        </a>
+    </div>
+    <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
+</div>
+{{endif}}
 {{endfor}}
 
 <div class="addFilter">
-    <form style="display:inline">
-        <select name="field">
+    <form style="display:inline" method="post">
+        <select name="field" onchange="updateAddFilter();">
             {{for:column:columns}}
-            <option>{{column|humanize}}</option>
+            {{if:column|neq(primaryKey)}}
+            <option value="{{column}}" data-references="{{references|prop(column)}}"
+                data-format="{{types|prop(column)|prop("format")}}">
+                {{column|humanize}}
+            </option>
+            {{endif}}
             {{endfor}}
-        </select>&nbsp;
+        </select>
         <select name="operator">
-            <option>=</option>
-            <option>&lt;</option>
-            <option>&gt;</option>
-        </select>&nbsp;
-        <input type="text" name="value" />&nbsp;
+            <option value="cs">~</option>
+            <option value="eq">=</option>
+            <option value="lt">&lt;</option>
+            <option value="gt">&gt;</option>
+        </select>
+        <input type="hidden" name="value" />
+        <select name="values" onchange="updateTextAndValue();" multiple style="height: 5rem;"></select>
+        <input type="hidden" name="text" />
         <input type="submit" value="Filter" />
     </form>
 </div>
 
 <div class="addSearch">
-    <form style="display:inline">
-        <input type="text" name="search" />&nbsp;
+    <form style="display:inline" method="post">
+        <input type="text" name="search" />
         <input type="submit" value="Search" />
     </form>
 </div>
@@ -58,8 +96,8 @@
             <th>Action</th>
             {{endif}}
             {{for:column:columns}}
-            {{if:column.text|neq(primaryKey)}}
-            <th>{{column.text|humanize}}</th>
+            {{if:column|neq(primaryKey)}}
+            <th>{{column|humanize}}</th>
             {{endif}}
             {{endfor}}
         </tr>
