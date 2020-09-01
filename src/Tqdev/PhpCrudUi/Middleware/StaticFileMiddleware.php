@@ -17,6 +17,10 @@ class StaticFileMiddleware extends Middleware
         switch ($extension) {
             case 'css':
                 return 'text/css';
+            case 'woff':
+                return 'font/woff';
+            case 'woff2':
+                return 'font/woff2';
             case 'svg':
                 return 'image/svg+xml';
             case 'js':
