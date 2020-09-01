@@ -19,11 +19,7 @@
             <td>{{name|humanize}}</td>
             </td>
             <td>
-<<<<<<< HEAD
-                {{if:field.table}}
-=======
                 {{if:field.table|and(field.text)}}
->>>>>>> 63d889bbdc8c05197bb23c0b006ba152eb6a62b9
                 <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
                 {{else}}
                 {{if:field.type.format|eq("large-string")}}
