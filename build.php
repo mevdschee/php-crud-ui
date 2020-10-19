@@ -54,7 +54,7 @@ function runDir(string $base, string $dir, array &$lines, array $ignore): int
                 }
                 array_push($lines, 'END_OF_HTML;', '}', '');
                 $count++;
-            } elseif (in_array($extension, ['css', 'svg', 'js'])) {
+            } elseif (in_array($extension, ['css', 'svg', 'js', 'woff', 'woff2', 'ico'])) {
                 $data = base64_encode(file_get_contents($filename));
                 $id = substr("$dir/$entry", 7);
                 array_push($lines, "// file: $dir/$entry");

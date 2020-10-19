@@ -23,6 +23,8 @@ class StaticFileMiddleware extends Middleware
                 return 'font/woff2';
             case 'svg':
                 return 'image/svg+xml';
+            case 'ico':
+                return 'image/x-icon';
             case 'js':
                 return 'application/javascript';
         }

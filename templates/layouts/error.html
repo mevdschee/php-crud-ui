@@ -2,26 +2,21 @@
 <html lang="en">
 
 <head>
-    <title>PHP-CRUD-UI</title>
+    <title>{{info.title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css"
-        rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{base}}/css/style.css">
+    <!--<link rel="stylesheet" type="text/css" href="{{base}}/css/music.css">-->
+    <link rel="shortcut icon" href="{{base}}/img/favicon.ico">
 </head>
 
-<body>
-    <div class="container-fluid">
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="{{base}}/">PHP-CRUD-UI</a>
-                </div>
-            </div>
-        </nav>
-        <div class="row">
-            <div class="col-md-12">
-                {{content}}
-            </div>
+<body class="{{table}}">
+    <div class="content">
+        <div class="navigation">
+            <a href="{{base}}/" class="title"><span>{{info.title}}</span>{{info.x-subtitle}}</a>
+            <a class="hamburger" href="{{base}}/menu" title="Open menu"><span></span><span></span><span></span></a>
+        </div>
+        <div class="body">
+            {{content}}
         </div>
     </div>
 </body>
