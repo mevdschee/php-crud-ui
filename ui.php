@@ -2226,7 +2226,7 @@ namespace Nyholm\Psr7 {
             return $new;
         }
 
-        private function setHeaders(array $headers) /*:void*/
+        private function setHeaders(array $headers): void
         {
             foreach ($headers as $header => $value) {
                 if (\is_int($header)) {
@@ -2433,7 +2433,7 @@ namespace Nyholm\Psr7 {
             return $new;
         }
 
-        private function updateHostFromUri() /*:void*/
+        private function updateHostFromUri(): void
         {
             if ('' === $host = $this->uri->getHost()) {
                 return;
@@ -2473,7 +2473,7 @@ namespace Nyholm\Psr7 {
         use MessageTrait;
 
         /** @var array Map of standard HTTP status code/reason phrases */
-        /*private*/ const PHRASES = [
+        private const PHRASES = [
             100 => 'Continue', 101 => 'Switching Protocols', 102 => 'Processing',
             200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content', 207 => 'Multi-status', 208 => 'Already Reported',
             300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 306 => 'Switch Proxy', 307 => 'Temporary Redirect',
@@ -2743,7 +2743,7 @@ namespace Nyholm\Psr7 {
         private $size;
 
         /** @var array Hash of readable and writable stream types */
-        /*private*/ const READ_WRITE_HASH = [
+        private const READ_WRITE_HASH = [
             'read' => [
                 'r' => true, 'w+' => true, 'r+' => true, 'x+' => true, 'c+' => true,
                 'rb' => true, 'w+b' => true, 'r+b' => true, 'x+b' => true,
@@ -2832,7 +2832,7 @@ namespace Nyholm\Psr7 {
             }
         }
 
-        public function close() /*:void*/
+        public function close(): void
         {
             if (isset($this->stream)) {
                 if (\is_resource($this->stream)) {
@@ -2856,7 +2856,16 @@ namespace Nyholm\Psr7 {
             return $result;
         }
 
-        public function getSize() /*:?int*/
+        private function getUri()
+        {
+            if (false !== $this->uri) {
+                $this->uri = $this->getMetadata('uri') ?? false;
+            }
+
+            return $this->uri;
+        }
+
+        public function getSize(): ?int
         {
             if (null !== $this->size) {
                 return $this->size;
@@ -2900,7 +2909,7 @@ namespace Nyholm\Psr7 {
             return $this->seekable;
         }
 
-        public function seek($offset, $whence = \SEEK_SET) /*:void*/
+        public function seek($offset, $whence = \SEEK_SET): void
         {
             if (!$this->seekable) {
                 throw new \RuntimeException('Stream is not seekable');
@@ -2911,7 +2920,7 @@ namespace Nyholm\Psr7 {
             }
         }
 
-        public function rewind() /*:void*/
+        public function rewind(): void
         {
             $this->seek(0);
         }
@@ -3000,7 +3009,7 @@ namespace Nyholm\Psr7 {
     class UploadedFile implements UploadedFileInterface
     {
         /** @var array */
-        /*private*/ const ERRORS = [
+        private const ERRORS = [
             \UPLOAD_ERR_OK => 1,
             \UPLOAD_ERR_INI_SIZE => 1,
             \UPLOAD_ERR_FORM_SIZE => 1,
@@ -3079,7 +3088,7 @@ namespace Nyholm\Psr7 {
         /**
          * @throws \RuntimeException if is moved or not ok
          */
-        private function validateActive() /*:void*/
+        private function validateActive(): void
         {
             if (\UPLOAD_ERR_OK !== $this->error) {
                 throw new \RuntimeException('Cannot retrieve stream due to upload error');
@@ -3103,7 +3112,7 @@ namespace Nyholm\Psr7 {
             return Stream::create($resource);
         }
 
-        public function moveTo($targetPath) /*:void*/
+        public function moveTo($targetPath): void
         {
             $this->validateActive();
 
@@ -3145,12 +3154,12 @@ namespace Nyholm\Psr7 {
             return $this->error;
         }
 
-        public function getClientFilename() /*:?string*/
+        public function getClientFilename(): ?string
         {
             return $this->clientFilename;
         }
 
-        public function getClientMediaType() /*:?string*/
+        public function getClientMediaType(): ?string
         {
             return $this->clientMediaType;
         }
@@ -3175,13 +3184,11 @@ namespace Nyholm\Psr7 {
      */
     class Uri implements UriInterface
     {
-        use LowercaseTrait;
+        private const SCHEMES = ['http' => 80, 'https' => 443];
 
-        /*private*/ const SCHEMES = ['http' => 80, 'https' => 443];
+        private const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
 
-        /*private*/ const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
-
-        /*private*/ const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
+        private const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
 
         /** @var string Uri scheme. */
         private $scheme = '';
@@ -3263,7 +3270,7 @@ namespace Nyholm\Psr7 {
             return $this->host;
         }
 
-        public function getPort() /*:?int*/
+        public function getPort(): ?int
         {
             return $this->port;
         }
@@ -3431,7 +3438,7 @@ namespace Nyholm\Psr7 {
             return !isset(self::SCHEMES[$scheme]) || $port !== self::SCHEMES[$scheme];
         }
 
-        private function filterPort($port) /*:?int*/
+        private function filterPort($port): ?int
         {
             if (null === $port) {
                 return null;
@@ -3543,7 +3550,7 @@ namespace Nyholm\Psr7Server {
         /**
          * {@inheritdoc}
          */
-        public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], /*?array*/ $post = null, array $files = [], $body = null): ServerRequestInterface
+        public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], ?array $post = null, array $files = [], $body = null): ServerRequestInterface
         {
             $method = $this->getMethodFromEnv($server);
             $uri = $this->getUriFromEnvWithHTTP($server);
@@ -3808,7 +3815,8 @@ namespace Nyholm\Psr7Server {
             array $server,
             array $headers = [],
             array $cookie = [],
-            array $get = [], /*?array*/ $post = null,
+            array $get = [],
+            ?array $post = null,
             array $files = [],
             $body = null
         ): ServerRequestInterface;
@@ -12813,12 +12821,12 @@ namespace Tqdev\PhpCrudUi\Controller {
 
         public function multi($results): ResponseInterface
         {
-            return success($results);
+            return $this->success($results);
         }
 
         public function exception($exception): ResponseInterface
         {
-
+            return $this->error(ErrorCode::ERROR_NOT_FOUND, $exception->getMessage());
         }
 
     }
