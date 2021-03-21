@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "mevdschee/php-crud-api",
-            "version": "v2.11.3",
+            "version": "v2.9.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mevdschee/php-crud-api.git",
-                "reference": "6d9618506bb7497d3ba56b3643f73293827e778f"
+                "reference": "adb1b87ebbbb8d03423adee8e0450545e2279951"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mevdschee/php-crud-api/zipball/6d9618506bb7497d3ba56b3643f73293827e778f",
-                "reference": "6d9618506bb7497d3ba56b3643f73293827e778f",
+                "url": "https://api.github.com/repos/mevdschee/php-crud-api/zipball/adb1b87ebbbb8d03423adee8e0450545e2279951",
+                "reference": "adb1b87ebbbb8d03423adee8e0450545e2279951",
                 "shasum": ""
             },
             "require": {
@@ -76,11 +76,7 @@
                 "swagger",
                 "ubuntu-linux"
             ],
-            "support": {
-                "issues": "https://github.com/mevdschee/php-crud-api/issues",
-                "source": "https://github.com/mevdschee/php-crud-api/tree/v2.11.3"
-            },
-            "time": "2021-03-19T00:46:56+00:00"
+            "time": "2020-08-25T15:10:43+00:00"
         },
         {
             "name": "nyholm/psr7",

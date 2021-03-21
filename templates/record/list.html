@@ -58,7 +58,7 @@
 {{endfor}}
 
 <div class="addFilter">
-    <form style="display:inline" method="post">
+    <form style="display:inline" method="post" action="#">
         <select name="field" onchange="updateAddFilter();">
             {{for:column:columns}}
             {{if:column|neq(primaryKey)}}
@@ -83,7 +83,7 @@
 </div>
 
 <div class="addSearch">
-    <form style="display:inline" method="post">
+    <form style="display:inline" method="post" action="#">
         <input type="text" name="search" />
         <input type="submit" value="Search" />
     </form>

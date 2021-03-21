@@ -48,6 +48,11 @@ class RecordService
         return new TemplateDocument('layouts/default', 'record/home', array());
     }
 
+    public function menu(): TemplateDocument
+    {
+        return new TemplateDocument('layouts/menu', 'record/menu', array());
+    }
+
     public function createForm(string $table, string $action): TemplateDocument
     {
         $types = $this->definition->getTypes($table, $action);

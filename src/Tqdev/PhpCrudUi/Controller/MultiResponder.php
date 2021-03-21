@@ -60,12 +60,12 @@ class MultiResponder implements Responder
 
     public function multi($results): ResponseInterface
     {
-        return success($results);
+        return $this->success($results);
     }
 
     public function exception($exception): ResponseInterface
     {
-
+        return $this->error(ErrorCode::ERROR_NOT_FOUND, $exception->getMessage());
     }
 
 }

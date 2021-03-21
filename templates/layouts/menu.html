@@ -13,7 +13,8 @@
     <div class="content">
         <div class="navigation">
             <a href="{{base}}/" class="title"><span>{{info.title}}</span>{{info.x-subtitle}}</a>
-            <a class="hamburger" href="{{base}}/menu" title="Open menu"><span></span><span></span><span></span></a>
+            <a class="hamburger close" href="javascript:window.history.go(-1);"
+                title="Close menu"><span></span><span></span><span></span></a>
         </div>
         <div class="body">
             {{content}}
