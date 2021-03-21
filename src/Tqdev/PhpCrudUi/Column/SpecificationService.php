@@ -219,7 +219,9 @@ class SpecificationService
         $items = array();
         if (isset($this->definition['tags'])) {
             foreach ($this->definition['tags'] as $tag) {
-                array_push($items, $tag['name']);
+                if ($this->hasTable($tag['name'], 'list')) {
+                    array_push($items, $tag['name']);
+                }
             }
         }
         return $items;
