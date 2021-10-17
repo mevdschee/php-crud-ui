@@ -131,11 +131,14 @@ $ignore = [
 
 $dirs = [
     'templates',
-    'vendor/psr',
     'vendor/nyholm',
     'vendor/mevdschee/php-crud-api/src/Tqdev/PhpCrudApi',
     'src',
     'webroot',
 ];
+
+if (!extension_loaded('psr')) {
+    array_unshift($directories, 'vendor/psr');
+}
 
 run(__DIR__, $dirs, 'ui.php', $ignore);
