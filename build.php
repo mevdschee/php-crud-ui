@@ -118,6 +118,8 @@ function run(string $base, array $dirs, string $filename, array $ignore)
     include 'tmp_' . $filename;
     ob_end_clean();
     rename('tmp_' . $filename, $filename);
+    $data = substr($data, 0, strrpos($data, "\n// file: webroot/index.php"));
+    file_put_contents(str_replace('.php', '.include.php', $filename), $data);
     $end = microtime(true);
     $time = ($end - $start) * 1000;
     echo sprintf("%d files combined in %d ms into '%s'\n", $count, $time, $filename);
