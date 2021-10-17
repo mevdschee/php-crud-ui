@@ -19,537 +19,6 @@ namespace {
     $_STATIC = array();
 }
 
-// file: templates/error/show.html
-namespace {
-$_HTML['error/show'] = <<<'END_OF_HTML'
-<ul class="breadcrumb">
-    <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/column/{{table}}/list">{{table}}</a></li>
-</ul>
-
-<h2>Error</h2>
-
-<strong>code:</strong><br/>
-<p>{{code}}</p>
-
-<strong>message:</strong><br/>
-<p>{{message}}</p>
-
-<strong>details:</strong><br/>
-<pre>{{details}}</pre>
-END_OF_HTML;
-}
-
-// file: templates/layouts/default.html
-namespace {
-$_HTML['layouts/default'] = <<<'END_OF_HTML'
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <title>{{info.title}}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="{{base}}/css/style.css">
-    <!--<link rel="stylesheet" type="text/css" href="{{base}}/css/music.css">-->
-    <link rel="shortcut icon" href="{{base}}/img/favicon.ico">
-</head>
-
-<body class="{{table}}">
-    <div class="content">
-        <div class="navigation">
-            <a href="{{base}}/" class="title"><span>{{info.title}}</span>{{info.x-subtitle}}</a>
-            <a class="hamburger" href="{{base}}/menu" title="Open menu"><span></span><span></span><span></span></a>
-        </div>
-        <div class="body">
-            {{content}}
-        </div>
-    </div>
-</body>
-
-</html>
-END_OF_HTML;
-}
-
-// file: templates/layouts/error.html
-namespace {
-$_HTML['layouts/error'] = <<<'END_OF_HTML'
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <title>{{info.title}}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="{{base}}/css/style.css">
-    <!--<link rel="stylesheet" type="text/css" href="{{base}}/css/music.css">-->
-    <link rel="shortcut icon" href="{{base}}/img/favicon.ico">
-</head>
-
-<body class="{{table}}">
-    <div class="content">
-        <div class="navigation">
-            <a href="{{base}}/" class="title"><span>{{info.title}}</span>{{info.x-subtitle}}</a>
-            <a class="hamburger" href="{{base}}/menu" title="Open menu"><span></span><span></span><span></span></a>
-        </div>
-        <div class="body">
-            {{content}}
-        </div>
-    </div>
-</body>
-
-</html>
-END_OF_HTML;
-}
-
-// file: templates/layouts/menu.html
-namespace {
-$_HTML['layouts/menu'] = <<<'END_OF_HTML'
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <title>{{info.title}}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="{{base}}/css/style.css">
-    <!--<link rel="stylesheet" type="text/css" href="{{base}}/css/music.css">-->
-    <link rel="shortcut icon" href="{{base}}/img/favicon.ico">
-</head>
-
-<body class="{{table}}">
-    <div class="content">
-        <div class="navigation">
-            <a href="{{base}}/" class="title"><span>{{info.title}}</span>{{info.x-subtitle}}</a>
-            <a class="hamburger close" href="javascript:window.history.go(-1);"
-                title="Close menu"><span></span><span></span><span></span></a>
-        </div>
-        <div class="body">
-            {{content}}
-        </div>
-    </div>
-</body>
-
-</html>
-END_OF_HTML;
-}
-
-// file: templates/record/create.html
-namespace {
-$_HTML['record/create'] = <<<'END_OF_HTML'
-<ul class="breadcrumb">
-    <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
-</ul>
-
-<h1>New item</h1>
-
-<form method="post">
-    {{for:value:key:record}}
-    {{if:key|neq(primaryKey)}}
-    <div>
-        <label for="{{key}}" class="col-sm-2 col-form-label" title="{{key|humanize}}">{{key|humanize}}</label>
-        {{if:value.values}}
-        <select id="{{key}}" name="{{key}}" class="form-control">
-            <option value=""></option>
-            {{for:v:k:value.values}}
-            <option value="{{k}}" {{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
-            {{endfor}}
-        </select>
-        {{else}}
-        {{if:value.type.format|eq("int32")}}
-        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
-        {{elseif:value.type.format|eq("int64")}}
-        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
-        {{elseif:value.type.format|eq("decimal")}}
-        <input class="form-control" id="{{key}}" type="number" step="any" name="{{key}}" value="{{value.value}}" />
-        {{elseif:value.type.format|eq("date-time")}}
-        <input class="form-control" id="{{key}}" type="datetime-local" name="{{key}}" value="{{value.value}}" />
-        {{elseif:value.type.format|eq("date")}}
-        <input class="form-control" id="{{key}}" type="date" name="{{key}}" value="{{value.value}}" />
-        {{elseif:value.type.format|eq("time")}}
-        <input class="form-control" id="{{key}}" type="time" name="{{key}}" value="" />
-        {{elseif:value.type.format|eq("large-string")}}
-        <textarea class="form-control" id="{{key}}" name="{{key}}">{{value.value}}</textarea>
-        {{elseif:value.type.format|eq("boolean")}}
-        <input class="form-control" id="{{key}}" name="{{key}}" type="checkbox" {{if:value.value}} checked{{endif}} />
-        {{else}}
-        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}" />
-        {{endif}}
-        {{endif}}
-    </div>
-    {{endif}}
-    {{endfor}}
-    <button type="submit" class="btn btn-primary">Save</button>
-</form>
-END_OF_HTML;
-}
-
-// file: templates/record/created.html
-namespace {
-$_HTML['record/created'] = <<<'END_OF_HTML'
-<ul class="breadcrumb">
-    <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
-</ul>
-
-<h1>create {{table}}</h1>
-
-<p>Added with {{primaryKey}} {{id}}</p>
-
-<p><a href="{{base}}/{{table}}/list" class="btn btn-primary">Ok</a></p>
-END_OF_HTML;
-}
-
-// file: templates/record/delete.html
-namespace {
-$_HTML['record/delete'] = <<<'END_OF_HTML'
-<ul class="breadcrumb">
-    <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
-</ul>
-
-<h1>{{name|or("Delete item")}}</h1>
-
-{{if:name}}
-<p>Are you sure you want to delete '{{name}}'?</p>
-{{else}}
-<p>Are you sure you want to delete item #{{id}}?</p>
-{{endif}}
-<p>The action cannot be undone.</p>
-
-<form method="post">
-    <input type="hidden" name="{{primaryKey}}" value="{{id}}" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a href="{{base}}/{{table}}/read/{{id}}" class="btn btn-default">Cancel</a>
-</form>
-END_OF_HTML;
-}
-
-// file: templates/record/deleted.html
-namespace {
-$_HTML['record/deleted'] = <<<'END_OF_HTML'
-<ul class="breadcrumb">
-    <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
-</ul>
-
-<h1>delete {{table}}</h1>
-
-<p>Deleted with {{primaryKey}} {{id}}</p>
-
-<p><a href="{{base}}/{{table}}/list" class="btn btn-primary">Ok</a></p>
-END_OF_HTML;
-}
-
-// file: templates/record/home.html
-namespace {
-$_HTML['record/home'] = <<<'END_OF_HTML'
-<ul class="breadcrumb">
-    <li><a href="{{base}}/">Home</a></li>
-</ul>
-
-<h1>{{info.title}}</h1>
-<br />
-<ul class="home">
-    {{for:item:menu}}
-    <li>
-        <a href="{{base}}/{{item}}/list">{{item|humanize}}</a>
-    </li>
-    {{endfor}}
-</ul>
-END_OF_HTML;
-}
-
-// file: templates/record/list.html
-namespace {
-$_HTML['record/list'] = <<<'END_OF_HTML'
-<ul class="breadcrumb">
-    <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
-</ul>
-
-<div class="titlebar">
-    <h1>{{table|humanize}}</h1>
-    <div>
-        <a onclick="document.querySelector('.addFilter').classList.toggle('visible');" href="#" class="icon filter">Add
-            filter</a>
-        <a onclick="document.querySelector('.addSearch').classList.toggle('visible');" href="#"
-            class="icon search">Search</a>
-        {{if:primaryKey}}
-        <a href="{{base}}/{{table}}/create" class="btn">New item</a>
-        {{endif}}
-    </div>
-</div>
-
-<script src="{{base}}/js/list.js"></script>
-
-{{for:filter:i:filters}}
-{{if:filter.type|eq("search")}}
-<div class="filterbar" data-index="{{i}}" data-filter="{{filter.type}},{{filter.operator}},{{filter.value}}">
-    <div>
-        <a href="{{base}}/{{table}}/list" title="Edit filter" onclick="return editFilter('{{i}}');">
-            Search '{{filter.value}}'
-        </a>
-    </div>
-    <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
-</div>
-{{elseif:filter.type|eq("value")}}
-<div class="filterbar" data-index="{{i}}"
-    data-filter="{{filter.type}},{{filter.field}},{{filter.operator}},{{filter.value}}">
-    <div>
-        <a href="{{base}}/{{table}}/list" title="Edit filter" onclick="return editFilter('{{i}}');">
-            {{filter.field|humanize}}
-            {{if:filter.operator|eq("cs")}}~
-            {{elseif:filter.operator|eq("eq")}}=
-            {{elseif:filter.operator|eq("lt")}}&lt;
-            {{elseif:filter.operator|eq("gt")}}&gt;
-            {{else}}{{filter.operator}}{{endif}}
-            '{{filter.value}}'
-        </a>
-    </div>
-    <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
-</div>
-{{elseif:filter.type|eq("reference")}}
-<div class="filterbar" data-index="{{i}}"
-    data-filter="{{filter.type}},{{filter.field}},{{filter.operator}},{{filter.value}},{{filter.text}}">
-    <div>
-        <a href="{{base}}/{{table}}/list" title="Edit filter" onclick="return editFilter('{{i}}');">
-            {{filter.field|humanize}} {{if:filter.operator|eq("in")}}={{else}}~{{endif}} '{{filter.text}}'
-        </a>
-    </div>
-    <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
-</div>
-{{endif}}
-{{endfor}}
-
-<div class="addFilter">
-    <form style="display:inline" method="post" action="#">
-        <select name="field" onchange="updateAddFilter();">
-            {{for:column:columns}}
-            {{if:column|neq(primaryKey)}}
-            <option value="{{column}}" data-references="{{references|prop(column)}}"
-                data-format="{{types|prop(column)|prop("format")}}">
-                {{column|humanize}}
-            </option>
-            {{endif}}
-            {{endfor}}
-        </select>
-        <select name="operator">
-            <option value="cs">~</option>
-            <option value="eq">=</option>
-            <option value="lt">&lt;</option>
-            <option value="gt">&gt;</option>
-        </select>
-        <input type="hidden" name="value" />
-        <select name="values" onchange="updateTextAndValue();" multiple style="height: 5rem;"></select>
-        <input type="hidden" name="text" />
-        <input type="submit" value="Filter" />
-    </form>
-</div>
-
-<div class="addSearch">
-    <form style="display:inline" method="post" action="#">
-        <input type="text" name="search" />
-        <input type="submit" value="Search" />
-    </form>
-</div>
-
-<table class="table list">
-    <thead>
-        <tr>
-            {{if:primaryKey}}
-            <th>Action</th>
-            {{endif}}
-            {{for:column:columns}}
-            {{if:column|neq(primaryKey)}}
-            <th>{{column|humanize}}</th>
-            {{endif}}
-            {{endfor}}
-        </tr>
-    </thead>
-    <tbody>
-        {{for:record:records}}
-        <tr>
-            {{for:field:name:record}}
-            {{if:name|eq(primaryKey)}}
-            <td><a href="{{base}}/{{table}}/read/{{field.value}}">view</a></td>
-            {{endif}}
-            {{if:name|neq(primaryKey)}}
-            {{if:field.table}}
-            <td><a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a></td>
-            {{else}}
-            <td>{{field.text}}</td>
-            {{endif}}
-            {{endif}}
-            {{endfor}}
-        </tr>
-        {{endfor}}
-    </tbody>
-</table>
-{{if:maxPage|gt(1)}}
-<div class="pagination" data-page="{{pageNumber}},{{pageSize}}">
-    {{if:pageNumber|gt(1)}}
-    <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="icon prev"
-        onclick="return navigatePage('{{pageNumber|sub(1)}},{{pageSize}}')">&lt;</a>
-    {{else}}
-    <a href="javascript:void(0);" class="icon prev disabled">&lt;</a>
-    {{endif}}
-    &nbsp;page {{pageNumber}}/{{maxPage}}&nbsp;
-    {{if:pageNumber|lt(maxPage)}}
-    <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="icon next"
-        onclick="return navigatePage('{{pageNumber|add(1)}},{{pageSize}}')">&gt;</a>
-    {{else}}
-    <a href="javascript:void(0);" class="icon next disabled">&gt;</a>
-    {{endif}}
-</div>
-{{endif}}
-<div class="footeractions">
-    <a href="{{base}}/{{table}}/export" class="btn">Export</a>
-
-</div>
-END_OF_HTML;
-}
-
-// file: templates/record/menu.html
-namespace {
-$_HTML['record/menu'] = <<<'END_OF_HTML'
-<br />
-<ul class="home">
-    {{for:item:menu}}
-    <li>
-        <a href="{{base}}/{{item}}/list">{{item|humanize}}</a>
-    </li>
-    {{endfor}}
-</ul>
-END_OF_HTML;
-}
-
-// file: templates/record/read.html
-namespace {
-$_HTML['record/read'] = <<<'END_OF_HTML'
-<ul class="breadcrumb">
-    <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
-</ul>
-
-<h1>{{name|or("View item")}}</h1>
-
-<table class="table read">
-    <thead>
-        <tr>
-            <th>Key</th>
-            <th>Value</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{for:field:name:record}}
-        {{if:name|neq(primaryKey)}}
-        <tr>
-            <td>{{name|humanize}}</td>
-            </td>
-            <td>
-                {{if:field.table|and(field.text)}}
-                <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
-                {{else}}
-                {{if:field.type.format|eq("large-string")}}
-                <div style="white-space: pre-wrap;">{{field.text}}</div>
-                {{else}}
-                {{if:field.text}}{{field.text}}{{else}}<span class="mobile-only">-</span>{{endif}}
-                {{endif}}
-                {{endif}}
-            </td>
-        </tr>
-        {{endif}}
-        {{endfor}}
-    </tbody>
-</table>
-
-<p>
-    <a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
-    <a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
-</p>
-{{if:referenced|has(0)}}
-<br />
-<br />
-<h2>Related</h2>
-<ul class="related">
-    {{for:relation:referenced}}
-    <li>
-        <a href="{{base}}/{{relation.0}}/list?filter=reference,{{relation.1}},in,{{id}},{{name}}">
-            {{relation.0|humanize}}
-        </a>
-    </li>
-    {{endfor}}
-    {{endif}}
-</ul>
-END_OF_HTML;
-}
-
-// file: templates/record/update.html
-namespace {
-$_HTML['record/update'] = <<<'END_OF_HTML'
-<ul class="breadcrumb">
-    <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
-</ul>
-
-<h1>{{name|or("Edit item")}}</h1>
-
-<form method="post">
-    {{for:value:key:record}}
-    {{if:key|neq(primaryKey)}}
-    <div>
-        <label for="{{key}}" class="col-sm-2 col-form-label" title="{{key|humanize}}">{{key|humanize}}</label>
-        {{if:value.values}}
-        <select id="{{key}}" name="{{key}}" class="form-control">
-            <option value=""></option>
-            {{for:v:k:value.values}}
-            <option value="{{k}}" {{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
-            {{endfor}}
-        </select>
-        {{else}}
-        {{if:value.type.format|eq("int32")}}
-        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
-        {{elseif:value.type.format|eq("int64")}}
-        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
-        {{elseif:value.type.format|eq("decimal")}}
-        <input class="form-control" id="{{key}}" type="number" step="any" name="{{key}}" value="{{value.value}}" />
-        {{elseif:value.type.format|eq("date-time")}}
-        <input class="form-control" id="{{key}}" type="datetime-local" name="{{key}}" value="{{value.value}}" />
-        {{elseif:value.type.format|eq("date")}}
-        <input class="form-control" id="{{key}}" type="date" name="{{key}}" value="{{value.value}}" />
-        {{elseif:value.type.format|eq("time")}}
-        <input class="form-control" id="{{key}}" type="time" name="{{key}}" value="" />
-        {{elseif:value.type.format|eq("large-string")}}
-        <textarea class="form-control" id="{{key}}" name="{{key}}">{{value.value}}</textarea>
-        {{elseif:value.type.format|eq("boolean")}}
-        <input class="form-control" id="{{key}}" name="{{key}}" type="checkbox" {{if:value.value}} checked{{endif}} />
-        {{else}}
-        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}" />
-        {{endif}}
-        {{endif}}
-    </div>
-    {{endif}}
-    {{endfor}}
-    <button type="submit" class="btn">Save</button>
-</form>
-END_OF_HTML;
-}
-
-// file: templates/record/updated.html
-namespace {
-$_HTML['record/updated'] = <<<'END_OF_HTML'
-<ul class="breadcrumb">
-    <li><a href="{{base}}/">Home</a></li>
-    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
-</ul>
-
-<h1>update {{table}}</h1>
-
-<p>Updated with {{primaryKey}} {{id}}</p>
-
-<p><a href="{{base}}/{{table}}/list" class="btn btn-primary">Ok</a></p>
-END_OF_HTML;
-}
-
 // file: vendor/psr/http-factory/src/RequestFactoryInterface.php
 namespace Psr\Http\Message {
 
@@ -2016,6 +1485,537 @@ namespace Psr\Http\Server {
          */
         public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface;
     }
+}
+
+// file: templates/error/show.html
+namespace {
+$_HTML['error/show'] = <<<'END_OF_HTML'
+<ul class="breadcrumb">
+    <li><a href="{{base}}/">Home</a></li>
+    <li><a href="{{base}}/column/{{table}}/list">{{table}}</a></li>
+</ul>
+
+<h2>Error</h2>
+
+<strong>code:</strong><br/>
+<p>{{code}}</p>
+
+<strong>message:</strong><br/>
+<p>{{message}}</p>
+
+<strong>details:</strong><br/>
+<pre>{{details}}</pre>
+END_OF_HTML;
+}
+
+// file: templates/layouts/default.html
+namespace {
+$_HTML['layouts/default'] = <<<'END_OF_HTML'
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>{{info.title}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{{base}}/css/style.css">
+    <!--<link rel="stylesheet" type="text/css" href="{{base}}/css/music.css">-->
+    <link rel="shortcut icon" href="{{base}}/img/favicon.ico">
+</head>
+
+<body class="{{table}}">
+    <div class="content">
+        <div class="navigation">
+            <a href="{{base}}/" class="title"><span>{{info.title}}</span>{{info.x-subtitle}}</a>
+            <a class="hamburger" href="{{base}}/menu" title="Open menu"><span></span><span></span><span></span></a>
+        </div>
+        <div class="body">
+            {{content}}
+        </div>
+    </div>
+</body>
+
+</html>
+END_OF_HTML;
+}
+
+// file: templates/layouts/error.html
+namespace {
+$_HTML['layouts/error'] = <<<'END_OF_HTML'
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>{{info.title}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{{base}}/css/style.css">
+    <!--<link rel="stylesheet" type="text/css" href="{{base}}/css/music.css">-->
+    <link rel="shortcut icon" href="{{base}}/img/favicon.ico">
+</head>
+
+<body class="{{table}}">
+    <div class="content">
+        <div class="navigation">
+            <a href="{{base}}/" class="title"><span>{{info.title}}</span>{{info.x-subtitle}}</a>
+            <a class="hamburger" href="{{base}}/menu" title="Open menu"><span></span><span></span><span></span></a>
+        </div>
+        <div class="body">
+            {{content}}
+        </div>
+    </div>
+</body>
+
+</html>
+END_OF_HTML;
+}
+
+// file: templates/layouts/menu.html
+namespace {
+$_HTML['layouts/menu'] = <<<'END_OF_HTML'
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>{{info.title}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{{base}}/css/style.css">
+    <!--<link rel="stylesheet" type="text/css" href="{{base}}/css/music.css">-->
+    <link rel="shortcut icon" href="{{base}}/img/favicon.ico">
+</head>
+
+<body class="{{table}}">
+    <div class="content">
+        <div class="navigation">
+            <a href="{{base}}/" class="title"><span>{{info.title}}</span>{{info.x-subtitle}}</a>
+            <a class="hamburger close" href="javascript:window.history.go(-1);"
+                title="Close menu"><span></span><span></span><span></span></a>
+        </div>
+        <div class="body">
+            {{content}}
+        </div>
+    </div>
+</body>
+
+</html>
+END_OF_HTML;
+}
+
+// file: templates/record/create.html
+namespace {
+$_HTML['record/create'] = <<<'END_OF_HTML'
+<ul class="breadcrumb">
+    <li><a href="{{base}}/">Home</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
+</ul>
+
+<h1>New item</h1>
+
+<form method="post">
+    {{for:value:key:record}}
+    {{if:key|neq(primaryKey)}}
+    <div>
+        <label for="{{key}}" class="col-sm-2 col-form-label" title="{{key|humanize}}">{{key|humanize}}</label>
+        {{if:value.values}}
+        <select id="{{key}}" name="{{key}}" class="form-control">
+            <option value=""></option>
+            {{for:v:k:value.values}}
+            <option value="{{k}}" {{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
+            {{endfor}}
+        </select>
+        {{else}}
+        {{if:value.type.format|eq("int32")}}
+        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("int64")}}
+        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("decimal")}}
+        <input class="form-control" id="{{key}}" type="number" step="any" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("date-time")}}
+        <input class="form-control" id="{{key}}" type="datetime-local" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("date")}}
+        <input class="form-control" id="{{key}}" type="date" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("time")}}
+        <input class="form-control" id="{{key}}" type="time" name="{{key}}" value="" />
+        {{elseif:value.type.format|eq("large-string")}}
+        <textarea class="form-control" id="{{key}}" name="{{key}}">{{value.value}}</textarea>
+        {{elseif:value.type.format|eq("boolean")}}
+        <input class="form-control" id="{{key}}" name="{{key}}" type="checkbox" {{if:value.value}} checked{{endif}} />
+        {{else}}
+        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}" />
+        {{endif}}
+        {{endif}}
+    </div>
+    {{endif}}
+    {{endfor}}
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+END_OF_HTML;
+}
+
+// file: templates/record/created.html
+namespace {
+$_HTML['record/created'] = <<<'END_OF_HTML'
+<ul class="breadcrumb">
+    <li><a href="{{base}}/">Home</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
+</ul>
+
+<h1>create {{table}}</h1>
+
+<p>Added with {{primaryKey}} {{id}}</p>
+
+<p><a href="{{base}}/{{table}}/list" class="btn btn-primary">Ok</a></p>
+END_OF_HTML;
+}
+
+// file: templates/record/delete.html
+namespace {
+$_HTML['record/delete'] = <<<'END_OF_HTML'
+<ul class="breadcrumb">
+    <li><a href="{{base}}/">Home</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
+</ul>
+
+<h1>{{name|or("Delete item")}}</h1>
+
+{{if:name}}
+<p>Are you sure you want to delete '{{name}}'?</p>
+{{else}}
+<p>Are you sure you want to delete item #{{id}}?</p>
+{{endif}}
+<p>The action cannot be undone.</p>
+
+<form method="post">
+    <input type="hidden" name="{{primaryKey}}" value="{{id}}" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="{{base}}/{{table}}/read/{{id}}" class="btn btn-default">Cancel</a>
+</form>
+END_OF_HTML;
+}
+
+// file: templates/record/deleted.html
+namespace {
+$_HTML['record/deleted'] = <<<'END_OF_HTML'
+<ul class="breadcrumb">
+    <li><a href="{{base}}/">Home</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
+</ul>
+
+<h1>delete {{table}}</h1>
+
+<p>Deleted with {{primaryKey}} {{id}}</p>
+
+<p><a href="{{base}}/{{table}}/list" class="btn btn-primary">Ok</a></p>
+END_OF_HTML;
+}
+
+// file: templates/record/home.html
+namespace {
+$_HTML['record/home'] = <<<'END_OF_HTML'
+<ul class="breadcrumb">
+    <li><a href="{{base}}/">Home</a></li>
+</ul>
+
+<h1>{{info.title}}</h1>
+<br />
+<ul class="home">
+    {{for:item:menu}}
+    <li>
+        <a href="{{base}}/{{item}}/list">{{item|humanize}}</a>
+    </li>
+    {{endfor}}
+</ul>
+END_OF_HTML;
+}
+
+// file: templates/record/list.html
+namespace {
+$_HTML['record/list'] = <<<'END_OF_HTML'
+<ul class="breadcrumb">
+    <li><a href="{{base}}/">Home</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
+</ul>
+
+<div class="titlebar">
+    <h1>{{table|humanize}}</h1>
+    <div>
+        <a onclick="document.querySelector('.addFilter').classList.toggle('visible');" href="#" class="icon filter">Add
+            filter</a>
+        <a onclick="document.querySelector('.addSearch').classList.toggle('visible');" href="#"
+            class="icon search">Search</a>
+        {{if:primaryKey}}
+        <a href="{{base}}/{{table}}/create" class="btn">New item</a>
+        {{endif}}
+    </div>
+</div>
+
+<script src="{{base}}/js/list.js"></script>
+
+{{for:filter:i:filters}}
+{{if:filter.type|eq("search")}}
+<div class="filterbar" data-index="{{i}}" data-filter="{{filter.type}},{{filter.operator}},{{filter.value}}">
+    <div>
+        <a href="{{base}}/{{table}}/list" title="Edit filter" onclick="return editFilter('{{i}}');">
+            Search '{{filter.value}}'
+        </a>
+    </div>
+    <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
+</div>
+{{elseif:filter.type|eq("value")}}
+<div class="filterbar" data-index="{{i}}"
+    data-filter="{{filter.type}},{{filter.field}},{{filter.operator}},{{filter.value}}">
+    <div>
+        <a href="{{base}}/{{table}}/list" title="Edit filter" onclick="return editFilter('{{i}}');">
+            {{filter.field|humanize}}
+            {{if:filter.operator|eq("cs")}}~
+            {{elseif:filter.operator|eq("eq")}}=
+            {{elseif:filter.operator|eq("lt")}}&lt;
+            {{elseif:filter.operator|eq("gt")}}&gt;
+            {{else}}{{filter.operator}}{{endif}}
+            '{{filter.value}}'
+        </a>
+    </div>
+    <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
+</div>
+{{elseif:filter.type|eq("reference")}}
+<div class="filterbar" data-index="{{i}}"
+    data-filter="{{filter.type}},{{filter.field}},{{filter.operator}},{{filter.value}},{{filter.text}}">
+    <div>
+        <a href="{{base}}/{{table}}/list" title="Edit filter" onclick="return editFilter('{{i}}');">
+            {{filter.field|humanize}} {{if:filter.operator|eq("in")}}={{else}}~{{endif}} '{{filter.text}}'
+        </a>
+    </div>
+    <a class="close" href="{{base}}/{{table}}/list" title="Clear filters" onclick="return closeFilter('{{i}}');"></a>
+</div>
+{{endif}}
+{{endfor}}
+
+<div class="addFilter">
+    <form style="display:inline" method="post" action="#">
+        <select name="field" onchange="updateAddFilter();">
+            {{for:column:columns}}
+            {{if:column|neq(primaryKey)}}
+            <option value="{{column}}" data-references="{{references|prop(column)}}"
+                data-format="{{types|prop(column)|prop("format")}}">
+                {{column|humanize}}
+            </option>
+            {{endif}}
+            {{endfor}}
+        </select>
+        <select name="operator">
+            <option value="cs">~</option>
+            <option value="eq">=</option>
+            <option value="lt">&lt;</option>
+            <option value="gt">&gt;</option>
+        </select>
+        <input type="hidden" name="value" />
+        <select name="values" onchange="updateTextAndValue();" multiple style="height: 5rem;"></select>
+        <input type="hidden" name="text" />
+        <input type="submit" value="Filter" />
+    </form>
+</div>
+
+<div class="addSearch">
+    <form style="display:inline" method="post" action="#">
+        <input type="text" name="search" />
+        <input type="submit" value="Search" />
+    </form>
+</div>
+
+<table class="table list">
+    <thead>
+        <tr>
+            {{if:primaryKey}}
+            <th>Action</th>
+            {{endif}}
+            {{for:column:columns}}
+            {{if:column|neq(primaryKey)}}
+            <th>{{column|humanize}}</th>
+            {{endif}}
+            {{endfor}}
+        </tr>
+    </thead>
+    <tbody>
+        {{for:record:records}}
+        <tr>
+            {{for:field:name:record}}
+            {{if:name|eq(primaryKey)}}
+            <td><a href="{{base}}/{{table}}/read/{{field.value}}">view</a></td>
+            {{endif}}
+            {{if:name|neq(primaryKey)}}
+            {{if:field.table}}
+            <td><a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a></td>
+            {{else}}
+            <td>{{field.text}}</td>
+            {{endif}}
+            {{endif}}
+            {{endfor}}
+        </tr>
+        {{endfor}}
+    </tbody>
+</table>
+{{if:maxPage|gt(1)}}
+<div class="pagination" data-page="{{pageNumber}},{{pageSize}}">
+    {{if:pageNumber|gt(1)}}
+    <a href="?page={{pageNumber|sub(1)}},{{pageSize}}" class="icon prev"
+        onclick="return navigatePage('{{pageNumber|sub(1)}},{{pageSize}}')">&lt;</a>
+    {{else}}
+    <a href="javascript:void(0);" class="icon prev disabled">&lt;</a>
+    {{endif}}
+    &nbsp;page {{pageNumber}}/{{maxPage}}&nbsp;
+    {{if:pageNumber|lt(maxPage)}}
+    <a href="?page={{pageNumber|add(1)}},{{pageSize}}" class="icon next"
+        onclick="return navigatePage('{{pageNumber|add(1)}},{{pageSize}}')">&gt;</a>
+    {{else}}
+    <a href="javascript:void(0);" class="icon next disabled">&gt;</a>
+    {{endif}}
+</div>
+{{endif}}
+<div class="footeractions">
+    <a href="{{base}}/{{table}}/export" class="btn">Export</a>
+
+</div>
+END_OF_HTML;
+}
+
+// file: templates/record/menu.html
+namespace {
+$_HTML['record/menu'] = <<<'END_OF_HTML'
+<br />
+<ul class="home">
+    {{for:item:menu}}
+    <li>
+        <a href="{{base}}/{{item}}/list">{{item|humanize}}</a>
+    </li>
+    {{endfor}}
+</ul>
+END_OF_HTML;
+}
+
+// file: templates/record/read.html
+namespace {
+$_HTML['record/read'] = <<<'END_OF_HTML'
+<ul class="breadcrumb">
+    <li><a href="{{base}}/">Home</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
+</ul>
+
+<h1>{{name|or("View item")}}</h1>
+
+<table class="table read">
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{for:field:name:record}}
+        {{if:name|neq(primaryKey)}}
+        <tr>
+            <td>{{name|humanize}}</td>
+            </td>
+            <td>
+                {{if:field.table|and(field.text)}}
+                <a href="{{base}}/{{field.table}}/read/{{field.value}}">{{field.text}}</a>
+                {{else}}
+                {{if:field.type.format|eq("large-string")}}
+                <div style="white-space: pre-wrap;">{{field.text}}</div>
+                {{else}}
+                {{if:field.text}}{{field.text}}{{else}}<span class="mobile-only">-</span>{{endif}}
+                {{endif}}
+                {{endif}}
+            </td>
+        </tr>
+        {{endif}}
+        {{endfor}}
+    </tbody>
+</table>
+
+<p>
+    <a class="btn btn-primary" href="{{base}}/{{table}}/update/{{id}}">Edit</a>
+    <a class="btn btn-danger" href="{{base}}/{{table}}/delete/{{id}}">Delete</a>
+</p>
+{{if:referenced|has(0)}}
+<br />
+<br />
+<h2>Related</h2>
+<ul class="related">
+    {{for:relation:referenced}}
+    <li>
+        <a href="{{base}}/{{relation.0}}/list?filter=reference,{{relation.1}},in,{{id}},{{name}}">
+            {{relation.0|humanize}}
+        </a>
+    </li>
+    {{endfor}}
+    {{endif}}
+</ul>
+END_OF_HTML;
+}
+
+// file: templates/record/update.html
+namespace {
+$_HTML['record/update'] = <<<'END_OF_HTML'
+<ul class="breadcrumb">
+    <li><a href="{{base}}/">Home</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
+</ul>
+
+<h1>{{name|or("Edit item")}}</h1>
+
+<form method="post">
+    {{for:value:key:record}}
+    {{if:key|neq(primaryKey)}}
+    <div>
+        <label for="{{key}}" class="col-sm-2 col-form-label" title="{{key|humanize}}">{{key|humanize}}</label>
+        {{if:value.values}}
+        <select id="{{key}}" name="{{key}}" class="form-control">
+            <option value=""></option>
+            {{for:v:k:value.values}}
+            <option value="{{k}}" {{if:k|eq(value.value)}} selected{{endif}}>{{v}}</option>
+            {{endfor}}
+        </select>
+        {{else}}
+        {{if:value.type.format|eq("int32")}}
+        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("int64")}}
+        <input class="form-control" id="{{key}}" type="number" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("decimal")}}
+        <input class="form-control" id="{{key}}" type="number" step="any" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("date-time")}}
+        <input class="form-control" id="{{key}}" type="datetime-local" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("date")}}
+        <input class="form-control" id="{{key}}" type="date" name="{{key}}" value="{{value.value}}" />
+        {{elseif:value.type.format|eq("time")}}
+        <input class="form-control" id="{{key}}" type="time" name="{{key}}" value="" />
+        {{elseif:value.type.format|eq("large-string")}}
+        <textarea class="form-control" id="{{key}}" name="{{key}}">{{value.value}}</textarea>
+        {{elseif:value.type.format|eq("boolean")}}
+        <input class="form-control" id="{{key}}" name="{{key}}" type="checkbox" {{if:value.value}} checked{{endif}} />
+        {{else}}
+        <input class="form-control" id="{{key}}" name="{{key}}" value="{{value.value}}" />
+        {{endif}}
+        {{endif}}
+    </div>
+    {{endif}}
+    {{endfor}}
+    <button type="submit" class="btn">Save</button>
+</form>
+END_OF_HTML;
+}
+
+// file: templates/record/updated.html
+namespace {
+$_HTML['record/updated'] = <<<'END_OF_HTML'
+<ul class="breadcrumb">
+    <li><a href="{{base}}/">Home</a></li>
+    <li><a href="{{base}}/{{table}}/list">{{table|humanize}}</a></li>
+</ul>
+
+<h1>update {{table}}</h1>
+
+<p>Updated with {{primaryKey}} {{id}}</p>
+
+<p><a href="{{base}}/{{table}}/list" class="btn btn-primary">Ok</a></p>
+END_OF_HTML;
 }
 
 // file: vendor/nyholm/psr7/src/Factory/Psr17Factory.php

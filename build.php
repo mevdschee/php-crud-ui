@@ -138,7 +138,7 @@ $dirs = [
 ];
 
 if (!extension_loaded('psr')) {
-    array_unshift($directories, 'vendor/psr');
+    array_unshift($dirs, 'vendor/psr');
 }
 
 run(__DIR__, $dirs, 'ui.php', $ignore);
