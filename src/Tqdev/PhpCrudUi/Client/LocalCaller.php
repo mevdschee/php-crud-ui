@@ -3,7 +3,7 @@
 namespace Tqdev\PhpCrudUi\Client;
 
 use Tqdev\PhpCrudApi\Api;
-use Tqdev\PhpCrudApi\Config;
+use Tqdev\PhpCrudApi\Config\Config;
 use Tqdev\PhpCrudApi\RequestFactory;
 
 class LocalCaller implements ApiCaller

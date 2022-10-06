@@ -36,10 +36,10 @@ class Ui implements RequestHandlerInterface
         $definition = new SpecificationService($api, $cache, $config->getCacheTime());
         $responder = new MultiResponder($config->getTemplatePath());
         $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime(), $config->getDebug());
-        foreach ($config->getMiddlewares() as $middleware => $properties) {
+        foreach (array_keys($config->getMiddlewares()) as $middleware) {
             switch ($middleware) {
                 case 'staticFile':
-                    new StaticFileMiddleware($router, $responder, $properties);
+                    new StaticFileMiddleware($router, $responder, $config, $middleware);
                     break;
             }
         }
