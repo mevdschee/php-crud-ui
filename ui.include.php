@@ -10408,6 +10408,7 @@ namespace Tqdev\PhpCrudApi\OpenApi {
         private $records;
         private $columns;
         private $builders;
+        private $status;
 
         public function __construct(ReflectionService $reflection, array $base, array $controllers, array $builders)
         {
@@ -13028,6 +13029,8 @@ namespace Tqdev\PhpCrudUi\Column {
         private $api;
         private $cache;
         private $ttl;
+        private $definition;
+        private $properties;
 
         public function __construct(CrudApi $api, Cache $cache, int $ttl)
         {
@@ -13999,7 +14002,7 @@ namespace Tqdev\PhpCrudUi\Record {
                     $j = 0;
                     foreach ($references as $column => $reference) {
                         if (!$reference && $column != $primaryKey) {
-                            $args["filter${j}[0]"] = implode(',', array($column, $filter['operator'], $filter['value']));
+                            $args["filter{$j}[0]"] = implode(',', array($column, $filter['operator'], $filter['value']));
                             $j++;
                         }
                     }
