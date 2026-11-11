@@ -10,6 +10,8 @@ class SpecificationService
     private $api;
     private $cache;
     private $ttl;
+    private $definition;
+    private $properties;
 
     public function __construct(CrudApi $api, Cache $cache, int $ttl)
     {

@@ -228,7 +228,7 @@ class RecordService
                 $j = 0;
                 foreach ($references as $column => $reference) {
                     if (!$reference && $column != $primaryKey) {
-                        $args["filter${j}[0]"] = implode(',', array($column, $filter['operator'], $filter['value']));
+                        $args["filter{$j}[0]"] = implode(',', array($column, $filter['operator'], $filter['value']));
                         $j++;
                     }
                 }

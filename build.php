@@ -127,6 +127,7 @@ function run(string $base, array $dirs, string $filename, array $ignore)
 
 $ignore = [
     'vendor/nyholm/psr7/src/Factory/HttplugFactory.php',
+    'vendor/nyholm/psr7/.php-cs-fixer.dist.php',
 ];
 
 $dirs = [
